@@ -243,7 +243,7 @@ function! s:cache_load_ini(name)
 			return obj
 		endif
 	endif
-	let config = s:readini(name, 1)
+	let config = s:readini(name, 0)
 	if type(config) != v:t_dict
 		let s:error = 'syntax error in '. a:name . ' line '. config
 		return config
@@ -267,6 +267,21 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" check requirement
+"----------------------------------------------------------------------
+function! s:requirement(what)
+	if a:what == 'asyncrun'
+		if exists(':AsyncRun') == 0
+			let t = 'asyncrun is required, install from '
+			call s:errmsg(t . '"skywind3000/asyncrun.vim"')
+			return 0
+		endif
+	endif
+	return 1
+endfunc
+
+
+"----------------------------------------------------------------------
 " collect config in rtp
 "----------------------------------------------------------------------
 function! s:collect_rtp_config() abort
@@ -278,9 +293,12 @@ function! s:collect_rtp_config() abort
 		endif
 	endif
 	if g:asynctasks_rtp_config != ''
+		let rtp_name = g:asynctasks_rtp_config
+		let rtp_name = s:replace(rtp_name, '$(system)', g:asynctasks_system)
+		let rtp_name = s:replace(rtp_name, '<system>', g:asynctasks_system)
 		for rtp in split(&rtp, ',')
 			if rtp != ''
-				let path = s:abspath(rtp . '/' . g:asynctasks_rtp_config)
+				let path = s:abspath(rtp . '/' . rtp_name)
 				if filereadable(path)
 					let names += [path]
 				endif
@@ -583,6 +601,57 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" edit task
+"----------------------------------------------------------------------
+function! s:task_edit(mode, path)
+	let name = a:path
+	if s:requirement('asyncrun') == 0
+		return -1
+	endif
+	if name == ''
+		if a:mode ==# '-e'
+			let name = asyncrun#get_root('%')
+			let name = name . '/' . g:asynctasks_config_name
+			let name = fnamemodify(expand(name), ':p')
+		else
+			let name = expand('~/.vim/' . g:asynctasks_rtp_config)
+		endif
+	endif
+	call inputsave()
+	let r = input('(Edit task config): ', name)
+	call inputrestore()
+	if r == ''
+		return -1
+	endif
+	let newfile = filereadable(name)? 0 : 1
+	exec "split " . fnameescape(name)
+	exec "setlocal ft=dosini"
+	if newfile
+		exec "normal ggVGx"
+		let textlist = [
+					\ '# define a new task named "default"',
+					\ '[default]',
+					\ '',
+					\ '# shell command, use quotation for filenames containing spaces',
+					\ 'command=gcc "$(VIM_FILEPATH)" -o "$(VIM_FILENOEXT)"',
+					\ '',
+					\ '# working directory, can change to $(VIM_ROOT) for project root',
+					\ 'cwd=$(VIM_FILEDIR)',
+					\ '',
+					\ '# output mode, can be either quickfix or terminal',
+					\ 'output=quickfix',
+					\ '',
+					\ '# this can be omitted (use the errorformat in vim)',
+					\ 'errorformat=%f:%l:%m',
+					\ '',
+					\ '',
+					\ ]
+		call append(line('.') - 1, textlist)
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
 " command AsyncTask
 "----------------------------------------------------------------------
 function! asynctasks#cmd(bang, ...)
@@ -596,9 +665,14 @@ function! asynctasks#cmd(bang, ...)
 		echo '    :AsyncTask {taskname}      - run specific task'
 		echo '    :AsyncTask -l              - list tasks'
 		echo '    :AsyncTask -h              - show this help'
+		echo '    :AsyncTask -e              - edit local task in project root'
+		echo '    :AsyncTask -E              - edit global task in ~/.vim'
 		return 0
 	elseif taskname == '-l'
 		call s:task_list('')
+		return 0
+	elseif taskname ==# '-e' || taskname ==# '-E'
+		call s:task_edit(taskname, (a:0 >= 2)? (a:2) : '')
 		return 0
 	endif
 	call asynctasks#run(a:bang, taskname, '')
@@ -611,7 +685,6 @@ endfunc
 
 command! -bang -nargs=* AsyncTask
 			\ call asynctasks#cmd('<bang>', <q-args>)
-
 
 
 "----------------------------------------------------------------------
