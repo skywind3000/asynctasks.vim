@@ -3,7 +3,7 @@
 " asynctasks.vim - 
 "
 " Created by skywind on 2020/01/16
-" Last Modified: 2020/01/16 00:50:59
+" Last Modified: 2020/01/18 04:29
 "
 "======================================================================
 
@@ -63,6 +63,10 @@ endif
 
 if !exists('g:asynctasks_term_rows')
 	let g:asynctasks_term_rows = ''
+endif
+
+if !exists('g:asynctasks_term_focus')
+	let g:asynctasks_term_focus = 1
 endif
 
 
@@ -513,11 +517,17 @@ function! s:task_option(task)
 		if output == 'term' || output == 'terminal'
 			let pos = g:asynctasks_term_pos
 			let gui = get(g:, 'asyncrun_gui', 0)
-			if pos != 'external' && pos != 'system' && pos != 'os'
+			if pos == 'vim' || pos == 'bang'
+				let opts.mode = 'bang'
+			elseif pos == 'quickfix'
+				let opts.mode = 'async'
+				let opts.raw = 1
+			elseif pos != 'external' && pos != 'system' && pos != 'os'
 				let opts.mode = 'term'
 				let opts.pos = pos
 				let opts.cols = g:asynctasks_term_cols
 				let opts.rows = g:asynctasks_term_rows
+				let opts.focus = g:asynctasks_term_focus
 			elseif s:windows && gui != 0
 				let opts.mode = 'system'
 			else
@@ -525,7 +535,13 @@ function! s:task_option(task)
 				let opts.pos = 'bottom'
 				let opts.cols = g:asynctasks_term_cols
 				let opts.rows = g:asynctasks_term_rows
+				let opts.focus = g:asynctasks_term_focus
 			endif
+		elseif output == 'quickfix-raw' || output == 'raw'
+			let opts.mode = 'async'
+			let opts.raw = 1
+		elseif output == 'vim'
+			let opts.mode = 'bang'
 		endif
 	endif
 	if has_key(task, 'errorformat')
@@ -537,7 +553,7 @@ function! s:task_option(task)
 	if has_key(task, 'strip')
 		let opts.strip = task.strip
 	endif
-	for key in ['pos', 'rows', 'cols']
+	for key in ['pos', 'rows', 'cols', 'focus']
 		if has_key(task, key)
 			let opts[key] = task[key]
 		endif
@@ -573,7 +589,12 @@ function! asynctasks#run(bang, taskname, path)
 		return -4
 	endif
 	let opts = s:task_option(task)
+	let skip = g:asyncrun_skip
+	if opts.mode == 'bang' || opts.mode == 2
+		" let g:asyncrun_skip = or(g:asyncrun_skip, 2)
+	endif
 	call asyncrun#run(a:bang, opts, task.command)
+	let g:asyncrun_skip = skip
 	return 0
 endfunc
 
@@ -644,6 +665,8 @@ function! s:task_edit(mode, path)
 		\ '# this can be omitted (use the errorformat in vim)',
 		\ 'errorformat=%f:%l:%m',
 		\ '',
+		\ '# save file before execute',
+		\ 'save=1',
 		\ '',
 		\ ]
 	if newfile
