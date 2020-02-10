@@ -2,8 +2,13 @@
 "
 " asynctasks.vim - 
 "
-" Created by skywind on 2020/01/16
-" Last Modified: 2020/01/18 04:29
+" Maintainer: skywind3000 (at) gmail.com, 2020
+"
+" Last Modified: 2020/02/10 23:27
+" Verision: 1.0.32
+"
+" for more information, please visit:
+" https://github.com/skywind3000/asynctasks.vim
 "
 "======================================================================
 
@@ -52,9 +57,9 @@ if !exists('g:asynctasks_init_tasks')
 	let g:asynctasks_init_tasks = 1
 endif
 
-" terminal mode: tab/top/bottom/left/right/external
+" terminal mode: tab/curwin/top/bottom/left/right/quickfix/external
 if !exists('g:asynctasks_term_pos')
-	let g:asynctasks_term_pos = 'bottom'
+	let g:asynctasks_term_pos = 'quickfix'
 endif
 
 if !exists('g:asynctasks_term_cols')
@@ -151,7 +156,7 @@ function! s:find_root(name, markers, strict)
 	let name = fnamemodify((a:name != '')? a:name : bufname(), ':p')
 	let finding = ''
 	" iterate all markers
-	for marker in split(g:projectile#marker, ',')
+	for marker in split(a:markers, ',')
 		if marker != ''
 			" search as a file
 			let x = findfile(marker, name . '/;')
@@ -196,7 +201,7 @@ function! s:search_parent(name, cwd)
 	let output = []
 	for name in finding
 		let name = fnamemodify(name, ':p')
-		let output += [name]
+		let output += [s:abspath(name)]
 	endfor
 	return output
 endfunc
@@ -218,8 +223,11 @@ function! s:abspath(path)
 	let f = (f != '%')? f : expand('%')
 	let f = fnamemodify(f, ':p')
 	if s:windows != 0
-		let f = substitute(f, "\\", '/', 'g')
+		let f = substitute(f, '\/', '\\', 'g')
+	else
+		let f = substitute(f, '\\', '\/', 'g')
 	endif
+	let f = substitute(f, '\\', '\/', 'g')
 	if len(f) > 1
 		let size = len(f)
 		if f[size - 1] == '/'
@@ -262,7 +270,8 @@ function! s:cache_load_ini(name)
 	let obj.name = name
 	let obj.config = config
 	let obj.keys = keys(config)
-	let home = fnamemodify(name, ':h')
+	let ininame = name
+	let inihome = fnamemodify(name, ':h')
 	let special = []
 	for sect in obj.keys
 		let section = obj.config[sect]
@@ -271,7 +280,8 @@ function! s:cache_load_ini(name)
 		endif
 		for key in keys(section)
 			let val = section[key]
-			let section[key] = s:replace(val, '$(CFGHOME)', home)
+			let section[key] = s:replace(val, '$(VIM_INIHOME)', inihome)
+			let section[key] = s:replace(val, '$(VIM_INIFILE)', ininame)
 		endfor
 	endfor
 	let sys = g:asynctasks_system
@@ -433,9 +443,30 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" 
+" extract correct command
 "----------------------------------------------------------------------
-function! s:sort_item(i1, i2)
+function! s:select_command(config, ft)
+	let command = get(a:config, 'command', '')
+	for key in keys(a:config)
+		let pos = stridx(key, ':')
+		if pos < 0
+			continue
+		endif
+		let part = split(key, ':')
+		let head = substitute(part[0], '^\s*\(.\{-}\)\s*$', '\1', '')
+		if head != 'command'
+			continue
+		endif
+		let text = substitute(part[1], '^\s*\(.\{-}\)\s*$', '\1', '')
+		let check = 0
+		for ft in split(text, ',')
+			let ft = substitute(ft, '^\s*\(.\{-}\)\s*$', '\1', '')
+			if ft == a:ft
+				let command = a:config[key]
+			endif
+		endfor
+	endfor
+	return command
 endfunc
 
 
@@ -485,6 +516,8 @@ function! asynctasks#split(name)
 	let parts = split(name, ':')
 	let name = (len(parts) >= 1)? parts[0] : ''
 	let system = (len(parts) >= 2)? parts[1] : ''
+	let name = substitute(name, '^\s*\(.\{-}\)\s*$', '\1', '')
+	let system = substitute(system, '^\s*\(.\{-}\)\s*$', '\1', '')
 	return [name, system]
 endfunc
 
@@ -513,7 +546,7 @@ function! asynctasks#tabulify(rows)
 			let newrow += repeat([''], ncols - len(newrow))
 		endif
 		for i in index
-			let size = len(newrow[i])
+			let size = strwidth(newrow[i])
 			let sizes[i] = (sizes[i] < size)? size : sizes[i]
 		endfor
 		let rows += [newrow]
@@ -522,14 +555,13 @@ function! asynctasks#tabulify(rows)
 		let ni = []
 		for i in index
 			let x = row[i]
-			let size = len(x)
-			if len(x) < sizes[i]
+			let size = strwidth(x)
+			if size < sizes[i]
 				let x = x . repeat(' ', sizes[i] - size)
 			endif
 			let ni += [x]
 		endfor
-		let text = join(ni, '  ')
-		let content += [text]
+		let content += [ni]
 	endfor
 	return content
 endfunc
@@ -538,19 +570,25 @@ endfunc
 "----------------------------------------------------------------------
 " display table
 "----------------------------------------------------------------------
-function! s:print_table(rows, highhead)
+function! s:print_table(rows, highmap)
 	let content = asynctasks#tabulify(a:rows)
 	let index = 0
 	for line in content
-		if index == 0 && a:highhead
-			let index += 1
-			echohl ModeMsg
-			echo ' '. line
-			echohl None
-		else
-			echo ' '. line
-		endif
+		let col = 0
+		echon (index == 0)? " " : "\n "
+		for cell in line
+			let key = index . ',' . col
+			if !has_key(a:highmap, key)
+				echohl None
+			else
+				exec 'echohl ' . a:highmap[key]
+			endif
+			echon cell . '  '
+			let col += 1
+		endfor
+		let index += 1
 	endfor
+	echohl None
 endfunc
 
 
@@ -575,7 +613,9 @@ function! s:task_option(task)
 	if has_key(task, 'output')
 		let output = task.output
 		let opts.mode = 'async'
-		if output == 'term' || output == 'terminal'
+		if output == 'quickfix'
+			let opts.mode = 'async'
+		elseif output == 'term' || output == 'terminal'
 			let pos = g:asynctasks_term_pos
 			let gui = get(g:, 'asyncrun_gui', 0)
 			if pos == 'vim' || pos == 'bang'
@@ -619,7 +659,32 @@ function! s:task_option(task)
 			let opts[key] = task[key]
 		endif
 	endfor
+	let opts.safe = 1
 	return opts
+endfunc
+
+
+"----------------------------------------------------------------------
+" compare version: 0 for equal, 1 for current > require, -1 for <
+"----------------------------------------------------------------------
+function! asynctasks#version_compare(current, require)
+	let current = split(a:current, '\.')
+	let require = split(a:require, '\.')
+	if len(require) < len(current)
+		let require += repeat(['.'], len(current) - len(require))
+	elseif len(require) > len(current)
+		let current += repeat(['.'], len(require) - len(current))
+	endif
+	for index in range(len(require))
+		let c = str2nr(current[index])
+		let r = str2nr(require[index])
+		if c > r
+			return 1
+		elseif c < r
+			return -1
+		endif
+	endfor
+	return 0
 endfunc
 
 
@@ -640,8 +705,9 @@ function! asynctasks#start(bang, taskname, path)
 	let task = tasks.config[a:taskname]
 	let ininame = task.__name__
 	let source = 'task ['. a:taskname . '] from ' . ininame
-	if !has_key(task, 'command') || task.command == ''
-		call s:errmsg('not find command in ' . source)
+	let command = s:select_command(task, &ft)
+	if command == ''
+		call s:errmsg('no command defined in ' . source)
 		return -3
 	endif
 	if exists(':AsyncRun') == 0
@@ -649,14 +715,51 @@ function! asynctasks#start(bang, taskname, path)
 		call s:errmsg(t . '"skywind3000/asyncrun.vim"')
 		return -4
 	endif
+	if exists('*asyncrun#version') == 0
+		let t = 'asyncrun is too old, get the latest from '
+		call s:errmsg(t . '"skywind3000/asyncrun.vim"')
+		return -5
+	endif
+	let target = '2.3.0'
+	if asynctasks#version_compare(asyncrun#version(), target) < 0
+		let t = 'asyncrun ' . target . ' or above is required, update from '
+		call s:errmsg(t . '"skywind3000/asyncrun.vim"')
+		return -6
+	endif
 	let opts = s:task_option(task)
 	let skip = g:asyncrun_skip
 	if opts.mode == 'bang' || opts.mode == 2
 		" let g:asyncrun_skip = or(g:asyncrun_skip, 2)
 	endif
-	call asyncrun#run(a:bang, opts, task.command)
+	call asyncrun#run(a:bang, opts, command)
 	let g:asyncrun_skip = skip
 	return 0
+endfunc
+
+
+"----------------------------------------------------------------------
+" list available tasks
+"----------------------------------------------------------------------
+function! asynctasks#list(path)
+	let path = (a:path == '')? expand('%:p') : a:path
+	if asynctasks#collect_config(path, 1) != 0
+		return -1
+	endif
+	let tasks = s:private.tasks
+	let rows = []
+	for task in tasks.avail
+		let item = tasks.config[task]
+		let command = get(item, 'command', '')
+		let ni = {}
+		let ni.name = task
+		let ni.command = s:select_command(item, &ft)
+		let ni.scope = item.__mode__
+		let ni.source = item.__name__
+		if ni.command != ''
+			let rows += [ni]
+		endif
+	endfor
+	return rows
 endfunc
 
 
@@ -671,15 +774,59 @@ function! s:task_list(path)
 	let tasks = s:private.tasks
 	let rows = []
 	let rows += [['Task', 'Type', 'Detail']]
+	let highmap = {}
+	let index = 0
+	let highmap['0,0'] = 'Title'
+	let highmap['0,1'] = 'Title'
+	let highmap['0,2'] = 'Title'
 	" let rows += [['----', '----', '------']]
 	for task in tasks.avail
 		let item = tasks.config[task]
-		let command = get(item, 'command', '')
-		let rows += [[task, item.__mode__, command]]
-		let rows += [['', '', item.__name__]]
+		let command = s:select_command(item, &ft)
+		if command != ''
+			let rows += [[task, item.__mode__, command]]
+			let rows += [['', '', item.__name__]]
+		endif
+		let highmap[(index * 2 + 1) . ',0'] = 'Keyword'
+		let highmap[(index * 2 + 1) . ',1'] = 'Number'
+		let highmap[(index * 2 + 1) . ',2'] = 'Statement'
+		let highmap[(index * 2 + 2) . ',2'] = 'Comment'
+		let index += 1
 	endfor
-	call s:print_table(rows, 1)
+	call s:print_table(rows, highmap)
+	" echo highmap
 endfunc
+
+
+"----------------------------------------------------------------------
+" config template
+"----------------------------------------------------------------------
+let s:template = [
+	\ '# vim: set noet fenc=utf-8 sts=4 sw=4 ts=4 ft=dosini:',
+	\ '',
+	\ '# define a new task named "file-compile"',
+	\ '[file-compile]',
+	\ '',
+	\ '# shell command, use quotation for filenames containing spaces',
+	\ '# check ":AsyncTaskMacro" to see available macros',
+	\ 'command=gcc "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)"',
+	\ '',
+	\ '# working directory, can change to $(VIM_ROOT) for project root',
+	\ 'cwd=$(VIM_FILEDIR)',
+	\ '',
+	\ '# output mode, can be one of quickfix and terminal',
+	\ '# - quickfix: output to quickfix window',
+	\ '# - terminal: run the command in the internal terminal',
+	\ 'output=quickfix',
+	\ '',
+	\ '# this is for output=quickfix only',
+	\ "# if it is omitted, vim's current errorformat will be used.",
+	\ 'errorformat=%f:%l:%m',
+	\ '',
+	\ '# save file before execute',
+	\ 'save=1',
+	\ '',
+	\ ]
 
 
 "----------------------------------------------------------------------
@@ -708,32 +855,85 @@ function! s:task_edit(mode, path)
 	let newfile = filereadable(name)? 0 : 1
 	exec "split " . fnameescape(name)
 	exec "setlocal ft=dosini sts=4 sw=4 ts=4 noet"
-	let textlist = [
-		\ '# vim: set noet fenc=utf-8 sts=4 sw=4 ts=4 ft=dosini:',
-		\ '',
-		\ '# define a new task named "default"',
-		\ '[default]',
-		\ '',
-		\ '# shell command, use quotation for filenames containing spaces',
-		\ 'command=gcc "$(VIM_FILEPATH)" -o "$(VIM_FILENOEXT)"',
-		\ '',
-		\ '# working directory, can change to $(VIM_ROOT) for project root',
-		\ 'cwd=$(VIM_FILEDIR)',
-		\ '',
-		\ '# output mode, can be either quickfix or terminal',
-		\ 'output=quickfix',
-		\ '',
-		\ '# this can be omitted (use the errorformat in vim)',
-		\ 'errorformat=%f:%l:%m',
-		\ '',
-		\ '# save file before execute',
-		\ 'save=1',
-		\ '',
-		\ ]
 	if newfile
 		exec "normal ggVGx"
-		call append(line('.') - 1, textlist)
+		call append(line('.') - 1, s:template)
+		setlocal nomodified
 	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" macro help 
+"----------------------------------------------------------------------
+let s:macros = { 
+	\ 'VIM_FILEPATH': 'File name of current buffer with full path',
+	\ 'VIM_FILENAME': 'File name of current buffer without path',
+	\ 'VIM_FILEDIR': 'Full path of current buffer without the file name',
+	\ 'VIM_FILEEXT': 'File extension of current buffer',
+	\ 'VIM_FILENOEXT': 
+		\ 'File name of current buffer without path and extension',
+	\ 'VIM_PATHNOEXT':
+		\ 'Current file name with full path but without extension',
+	\ 'VIM_CWD': 'Current directory',
+	\ 'VIM_RELDIR': 'File path relativize to current directory',
+	\ 'VIM_RELNAME': 'File name relativize to current directory',
+	\ 'VIM_ROOT': 'Project root directory',
+	\ 'VIM_CWORD': 'Current word under cursor',
+	\ 'VIM_CFILE': 'Current filename under cursor',
+	\ 'VIM_GUI': 'Is running under gui ?',
+	\ 'VIM_VERSION': 'Value of v:version',
+	\ 'VIM_COLUMNS': "How many columns in vim's screen",
+	\ 'VIM_LINES': "How many lines in vim's screen", 
+	\ 'VIM_SVRNAME': 'Value of v:servername for +clientserver usage',
+	\ }
+
+
+"----------------------------------------------------------------------
+" macro list
+"----------------------------------------------------------------------
+function! s:task_macro()
+	let macros = {}
+	let macros['VIM_FILEPATH'] = expand("%:p")
+	let macros['VIM_FILENAME'] = expand("%:t")
+	let macros['VIM_FILEDIR'] = expand("%:p:h")
+	let macros['VIM_FILENOEXT'] = expand("%:t:r")
+	let macros['VIM_PATHNOEXT'] = expand("%:r")
+	let macros['VIM_FILEEXT'] = "." . expand("%:e")
+	let macros['VIM_CWD'] = getcwd()
+	let macros['VIM_RELDIR'] = expand("%:h:.")
+	let macros['VIM_RELNAME'] = expand("%:p:.")
+	let macros['VIM_CWORD'] = expand("<cword>")
+	let macros['VIM_CFILE'] = expand("<cfile>")
+	let macros['VIM_VERSION'] = ''.v:version
+	let macros['VIM_SVRNAME'] = v:servername
+	let macros['VIM_COLUMNS'] = ''.&columns
+	let macros['VIM_LINES'] = ''.&lines
+	let macros['VIM_GUI'] = has('gui_running')? 1 : 0
+	let macros['VIM_ROOT'] = asyncrun#get_root('%')
+    let macros['VIM_HOME'] = expand(split(&rtp, ',')[0])
+	let macros['<cwd>'] = macros['VIM_CWD']
+	let macros['<root>'] = macros['VIM_ROOT']
+	let names = ['FILEPATH', 'FILENAME', 'FILEDIR', 'FILEEXT', 'FILENOEXT']
+	let names += ['PATHNOEXT', 'CWD', 'RELDIR', 'RELNAME', 'CWORD', 'CFILE']
+	let names += ['VERSION', 'SVRNAME', 'COLUMNS', 'LINES', 'GUI', 'ROOT']
+	let rows = []
+	let rows += [['Macro', 'Detail', 'Value']]
+	let highmap = {}
+	let highmap['0,0'] = 'Title'
+	let highmap['0,1'] = 'Title'
+	let highmap['0,2'] = 'Title'
+	let index = 1
+	for nn in names
+		let name = 'VIM_' . nn
+		let rows += [['$(' . name . ')', s:macros[name], macros[name]]]
+		" let rows += [['', macros[name]]]
+		let highmap[index . ',0'] = 'Keyword'
+		let highmap[index . ',1'] = 'Statement'
+		let highmap[index . ',2'] = 'Comment'
+		let index += 1
+	endfor
+	call s:print_table(rows, highmap)
 endfunc
 
 
@@ -742,8 +942,9 @@ endfunc
 "----------------------------------------------------------------------
 function! asynctasks#cmd(bang, ...)
 	let taskname = (a:0 >= 1)? (a:1) : ''
+	let path = (a:0 >= 2)? (a:2) : ''
 	if taskname == ''
-		call s:errmsg('empty task name, use ":AsyncTask -h" for help')
+		call s:errmsg('require task name')
 		return -1
 	elseif taskname == '-h'
 		echo 'usage:  :AsyncTask <operation>'
@@ -753,12 +954,16 @@ function! asynctasks#cmd(bang, ...)
 		echo '    :AsyncTask -h              - show this help'
 		echo '    :AsyncTask -e              - edit local task in project root'
 		echo '    :AsyncTask -E              - edit global task in ~/.vim'
+		echo '    :AsyncTask -m              - display command macros'
 		return 0
 	elseif taskname == '-l'
 		call s:task_list('')
 		return 0
 	elseif taskname ==# '-e' || taskname ==# '-E'
-		call s:task_edit(taskname, (a:0 >= 2)? (a:2) : '')
+		call s:task_edit(taskname, path)
+		return 0
+	elseif taskname == '-m'
+		call s:task_macro()
 		return 0
 	endif
 	call asynctasks#start(a:bang, taskname, '')
@@ -766,11 +971,24 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" commands
+" command
 "----------------------------------------------------------------------
 
 command! -bang -nargs=* AsyncTask
 			\ call asynctasks#cmd('<bang>', <q-args>)
+
+
+"----------------------------------------------------------------------
+" help commands
+"----------------------------------------------------------------------
+command! -bang -nargs=0 AsyncTaskEdit
+			\ call asynctasks#cmd('', ('<bang>' == '')? '-e' : '-E')
+
+command! -nargs=0 AsyncTaskList 
+			\ call asynctasks#cmd('', '-l')
+
+command! -nargs=0 AsyncTaskMacro
+			\ call asynctasks#cmd('', '-m')
 
 
 "----------------------------------------------------------------------
