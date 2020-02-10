@@ -155,7 +155,7 @@ save=1
 
 ### 宏替换
 
-在 `command` 字段和 `cwd` 字段可以使用下面这些：
+在 `command` 字段和 `cwd` 字段可以使用下面这些宏：
 
 ```
 $(VIM_FILEPATH)  - 当前 buffer 的文件名全路径
