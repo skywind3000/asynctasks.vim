@@ -33,6 +33,11 @@ let g:asyncrun_open = 6
     - [运行模式](#运行模式)
     - [内置终端](#内置终端)
     - [保持焦点](#保持焦点)
+    - [外部终端](#外部终端)
+    - [系统特定任务](#系统特定任务)
+    - [文件类型命令](#文件类型命令)
+    - [配置搜索](#配置搜索)
+    - [其他命令](#其他命令)
 - [其他](#其他)
 
 <!-- /TOC -->
@@ -127,6 +132,7 @@ save=1
 ```
 
 不同任务配置的优先级是本地配置高于全局配置，深层目录的配置优先于上层目录的配置，概念有点类似 editorconfig，你可以在多级目录定义同样名称的任务，下层的任务会覆盖上层的任务。
+
 
 ### 宏替换
 
@@ -271,6 +277,114 @@ let g:asynctasks_term_focus = 1
 ```
 
 默认是 `0`，代表保持焦点，如果设置成 `1` 的话，运行任务时会跳到内置终端的窗口上，看你个人喜欢。
+
+
+### 外部终端
+
+在 Windows 下工作经常使用 Visual Studio 的同学们一般会习惯像 VS 一样，运行程序时打开一个新的 cmd 窗口来执行，我们设置：
+
+```VimL
+let g:asynctasks_term_pos = 'external'
+```
+
+那么对于所有 `output=terminal` 的任务，就能使用外部系统终端了：
+
+![](images/demo-4.png)
+
+是不是有点 VS 的感觉了？目前该选项仅支持 Windows，但是也很容易就能扩展成：
+
+- 打开新的 `tmux` 窗口来运行
+- 打开一个新的 `gnome-terminal` 窗口或者 tab 来运行
+- 打开一个新的 `xterm` 窗口来运行
+- 打开一个新的 `WSL` 窗口来运行
+
+视需求逐步添加完善吧。
+
+### 系统特定任务
+
+同样一个任务名，你可以配置是 windows 特有，还是 unix 特有：
+
+```ini
+[task1:win]
+command=echo I am in Windows.
+
+[task1:unix]
+command=echo I am in Unix.
+```
+
+在任务名后面追加一个冒号，里面可选值为 `win` 或者 `unix`，就能指定适配的操作系统了，上面两个任务，尽管都是叫做 `task1`，但是在不同系统下运行的是不同的命令。
+
+### 文件类型命令
+
+在同一个任务中，可以在 `command` 字段后面用冒号分隔写明适配的 `&filetype`，比如我们写个复杂版的 `file-run` 任务：
+
+```ini
+[file-run]
+command="$(VIM_FILEPATH)"
+command:c,cpp="$(VIM_PATHNOEXT)"
+command:python=python "$(VIM_FILEPATH)"
+command:make=make -f "$(VIM_FILEPATH)"
+command:javascript=node "$(VIM_FILEPATH)"
+command:sh=sh "$(VIM_FILEPATH)"
+command:lua=lua "$(VIM_FILEPATH)"
+command:perl=perl "$(VIM_FILEPATH)"
+command:ruby=ruby "$(VIM_FILEPATH)"
+command:fish=fish "$(VIM_FILEPATH)"
+command:php=php "$(VIM_FILEPATH)"
+command:erlang=escript "$(VIM_FILEPATH)"
+output=terminal
+cwd=$(VIM_FILEDIR)
+```
+
+不加冒号的 `command` 是默认命令，而加了冒号的 `command` 如果能和 `&filetype` 匹配上，则会优先被使用。
+
+把它放到全局配置（~/.vim/tasks.ini）中，绑定 `:AsyncTask file-run` 到 `<F5>` 上面，那么每次按 F5 运行同样一个任务时，就能根据当前文件类型自动适配对应命令了，是不是很方便？
+
+### 配置搜索
+
+前面一直再说全局配置放在 `~/.vim/tasks.ini` 中，其实是会搜索所有 runtimepath 的，只要任何一个 runtimepath 中存在 `tasks.ini` 都会被加载进来，嫌名字丑没关系，你可以定义：
+
+```VimL
+let g:asynctasks_rtp_config = 'etc/tasks.ini'
+```
+
+那么就会变成到每个 runtimepath 下面的 `etc` 目录中去找 tasks.ini 了。这样设计有个好处，你可以把全局任务配置文件一起提交到你的 dotfiles 仓库里，记得加载的时候设置一下 `set rtp+=...` 就行了。
+
+对于局部任务配置，就是那个 `.tasks` 的文件名，不喜欢你也可以换：
+
+```VimL
+let g:asynctasks_config_name = '.asynctasks'
+```
+
+那么就会改为搜索名为 `.asynctasks` 的文件了。
+
+### 其他命令
+
+列出当前可用的 task：
+
+```VimL
+:AsyncTaskList
+```
+
+效果如下：
+
+![](images/demo-list.png)
+
+该命令能显示可用的 task 名称，具体命令，以及来自哪个配置文件。
+
+显示宏变量帮助：
+
+```VimL
+:AsyncTaskMacro
+```
+
+显示效果：
+
+![](images/demo-macro.png)
+
+左边是宏名称，中间是说明，右边是具体展开值。
+
+这条命令很有用，当你写 task 配置忘记宏名称了，用它随时查看，不用翻文档。
 
 ## 其他
 
