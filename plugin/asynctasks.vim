@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/02/11 02:17
-" Verision: 1.1.3
+" Last Modified: 2020/02/11 02:38
+" Verision: 1.1.5
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -71,7 +71,16 @@ if !exists('g:asynctasks_term_rows')
 endif
 
 if !exists('g:asynctasks_term_focus')
-	let g:asynctasks_term_focus = 1
+	let g:asynctasks_term_focus = 0
+endif
+
+if !exists('g:asynctasks_term_reuse')
+	let g:asynctasks_term_reuse = 0
+endif
+
+" set to 1 to confine running tasks only in a normal buffer (&bt is empty)
+if !exists('g:asynctasks_strict')
+	let g:asynctasks_strict = 1
 endif
 
 
@@ -660,6 +669,7 @@ function! s:task_option(task)
 		endif
 	endfor
 	let opts.safe = 1
+	let opts.reuse = g:asynctasks_term_reuse
 	return opts
 endfunc
 

@@ -31,6 +31,8 @@ let g:asyncrun_open = 6
     - [宏替换](#宏替换)
     - [项目目录](#项目目录)
     - [运行模式](#运行模式)
+    - [内置终端](#内置终端)
+    - [保持焦点](#保持焦点)
 - [其他](#其他)
 
 <!-- /TOC -->
@@ -214,7 +216,11 @@ let g:asynctasks_term_pos = 'quickfix'   " default to quickfix
 | right | 内置终端 | 在右边打开一个可复用内置终端 |
 | external | 系统终端 | 打开一个新的操作系统终端窗口运行命令 |
 
-基本上 Vim 中常见的运行模式都包含了，选择一个你喜欢的模式即可，比如设置：
+基本上 Vim 中常见的运行模式都包含了，选择一个你喜欢的模式即可。
+
+### 内置终端
+
+当 `output=terminal` 时，设置：
 
 ```VimL
 let g:asynctasks_term_pos = 'bottom'
@@ -243,12 +249,28 @@ let g:asynctasks_term_pos = 'tab'
 
 ![](images/demo-3.png)
 
-整个 tab 都用于运行你的任务，应该足够大了吧？
+整个 tab 都用于运行你的任务，应该足够大了吧？在上下左右分屏模式的终端会复用已有窗口而 tab 终端会每次新建新的 tab，要你结束后自己关闭，可以设置：
+
+```VimL
+let g:asynctasks_term_reuse = 1
+```
+
+设置成 `1`，让 tab 终端也可以先尝试复用已有的 tab。
+
 
 默认的 `quickfix` 模式尽管也可以运行程序，但是并不适合一些有交互的任务，比如需要用户输入点什么，`quickfix` 模式就没办法了，这时你就需要一个真实的终端了，真实的终端还能正确的显示颜色，这个在 `quickfix` 中就无能为力了。
 
 当然，内置终端到 vim 8.1 才稳定下来，处于对老 vim 的支持，asynctasks 默认使用 `quickfix` 模式来运行任务。
 
+### 保持焦点
+
+当你使用分屏模式的内置终端时（`left`/`right`/`top`/`bottom`），默认运行任务时，焦点会保持在当前窗口，这里提供了一个选项：
+
+```VimL
+let g:asynctasks_term_focus = 1
+```
+
+默认是 `0`，代表保持焦点，如果设置成 `1` 的话，运行任务时会跳到内置终端的窗口上，看你个人喜欢。
 
 ## 其他
 
