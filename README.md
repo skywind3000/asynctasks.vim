@@ -30,6 +30,7 @@ let g:asyncrun_open = 6
     - [AsyncTaskEdit - 编辑任务](#asynctaskedit---编辑任务)
     - [宏替换](#宏替换)
     - [项目目录](#项目目录)
+    - [运行模式](#运行模式)
 - [其他](#其他)
 
 <!-- /TOC -->
@@ -65,7 +66,7 @@ output=terminal
 
 ![](images/demo-1.png)
 
-默认模式下（output=quickfix），命令输出会显示在下方的 quickfix 窗口中，编译错误会和 errorformat 匹配并显示为高亮，方便你按回车跳转到具体错误，或者用 `cnext`/`cprev` 命令快速跳转错误位置。
+默认模式下（output=quickfix），命令输出会实时显示在下方的 quickfix 窗口中，编译错误会和 errorformat 匹配并显示为高亮，方便你按回车跳转到具体错误，或者用 `cnext`/`cprev` 命令快速跳转错误位置。
 
 如果要查看当前有哪些可用任务，则用 `:AsyncTaskList` 查看有哪些可用任务，然后当你需要编辑任务时，用 `:AsyncTaskEdit` 打开并编辑当前项目的 `.tasks` 文件。
 
@@ -102,7 +103,7 @@ output=terminal
 [compile-file]
 
 # 要执行的命令，文件名之类的最好用双引号括起来，避免包含空格出错。
-# 不会写可以用 ":AsyncTaskMacro" 命令查看宏变量帮助
+# 不会写可以用 ":AsyncTaskMacro" 命令随时查看宏变量帮助
 command=gcc "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)"
 
 # 工作目录，可以写具体目录，或者宏变量的名字，$(VIM_FILEDIR) 代表文件目录
@@ -181,6 +182,72 @@ output=terminal
 ```
 
 注意，我们定义任务的 `.tasks` 文件 **并不是** 项目标识，因为它可以多层嵌套，同一个项目里定义好几个，还会有项目不定义自己的本地任务，只使用 `tasks.ini` 中定义的全局任务，此时并不需要一个 `.tasks` 配置放在项目中，因此 `.tasks` 配置文件和项目标识是两个维度上的事情。
+
+### 运行模式
+
+配置任务时，`output` 字段可以设置为：
+
+| 名称 | 说明 |
+|-|-|
+| quickfix | 默认值，实时显示输出到 quickfix 窗口，并匹配 errorformat |
+| terminal | 在终端内运行任务 |
+
+前者一般用于一些编译/grep 之类的任务，因为可以在 quickfix 窗口中匹配错误。而后者一般用于一些 “纯运行类” 任务，比如运行你刚才编译出来的程序。
+
+当你将 `output` 设置为 `terminal` 时，将会根据下面一个全局变量指定终端模式：
+
+```VimL
+" terminal mode: tab/curwin/top/bottom/left/right/quickfix/external
+let g:asynctasks_term_pos = 'quickfix'   " default to quickfix
+```
+
+这个值决定所有 `output=terminal` 的任务到底用什么终端运行，以及在什么地方打开终端，备选项有：
+
+| 选项 | 模式 | 说明 |
+|-|-|-|
+| quickfix | 模拟 | 默认模式，跳过匹配错误，直接在 quickfix 中显示原始输出 |
+| vim | - | 传统 vim 的 `!` 命令运行任务，有些人喜欢这种老模式 |
+| tab | 内置终端 | 在新的 tab 上打开内置终端 |
+| top | 内置终端 | 在上方打开一个可复用内置终端 |
+| bottom | 内置终端 | 在下方打开一个可复用内置终端 |
+| left | 内置终端 | 在左边打开一个可复用内置终端 |
+| right | 内置终端 | 在右边打开一个可复用内置终端 |
+| external | 系统终端 | 打开一个新的操作系统终端窗口运行命令 |
+
+基本上 Vim 中常见的运行模式都包含了，选择一个你喜欢的模式即可，比如设置：
+
+```VimL
+let g:asynctasks_term_pos = 'bottom'
+```
+
+那么运行 `:AsyncTask file-run` 时，就能在下方的内置终端运行任务了：
+
+![](images/demo-2.png)
+
+终端窗口会复用，如果上一个任务结束了，再次运行时不会新建终端窗口，会先尝试复用老的已结束的终端窗口，找不到才会新建。
+
+当使设置为 `top`/`bottom`/`left`/`right` 时，可以用下面两个配置确定终端窗口大小：
+
+```VimL
+let g:asynctasks_term_rows = 10    " 设置纵向切割时，高度为 10
+let g:asynctasks_term_cols = 80    " 设置横向切割时，宽度为 80
+```
+
+有人说分屏的内置终端太小了，没关系，你可以设置成 `tab`：
+
+```VimL
+let g:asynctasks_term_pos = 'tab'
+```
+
+这样基本就能使用整个 vim 全屏大小的区域了：
+
+![](images/demo-3.png)
+
+整个 tab 都用于运行你的任务，应该足够大了吧？
+
+默认的 `quickfix` 模式尽管也可以运行程序，但是并不适合一些有交互的任务，比如需要用户输入点什么，`quickfix` 模式就没办法了，这时你就需要一个真实的终端了，真实的终端还能正确的显示颜色，这个在 `quickfix` 中就无能为力了。
+
+当然，内置终端到 vim 8.1 才稳定下来，处于对老 vim 的支持，asynctasks 默认使用 `quickfix` 模式来运行任务。
 
 
 ## 其他
