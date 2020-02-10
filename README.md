@@ -281,7 +281,7 @@ let g:asynctasks_term_focus = 0
 
 ### 外部终端
 
-在 Windows 下工作经常使用 Visual Studio 的同学们一般会习惯像 VS 一样，运行程序时打开一个新的 cmd 窗口来执行，我们设置：
+在 Windows 下经常使用 Visual Studio 的同学们一般会喜欢像 VS 一样，打开一个新的 cmd 窗口来运行程序，我们设置：
 
 ```VimL
 let g:asynctasks_term_pos = 'external'
