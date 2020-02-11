@@ -141,9 +141,8 @@ cwd=$(VIM_FILEDIR)
 # - terminal: 在终端内运行任务
 output=quickfix
 
-# quickfix 错误匹配的模板，不写会使用 vim 的 errorformat 代替。
+# quickfix 错误匹配的模板，不提供的话会使用 vim 的 errorformat 代替。
 # 为空字符串的话，会让在 quickfix 中显示原始文本
-# if it is omitted, vim's current errorformat will be used.
 errorformat=%f:%l:%m
 
 # 设置成 1 会在运行前保存当前文件，2 保存所有修改过的文件。
