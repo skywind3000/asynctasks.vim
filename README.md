@@ -225,7 +225,7 @@ output=terminal
 
 ```VimL
 " terminal mode: tab/curwin/top/bottom/left/right/quickfix/external
-let g:asynctasks_term_pos = 'quickfix'   " default to quickfix
+let g:asynctasks_term_pos = 'quickfix'
 ```
 
 这个值决定所有 `output=terminal` 的任务到底用什么终端运行，以及在什么地方打开终端，备选项有：
@@ -283,13 +283,13 @@ let g:asynctasks_term_reuse = 1
 设置成 `1`，让 tab 终端也可以先尝试复用已有的 tab。
 
 
-默认的 `quickfix` 模式尽管也可以运行程序，但是并不适合一些有交互的任务，比如需要用户输入点什么，`quickfix` 模式就没办法了，这时你就需要一个真实的终端了，真实的终端还能正确的显示颜色，这个在 `quickfix` 中就无能为力了。
+默认的 `quickfix` 模式尽管也可以运行程序，但是并不适合一些有交互的任务，比如需要用户输入点什么，`quickfix` 模式就没办法了，这时你就需要一个真实的终端，真实终端还能正确的显示颜色，这个在 `quickfix` 是无能为力的事情。
 
 当然，内置终端到 vim 8.1 才稳定下来，处于对老 vim 的支持，asynctasks 默认使用 `quickfix` 模式来运行任务。
 
 ### 保持焦点
 
-当你使用分屏模式的内置终端时（`left`/`right`/`top`/`bottom`），默认运行任务时，焦点跳到终端窗口，这里提供了一个选项：
+使用分屏模式的内置终端时（`left`/`right`/`top`/`bottom`），默认运行任务时焦点会跳到终端窗口，这里有个选项：
 
 ```VimL
 let g:asynctasks_term_focus = 0
