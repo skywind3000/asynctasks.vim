@@ -333,7 +333,7 @@ command=echo I am in Unix.
 
 ### 文件类型适配
 
-在同一个任务中，可以在 `command` 字段后面用冒号分隔写明适配的 `&filetype`，比如我们写个复杂版的 `file-run` 任务：
+在同一个任务中，可以在 `command` 字段后面用冒号分隔写明适配的 `&filetype`，比如我们写个加强版的 `file-run` 任务：
 
 ```ini
 [file-run]
