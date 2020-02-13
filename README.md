@@ -1,5 +1,3 @@
-![](images/icon-1.jpg)
-
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity) [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
@@ -28,6 +26,10 @@
 - [感谢](#感谢)
 
 <!-- /TOC -->
+
+<!--&nbps;-->
+
+![](images/icon-1.jpg)
 
 ## 这是干什么的？
 
