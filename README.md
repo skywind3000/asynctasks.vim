@@ -10,8 +10,8 @@
     - [安装](#安装)
     - [尝试](#尝试)
 - [使用手册](#使用手册)
-    - [AsyncTask - 运行任务](#asynctask---运行任务)
-    - [AsyncTaskEdit - 编辑任务](#asynctaskedit---编辑任务)
+    - [运行任务：AsyncTask](#运行任务asynctask)
+    - [编辑任务：AsyncEdit](#编辑任务asyncedit)
     - [命令行宏替换](#命令行宏替换)
     - [项目目录](#项目目录)
     - [运行模式](#运行模式)
@@ -110,7 +110,7 @@ output=terminal
 
 ## 使用手册
 
-### AsyncTask - 运行任务
+### 运行任务：AsyncTask
 
 运行指定任务，格式为：
 
@@ -121,7 +121,7 @@ output=terminal
 这条命令很简单，不过注意命令中各种类似 `$(VIM_FILENAME)` 的宏，会根据当前文件展开，因此，避免到一个 nerdtree 的工具窗口里去运行任务，会有很多信息缺失导致宏变量展开成空字符串。
 
 
-### AsyncTaskEdit - 编辑任务
+### 编辑任务：AsyncEdit
 
 编辑任务配置文件：
 
