@@ -2,7 +2,7 @@
 
 # asynctasks.vim - 合理的构建任务系统
 
-这是一个经过思考的，合理的任务构建系统，用于弥补 Vim 长期以来缺乏类似 vscode 任务系统的不足：
+这是一个经过思考的，合理的任务构建系统，用于弥补 Vim 长期以来缺乏类似 vscode 任务系统的不足。
 
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity) [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -39,17 +39,20 @@
 
 ## 特性说明
 
-- 简单高效，高度定制化。
-- 针对项目的局部任务配置，同一个任务绑定同个快捷键，在不同项目中运行特定的命令。
-- 全局任务配置，对通用性很强的项目，用全局配置来避免每个项目都配置一遍。
-- 丰富的运行模式：quickfix，内置终端，外部终端，传统 `!` 运行，选择你喜欢的方式。
-- 在 Vim/NeoVim 下提供完全一致的体验（如今这个越来越难了）。
-- 针对文件类型的任务，同一个任务在不同类型文件下运行不同命令。
-- 提供接口导出数据，方便同你喜欢的 fuzzyfinder 集成。
-
 Vim/NeoVim 本身在不停的进化，因此重新检讨一些固有的工作流程是有必要的，比如能否在构建这个事情上，让 Vim 的体验提升一截，做到像 vscode 构建系统一样方便流畅呢？
 
 我看过很多 `.vimrc` 配置，大部分在关于如何编译和运行项目这方面，都在用一些非常原始的方法，这么多年下来，仍然缺少一套系统化的解决方案。我也用过不少相关插件：`neomake`，`quickrun` 以及 `dispatch`，大部分只把事情做到一半，都没能完全满足我的需求。
+
+理想中的任务系统应该具有如下特点：
+
+- 四大基本原则：**概念清晰**，**使用简单**，**功能强大**，**接口统一**，四者缺一不可。
+- 跟 vscode 一样，可以针对项目配置**局部任务**，同一个任务绑定同个快捷键，在不同项目中运行特定的命令。
+- 可以配置全局任务，对通用性强的项目，用**全局任务**来避免每个项目都配置一遍。
+- 任务既可以针对正在编辑的**当前文件**，也能针对**整个项目**。
+- 应该有丰富的运行模式供我选择：`后台`，`异步`，`quickfix`，`内置终端`，`外部终端`，传统 `!` ，`tmux` 等，选择你喜欢的方式。
+- 应该能在 `Vim` / `NeoVim` 下提供完全一致的体验（如今这个越来越难了）。
+- 应该有丰富的选项供我定制，比如为同一个任务在不同类型文件下运行不同命令，比如设定错误捕获的模板。
+- 最好提供接口导出数据，方便同我喜欢的 **fuzzyfinder** 集成。
 
 因此我制作了这个插件，希望能为 Vim 提供一套合理的，系统的构建解决方案。
 
