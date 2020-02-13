@@ -1,14 +1,19 @@
-[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity) [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+![](images/icon-1.jpg)
 
+# asynctasks.vim - 合理的构建任务系统
+
+这是一个经过思考的，合理的任务构建系统，用于弥补 Vim 长期以来缺乏类似 vscode 任务系统的不足：
+
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity) [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 <!-- TOC -->
 
-- [这是干什么的？](#这是干什么的)
+- [特性说明](#特性说明)
 - [快速上手](#快速上手)
     - [安装](#安装)
-    - [尝试](#尝试)
-- [使用手册](#使用手册)
+    - [使用](#使用)
+- [项目文档](#项目文档)
     - [运行任务：AsyncTask](#运行任务asynctask)
     - [编辑任务：AsyncEdit](#编辑任务asyncedit)
     - [命令行宏替换](#命令行宏替换)
@@ -27,15 +32,11 @@
 
 <!-- /TOC -->
 
+
 <!--&nbps;-->
 
-![](images/icon-1.jpg)
 
-## 这是干什么的？
-
-
-
-这是一个经过思考的，合理的任务构建系统，用于弥补 Vim 长期以来缺乏类似 vscode 任务系统的不足：
+## 特性说明
 
 - 简单高效，高度定制化。
 - 针对项目的局部任务配置，同一个任务绑定同个快捷键，在不同项目中运行特定的命令。
@@ -50,6 +51,7 @@ Vim/NeoVim 本身在不停的进化，因此重新检讨一些固有的工作流
 我看过很多 `.vimrc` 配置，大部分在关于如何编译和运行项目这方面，都在用一些非常原始的方法，这么多年下来，仍然缺少一套系统化的解决方案。我也用过不少相关插件：`neomake`，`quickrun` 以及 `dispatch`，大部分只把事情做到一半，都没能完全满足我的需求。
 
 因此我制作了这个插件，希望能为 Vim 提供一套合理的，系统的构建解决方案。
+
 
 ## 快速上手
 
@@ -70,7 +72,7 @@ let g:asyncrun_open = 6
 告诉 asyncrun 运行时自动打开高度为 6 的 quickfix 窗口，不然你看不到任何输出。
 
 
-### 尝试
+### 使用
 
 本插件在运行时会到当前文件所在目录及所有上级目录搜索所有名为 `.tasks` 的文件，并先后加载，同样一个名字的任务可以在不同的配置文件里定义多次，目录层次越深的 `.tasks` 文件拥有越高的优先级。
 
@@ -103,15 +105,42 @@ output=terminal
 
 默认模式下（output=quickfix），命令输出会实时显示在下方的 quickfix 窗口中，编译错误会和 errorformat 匹配并显示为高亮，方便你按回车跳转到具体错误，或者用 `cnext`/`cprev` 命令快速跳转错误位置。
 
+除此之外还有多种运行模式可以配置例如使用内置终端或者外置终端，具体参考后面文档。
+
 如果要查看当前有哪些可用任务，则用 `:AsyncTaskList` 查看有哪些可用任务，然后当你需要编辑任务时，用 `:AsyncTaskEdit` 打开并编辑当前项目的 `.tasks` 文件。
 
 有的项目用 cmake 构建，有的项目用 ninjia 构建，基于项目目录的局部配置机制，让你可以定义同样一个任务名称，绑定同样一个快捷键，却在不同的项目里执行特定的构建命令。同时对一些通用性高的项目将任务定义到全局配置里可以避免每个项目写一遍。
 
-是不是很简单？
+任务配置好了以后我们设定两个快捷键：
 
+```VimL
+noremap <silent><F9> :AsyncTask file-build<cr>
+noremap <silent><F5> :AsyncTask file-run<cr>
+```
 
+然后 `<F9>` 编译，`<F5>` 运行，是不是很简单？`asynctasks.vim` 支持非常丰富的配置项目供你定制，比如我们可以扩充一下上面的 `file-run` 任务，让它根据文件类型执行不同的命令：
 
-## 使用手册
+```ini
+[file-run]
+command="$(VIM_FILEPATH)"
+command:c,cpp="$(VIM_PATHNOEXT)"
+command:python=python "$(VIM_FILEPATH)"
+command:make=make -f "$(VIM_FILEPATH)"
+command:javascript=node "$(VIM_FILEPATH)"
+command:sh=sh "$(VIM_FILEPATH)"
+command:lua=lua "$(VIM_FILEPATH)"
+command:perl=perl "$(VIM_FILEPATH)"
+command:ruby=ruby "$(VIM_FILEPATH)"
+command:fish=fish "$(VIM_FILEPATH)"
+command:php=php "$(VIM_FILEPATH)"
+command:erlang=escript "$(VIM_FILEPATH)"
+output=terminal
+cwd=$(VIM_FILEDIR)
+```
+
+这样简单配置一下，即可实现 quickrun 插件的功能，关于如何设定项目级别的编译，局部配置和全局配置的搭配，以及多种运行模式的定制等内容，参考下面文档。
+
+## 项目文档
 
 ### 运行任务：AsyncTask
 
