@@ -1,8 +1,35 @@
 ![](images/icon-1.jpg)
 
-# 简单介绍
-
 [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
+<!-- TOC -->
+
+- [这是干什么的？](#这是干什么的)
+- [快速上手](#快速上手)
+    - [安装](#安装)
+    - [使用](#使用)
+- [使用手册](#使用手册)
+    - [AsyncTask - 运行任务](#asynctask---运行任务)
+    - [AsyncTaskEdit - 编辑任务](#asynctaskedit---编辑任务)
+    - [命令行宏替换](#命令行宏替换)
+    - [项目目录](#项目目录)
+    - [运行模式](#运行模式)
+    - [内置终端](#内置终端)
+    - [保持焦点](#保持焦点)
+    - [外部终端](#外部终端)
+- [增强功能](#增强功能)
+    - [系统特定任务](#系统特定任务)
+    - [文件类型适配](#文件类型适配)
+    - [配置搜索](#配置搜索)
+    - [查看可用任务](#查看可用任务)
+    - [显示宏信息](#显示宏信息)
+- [感谢](#感谢)
+
+<!-- /TOC -->
+
+## 这是干什么的？
+
 
 
 这是一个经过思考的，合理的任务构建系统，用于弥补 Vim 长期以来缺乏类似 vscode 任务系统的不足：
@@ -21,9 +48,9 @@ Vim/NeoVim 本身在不停的进化，因此重新检讨一些固有的工作流
 
 因此我制作了这个插件，希望能为 Vim 提供一套合理的，系统的构建解决方案。
 
+## 快速上手
 
-
-# 安装
+### 安装
 
 使用 [vim-plug](https://github.com/junegunn/vim-plug) 进行安装：
 ```VimL
@@ -39,29 +66,8 @@ let g:asyncrun_open = 6
 
 告诉 asyncrun 运行时自动打开高度为 6 的 quickfix 窗口，不然你看不到任何输出。
 
-# 内容
 
-<!-- TOC -->
-
-- [概念介绍](#概念介绍)
-- [使用手册](#使用手册)
-    - [AsyncTask - 运行任务](#asynctask---运行任务)
-    - [AsyncTaskEdit - 编辑任务](#asynctaskedit---编辑任务)
-    - [宏替换](#宏替换)
-    - [项目目录](#项目目录)
-    - [运行模式](#运行模式)
-    - [内置终端](#内置终端)
-    - [保持焦点](#保持焦点)
-    - [外部终端](#外部终端)
-    - [系统特定任务](#系统特定任务)
-    - [文件类型适配](#文件类型适配)
-    - [配置搜索](#配置搜索)
-    - [其他命令](#其他命令)
-- [其他](#其他)
-
-<!-- /TOC -->
-
-## 概念介绍
+### 使用
 
 本插件在运行时会到当前文件所在目录及所有上级目录搜索所有名为 `.tasks` 的文件，并先后加载，同样一个名字的任务可以在不同的配置文件里定义多次，目录层次越深的 `.tasks` 文件拥有越高的优先级。
 
@@ -155,7 +161,7 @@ save=1
 不同任务配置的优先级是本地配置高于全局配置，深层目录的配置优先于上层目录的配置，概念有点类似 editorconfig，你可以在多级目录定义同样名称的任务，下层的任务会覆盖上层的同名任务。
 
 
-### 宏替换
+### 命令行宏替换
 
 在 `command` 字段和 `cwd` 字段可以使用下面这些宏：
 
@@ -221,7 +227,7 @@ output=terminal
 | quickfix | 默认值，实时显示输出到 quickfix 窗口，并匹配 errorformat |
 | terminal | 在终端内运行任务 |
 
-前者一般用于一些编译/grep 之类的任务，因为可以在 quickfix 窗口中匹配错误。而后者一般用于一些 “纯运行类” 任务，比如运行你刚才编译出来的程序。
+前者（`quickfix`）是默认模式，一般用于一些编译/grep 之类的任务，因为可以在 quickfix 窗口中匹配错误。而后者一般用于一些 “纯运行类” 任务，比如运行你刚才编译出来的程序。
 
 当你将 `output` 设置为 `terminal` 时，将会根据下面一个全局变量指定终端模式：
 
@@ -321,6 +327,8 @@ let g:asynctasks_term_pos = 'external'
 
 视需求逐步添加完善吧。
 
+## 增强功能
+
 ### 系统特定任务
 
 同样一个任务名，你可以配置是 windows 特有，还是 unix 特有：
@@ -379,7 +387,7 @@ let g:asynctasks_config_name = '.asynctasks'
 
 那么就会改为搜索名为 `.asynctasks` 的文件了。
 
-### 其他命令
+### 查看可用任务
 
 列出当前可用的 task：
 
@@ -392,6 +400,8 @@ let g:asynctasks_config_name = '.asynctasks'
 ![](images/demo-list.png)
 
 该命令能显示可用的 task 名称，具体命令，以及来自哪个配置文件。
+
+### 显示宏信息
 
 显示宏变量帮助：
 
@@ -407,6 +417,6 @@ let g:asynctasks_config_name = '.asynctasks'
 
 这条命令很有用，当你写 task 配置忘记宏名称了，用它随时查看，不用翻文档。
 
-## 其他
+## 感谢
 
 TODO
