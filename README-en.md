@@ -11,6 +11,7 @@ An efficient way to handle building/running tasks by imitating vscode's task sys
 - [Introduction](#introduction)
 - [Get started](#get-started)
 - [Build and run a single file](#build-and-run-a-single-file)
+- [Build and run a project](#build-and-run-a-project)
 
 <!-- /TOC -->
 
@@ -80,7 +81,7 @@ noremap <silent><f5> :AsyncTask file-run<cr>
 noremap <silent><f9> :AsyncTask file-build<cr>
 ```
 
-Put the code above in your `vimrc` and you can have F9 to compile current file and F5 to run it. And you may ask, this is for C/C++, what if you want to run a python script, should you create a new task `file-run-python` ? Totally unnecessary, you can define special command for different file types:
+Put the code above in your `vimrc` and you can have F9 to compile current file and F5 to run it. And you may ask, this is for C/C++ only, what if you want to run a python script, should you create a new task `file-run-python` ? Totally unnecessary, commands can match with file types:
 
 ```ini
 [file-run]
@@ -98,5 +99,24 @@ cwd=$(VIM_FILEDIR)
 save=2
 ```
 
-The `command` field accept file type filters, 
+The `command` followed by a colon accepts file type list separated by comma. If the current file type cannot be matched, the default command will be used. The `-save=2` represents to save all modified buffers before running the task.
+
+At this point, you can have your `F5` to run all type of files. And plugins like quickrun can be obsoleted immediately, they can't do better than this. Then we continue to polish `file-build` to support more file types:
+
+```ini
+command:c,cpp=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" -lstdc++ -lm -msse3
+command:go=go build -o "$(VIM_PATHNOEXT)" "$(VIM_FILEPATH)"
+command:make=make -f "$(VIM_FILEPATH)"
+output=quickfix
+cwd=$(VIM_FILEDIR)
+save=2
+```
+
+Again, F9 can be used to compile many file types, same keybind, different command. This two tasks can be defined in local `.tasks` and work for the project scope or in the `.vim/tasks.ini` and work for all project. Much more elegant than using `&makeprg` or calling `asyncrun`/`neomake`/`dispatch` with a lot `if`/`else` in your `vimrc`.
+
+Tasks for running compilers or grep may set `output=quickfix` (default), because the output can use errorformat to match errors in the quickfix window, while tasks for running your file/project may set `output=terminal`.
+
+When you set `output` to `terminal`, you can further indicate what type of terminal do you want to use exactly, like: a simulated terminal in quickfix window (without matching the errorformat)? the triditional `!` command in vim? the internal terminal ? an external terminal window ? or in a tmux split window ?? The detail will be discussed later.
+
+## Build and run a project
 
