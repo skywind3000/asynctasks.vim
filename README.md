@@ -25,6 +25,10 @@ An efficient way to handle building/running tasks by imitating vscode's task sys
 
 <!-- /TOC -->
 
+This readme is also available in:
+
+- 【[Chinese|中文文档](README-cn.md)】
+
 ## Introduction
 
 As vim 8.0 released in 2017, we have got many wonderful plugins like: LSP, DAP and  asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector) which could only been imagined in emacs now exist in vim's community.
