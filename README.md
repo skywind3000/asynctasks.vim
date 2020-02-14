@@ -31,7 +31,7 @@ This readme is also available in:
 
 ## Introduction
 
-As vim 8.0 released in 2017, we have got many wonderful plugins like: LSP, DAP and  asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector) which could only been imagined in emacs now exist in vim's community.
+As vim 8.0 released in 2017, we have got many wonderful plugins like: LSP, DAP and  asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector) which could only been imagined in emacs in the past, now become reality in vim.
 
 But vim is still lack of an elegent system to build/run your project. A lot of people are still dealing with building/running tasks in such a primitive and flaky way. Therefor, I decide to create this plugin and introduce vscode's task like machanisms to vim. 
 
