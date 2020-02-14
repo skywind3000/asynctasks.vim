@@ -235,7 +235,7 @@ $(VIM_INIFILE)     # Full path name of current ini (.tasks) file.
 $(VIM_INIHOME)     # Where the ini file locates.
 ```
 
-They will be expanded and replaced in the `command` and `cwd` fields. System environment variables with same names are also initialized as the same value. If one of your task has a very complex shell command, you can put the command in a shell script and execute it in the task:
+They will be expanded and replaced in the `command` and `cwd` fields. System environment variables with same names are also initialized as the same value. If one of your task has many complex shell commands, you can put the commands in a shell script and execute it in the task:
 
 ```ini
 [project-build]
@@ -243,7 +243,7 @@ command=build/my-build-task.sh
 cwd=<root>
 ```
 
-In this case, you don't have to pass any argument to `my-build-task.sh`, because the shell script can use environment variable `$VIM_FILENAME` to access current file name. By utilizing system environment variables with external script file, you can describe many complex tasks in your project. And of course, much more powerful than defining some keymaps for `!` command in your `vimrc`.
+In this case, you don't have to pass any argument to `my-build-task.sh`, because the shell script can read environment variable `$VIM_FILENAME` to access current file name. By utilizing system environment variables with external script file, you can describe many complex tasks in your project. And of course, much more powerful than defining some keymaps for `!` command in your `vimrc`.
 
 There is a `:AsyncTaskMacro` command for you to display macro help:
 
