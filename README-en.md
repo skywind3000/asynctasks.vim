@@ -158,12 +158,12 @@ noremap <silent><f6> :AsyncTask project-run<cr>
 noremap <silent><f7> :AsyncTask project-build<cr>
 ```
 
-Now, F7 can be used to build your project and F6 can be used run your project. You may ask again, this is for `gnu-make` only, but there are a lot of build tools like cmake, ninja and bazel, should you define new tasks as `project-build-cmake` and `project-build-ninja` and assign different keymaps for them ?
+Now, F7 can be used to build your project and F6 can be used run your project. You may ask again, this is for `gnu-make` only, but there are a lot of build tools like cmake, ninja and bazel, should you define new tasks as `project-build-cmake` or  `project-build-ninja` and assign different keymaps for them ?
 
 
 ## Task priority
 
-No, you don't have to. The most simply way is to put previous `project-build` and `project-run` in your `~/.vim/tasks.ini` as the default, global tasks, for generic projects using `gnu-make` you can use them directly.
+No, you don't have to. The easiest way is to put previous `project-build` and `project-run` in your `~/.vim/tasks.ini` as the default and global tasks, you can use them directly for generic projects using `make`.
 
 For other type of projects, for example, I am using `msbuild` in my project `A`. And I can define a new `project-build` task in the local `.tasks` file residing in project `A`:
 
@@ -179,11 +179,13 @@ cwd=<root>
 output=terminal
 ```
 
-The local tasks have higher priority than the global tasks. So task defined in `.tasks` will always override the task in `~/.vim/tasks.ini` with the same name. So, in project `A`, our two old friends `project-build` and `project-run` have been replaced to the local methods.
+The `.tasks` configuration file are read top to bottom and the most recent tasks found take precedence. and local tasks always have higher priority than the global tasks. 
 
-Firstly, the new `project-build` task will call `vcvars32.bat` to setup environment variables, then, use a `&&` to concatenate `msbuild` command. And we initiate `errorformat` to `%f(%l):%m` to match vc errors for this task.
+Task defined in `.tasks` will always override the task with the same name in `~/.vim/tasks.ini`. So, in project `A`, our two old friends `project-build` and `project-run` have been replaced with the local methods.
 
-We can still use `F7` to build this project and `F6` to run it. We don't have to change our habit if we are working in a different type of project. Unified workflow can be take in different project types. This is the power of local/global tasks combination.
+Firstly, the new `project-build` task will call `vcvars32.bat` to setup environment variables, then, use a `&&` to concatenate `msbuild` command. `errorformat` is initiated to `%f(%l):%m` for matching `Visual C++` errors in this task.
+
+We can still use `F7` to build this project and `F6` to run it. We don't have to change our habit if we are working in a different type of project. Unified workflow can be used in different type of projects. This is the power of local/global tasks combination.
 
 ## Query available tasks
 
