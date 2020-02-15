@@ -384,7 +384,7 @@ Then I use `:AsyncTask grep` in my project B, it prompts me to input `keyword` b
 
 Because the new `grep` task is specifically for project `B`, it knows what to search and what to skip, so it's obviously faster than the default/global one.
 
-Another way for that is use a new rg ignore file in certain project. Check rg documentation for `--ignore-file`.
+Another way for that is to use a new rg ignore file for certain project. Check rg documentation for `--ignore-file`.
 
 ### Data source for fuzzy finders
 
