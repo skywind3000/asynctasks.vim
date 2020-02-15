@@ -22,6 +22,7 @@ An efficient way to handle building/running tasks by imitating vscode's task sys
     - [Ask for user input](#ask-for-user-input)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
+- [Frequently asked questions](#frequently-asked-questions)
 - [Credit](#credit)
 
 <!-- /TOC -->
@@ -431,6 +432,10 @@ Set to `1` to reuse internal terminal when open it in a new tab.
 ##### The `g:asynctasks_term_hidden` option
 
 If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide`.
+
+## Frequently asked questions
+
+See the [FAQ](https://github.com/skywind3000/asynctasks.vim/wiki/FAQ).
 
 ## Credit
 
