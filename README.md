@@ -373,7 +373,7 @@ Real example used by myself:
 
 ```ini
 [grep]
-command=rg -n --no-heading --color never -g source/**/*.cpp -g include/**/*.h $(?keyword) .
+command=rg -n --no-heading --color never -g source/**/*.cpp -g include/**/*.h $(?keyword) "<root>"
 cwd=<root>
 errorformat=%f:%l:%m
 ```
