@@ -58,7 +58,7 @@ It requires `asyncrun.vim` 2.4.0 or above. Don't forget to setup:
 let g:asyncrun_open = 6
 ```
 
-And quickfix window can be opened automatically, otherwise you can't see the task output unless use `:copen` manually.
+And quickfix window can be opened automatically, otherwise you can't see the task output unless using `:copen` manually.
 
 ### Build and run a single file
 
