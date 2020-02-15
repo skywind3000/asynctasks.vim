@@ -369,6 +369,19 @@ There are two variable you need to provide, input them one by one, press `ESC` t
 
 As you see, `$(?your name)` has been substituted with the value you just provided.
 
+Real example used by myself:
+
+```ini
+[grep]
+command=rg -n --no-heading --color never -g source/**/*.cpp -g include/**/*.h $(?keyword) .
+cwd=<root>
+errorformat=%f:%l:%m
+```
+
+This is a local `grep` task for my project `B`. I redefined the `grep` task in the project `B` scope to override the global one, because I want `rg` search `source` and `include` folders only (skip other testing sources).
+
+After definition, when I use `:AsyncTask grep` in my project B, it will ask me to input `keyword` before searching, it is faster than the global one.
+
 
 ### Data source for fuzzy finders
 
