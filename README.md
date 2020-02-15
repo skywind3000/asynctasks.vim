@@ -380,7 +380,9 @@ errorformat=%f:%l:%m
 
 This is a local `grep` task for my project `B`. I redefined the `grep` task in the project `B` scope to override the global one, because I want `rg` search `source` and `include` folders only (skip other testing sources).
 
-After definition, when I use `:AsyncTask grep` in my project B, it will ask me to input `keyword` before searching, it is faster than the global one.
+Then I use `:AsyncTask grep` in my project B, it prompts me to input `keyword` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
+
+Because the new `grep` task is specifically for project `B`, it knows what to search and what to skip, so it's obviously faster than the default/global one.
 
 
 ### Data source for fuzzy finders
