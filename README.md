@@ -18,11 +18,11 @@ An efficient way to handle building/running/testing/deploying tasks by imitating
     - [Macro variable substitution](#macro-variable-substitution)
     - [Task running modes](#task-running-modes)
     - [Run in an external terminal](#run-in-an-external-terminal)
-- [Advanced topics](#advanced-topics)
+- [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
-- [Frequently asked questions](#frequently-asked-questions)
+- [Frequently Asked Questions](#frequently-asked-questions)
 - [Credit](#credit)
 
 <!-- /TOC -->
@@ -315,7 +315,7 @@ A whole tab can be used to display the internal terminal:
 
 ![](images/demo-3.png)
 
-Almost all the vim screen are occupied, is it big enough to fit your need ? This is my favorite mode. 
+Almost all the vim screen are occupied, is it big enough to fit your need ? This is my most favorite one. 
 
 
 The default `quickfix` can also be used to run your task, but it is not capable to handle user input, and if your program will interact with user, you may choose a real terminal.
@@ -343,7 +343,7 @@ Familiar feeling like you are working in Visual Studio.
 
 `asynctasks.vim` provide you all the possible ways to run a command in vim with no compromise. Choose one you like.
 
-## Advanced topics
+## Advanced Topics
 
 Continue hacking in `asynctasks.vim`:
 
@@ -452,7 +452,7 @@ Set to `1` to reuse internal terminal when open it in a new tab.
 
 If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide`.
 
-## Frequently asked questions
+## Frequently Asked Questions
 
 See the [FAQ](https://github.com/skywind3000/asynctasks.vim/wiki/FAQ).
 
