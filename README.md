@@ -50,7 +50,7 @@ Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
 ```
 
-Don't forget to initialize:
+It requires `asyncrun.vim` 2.4.0 or above. Don't forget to setup:
 
 ```VimL
 let g:asyncrun_open = 6
