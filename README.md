@@ -323,7 +323,7 @@ The default `quickfix` can also be used to run your task, but it is not capable 
 **Bonus**:
 
 - tab terminal can also be reusable if you set `g:asynctasks_term_reuse` to `1`.
-- you can keep prevent focus changing if you set `g:asynctasks_term_focus` to `0` (split terminals only).
+- you can prevent focus changing if you set `g:asynctasks_term_focus` to `0` (split terminals only).
 
 (When you are using internal terminal, `asynctasks.vim` encourage you to setup `ALT+HJKL` to jump around windows and `ALT+q` to exit to terminal normal mode).
 
