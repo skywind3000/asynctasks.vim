@@ -224,6 +224,7 @@ $(VIM_FILEPATH)    # File name of current buffer with full path.
 $(VIM_FILENAME)    # File name of current buffer without path.
 $(VIM_FILEDIR)     # Full path of current buffer without the file name.
 $(VIM_FILEEXT)     # File extension of current buffer.
+$(VIM_FILETYPE)    # File type (value of &ft in vim)
 $(VIM_FILENOEXT)   # File name of current buffer without path and extension.
 $(VIM_PATHNOEXT)   # Current file name with full path but without extension.
 $(VIM_CWD)         # Current directory (which :pwd returns).
