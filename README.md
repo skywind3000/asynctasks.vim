@@ -1,4 +1,4 @@
-![](images/icon-3.jpg)
+![](images/icon-3.png)
 
 # asynctasks.vim - a modern task system
 

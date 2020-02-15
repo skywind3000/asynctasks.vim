@@ -1,4 +1,4 @@
-![](images/icon-1.jpg)
+![](images/icon-3.png)
 
 # asynctasks.vim - 合理的构建任务系统
 
