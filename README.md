@@ -29,7 +29,7 @@ An efficient way to handle building/running tasks by imitating vscode's task sys
 
 This readme is also available in:
 
-- 【[Chinese|中文文档](README-cn.md)】
+- 【[Chinese | 中文文档](README-cn.md)】
 
 ## Introduction
 
