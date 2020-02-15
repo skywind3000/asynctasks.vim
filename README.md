@@ -21,6 +21,7 @@ An efficient way to handle building/running tasks by imitating vscode's task sys
 - [Advanced topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
+    - [Options](#options)
 - [Credit](#credit)
 
 <!-- /TOC -->
@@ -201,6 +202,8 @@ Firstly, the new `project-build` task will call `vcvars32.bat` to setup environm
 
 We can still use `F7` to build this project and `F6` to run it. We don't have to change our habit if we are working in a different type of project. Unified workflow can be used in different type of projects. This is the power of local/global tasks combination.
 
+**Bonus**: use `:AsyncTaskEdit` to edit local tasks, and `:AsyncTaskEdit!` to edit global tasks.
+
 ### Query available tasks
 
 What tasks do you have in current project ? Where are they defined ? Has one global task been overrided by a local one ? We use `:AsyncTaskList` command to answer these questions:
@@ -294,8 +297,8 @@ Command `:AsyncTask file-run` will open an internal terminal under your current 
 If the previous terminal session has finished, the window will be resused. When you set `g:asynctasks_term_pos` to one of `top`, `bottom`, `left` and `right`, these two options below represents terminal size:
 
 ```VimL
-let g:asynctasks_term_rows = 10    " set height for the vertical terminal split
-let g:asynctasks_term_cols = 80    " set width for horizontal terminal split
+let g:asynctasks_term_rows = 10    " set height for the horizontal terminal split
+let g:asynctasks_term_cols = 80    " set width for vertical terminal split
 ```
 
 If a terminal split window is too small for you, you can setup:
@@ -373,6 +376,61 @@ let current_tasks = asynctasks#list("")
 
 It returns a list of items, each item represents a task. And it can be used as the data source for fuzzy finders like `fzf.vim` or `Leaderf`.
 
+### Options
+
+##### The `g:asynctasks_config_name` option
+
+Don't like the `.tasks` file name ? Rename it as you want:
+
+```VimL
+let g:asynctasks_config_name = '.asynctask'
+let g:asynctasks_config_name = '.git/tasks.ini'
+```
+
+##### The `g:asynctasks_rtp_config` option
+
+Don't like the global `tasks.ini` file name in your `~/.vim` ? Change it to:
+
+```VimL
+let g:asynctasks_rtp_config = "asynctasks.ini"
+```
+
+##### The `g:asynctasks_extra_config` option
+
+A list of additional global task configuration files, you can indicate other global configurations:
+
+```VimL
+let g:asynctasks_extra_config = [
+    \ '~/github/my_dotfiles/my_tasks.ini',
+    \ '~/.config/tasks/local_tasks.ini',
+    \ ]
+```
+
+Then, these two additional globla configurations will be loaded after reading `~/.vim/tasks.ini`.
+
+##### The `g:asynctasks_term_pos` option
+
+What terminal do you want to run your task. see [Task running modes](#task-running-modes).
+
+##### The `g:asynctasks_term_cols` option
+
+Internal terminal width when using vertical split.
+
+##### The `g:asynctasks_term_rows` option
+
+Internal terminal height when using horizontal split.
+
+##### The `g:asynctasks_term_focus` option
+
+Set to zero to keep focus when using an internal terminal in a new split.
+
+##### The `g:asynctasks_term_reuse` option
+
+Set to `1` to reuse internal terminal when open it in a new tab.
+
+##### The `g:asynctasks_term_hidden` option
+
+If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide`.
 
 ## Credit
 
