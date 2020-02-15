@@ -213,6 +213,8 @@ What tasks do you have in current project ? Where are they defined ? Has one glo
 
 It will display task name, command and where it has been defined.
 
+**Bonus**: tasks starting with a dot "." will be hidden (eg. ".file-test-temp1"), use `:AsyncTaskList!` to see them all.
+
 ### Macro variable substitution
 
 `asynctasks.vim` supports macro variable substitution in `command` and `cwd` fileds, available macros are:
