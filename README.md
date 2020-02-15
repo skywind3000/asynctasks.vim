@@ -298,7 +298,7 @@ Command `:AsyncTask file-run` will open an internal terminal under your current 
 
 ![](images/demo-2.png)
 
-If the previous terminal session has finished, the window will be resused. When you set `g:asynctasks_term_pos` to one of `top`, `bottom`, `left` and `right`, these two options below represents terminal size:
+If the previous terminal session has finished, the window will be resused. When you set `g:asynctasks_term_pos` to one of `top`, `bottom`, `left` and `right`, these two options below can allow you change the terminal size:
 
 ```VimL
 let g:asynctasks_term_rows = 10    " set height for the horizontal terminal split
