@@ -20,7 +20,7 @@ An efficient way to handle building/running/testing/deploying tasks by imitating
     - [Run in an external terminal](#run-in-an-external-terminal)
 - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
-    - [Task profile](#task-profile)
+    - [Task with different profiles](#task-with-different-profiles)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
 - [Frequently Asked Questions](#frequently-asked-questions)
@@ -387,7 +387,7 @@ Because the new `grep` task is specifically for project `B`, it knows what to se
 
 Another way for that is to use a new rg ignore file for certain project. Check rg documentation for `--ignore-file`.
 
-### Task profile
+### Task with different profiles
 
 One task can have many different `profiles`:
 
