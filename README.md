@@ -401,19 +401,19 @@ command=gcc -g "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)"
 cwd=$(VIM_FILEDIR)
 ```
 
-Here we have `task1` with two different profiles `release` and `debug`. The current profile can be changed to `debug` by:
+Here we have `task1` with two different profiles `release` and `debug`. The default profile is `debug`, change it to `release` by:
 
 ```VimL
-:AsyncTaskProfile debug
+:AsyncTaskProfile release
 ```
 
 or
 
 ```VimL
-:let g:asynctasks_profile = 'debug'
+:let g:asynctasks_profile = 'release'
 ```
 
-Then, `:AsyncTask task1` will run `tasks1` with profile `debug`.
+Then, `:AsyncTask task1` will run `tasks1` with profile `release`.
 
 
 ### Data source for fuzzy finders
