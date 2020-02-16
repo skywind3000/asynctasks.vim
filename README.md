@@ -20,6 +20,7 @@ An efficient way to handle building/running/testing/deploying tasks by imitating
     - [Run in an external terminal](#run-in-an-external-terminal)
 - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
+    - [Task profile](#task-profile)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
 - [Frequently Asked Questions](#frequently-asked-questions)
@@ -385,6 +386,35 @@ Then I use `:AsyncTask grep` in my project B, it prompts me to input `keyword` b
 Because the new `grep` task is specifically for project `B`, it knows what to search and what to skip, so it's obviously faster than the default/global one.
 
 Another way for that is to use a new rg ignore file for certain project. Check rg documentation for `--ignore-file`.
+
+### Task profile
+
+One task can have many different `profiles`:
+
+```ini
+[task1:release]
+command=gcc -O2 "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)"
+cwd=$(VIM_FILEDIR)
+
+[task1:debug]
+command=gcc -g "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)"
+cwd=$(VIM_FILEDIR)
+```
+
+The two above share the same name `task1`, but with different profiles. We can switch current profile to `debug` by:
+
+```VimL
+:let g:asynctasks_profile = 'debug'
+```
+
+or:
+
+```VimL
+:AsyncTaskProfile debug
+```
+
+Then, `:AsyncTask task1` will run `tasks1` with profile `debug`.
+
 
 ### Data source for fuzzy finders
 
