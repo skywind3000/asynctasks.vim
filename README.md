@@ -401,13 +401,13 @@ command=gcc -g "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)"
 cwd=$(VIM_FILEDIR)
 ```
 
-The two above share the same name `task1`, but with different profiles. We can switch current profile to `debug` by:
+Here we have `task1` with two different profiles `release` and `debug`. You can change the current profile to `debug` by:
 
 ```VimL
 :let g:asynctasks_profile = 'debug'
 ```
 
-or:
+or
 
 ```VimL
 :AsyncTaskProfile debug
