@@ -55,7 +55,7 @@ Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
 ```
 
-It requires `asyncrun.vim` 2.4.0 or above. Don't forget to setup:
+It requires [asyncrun.vim](https://github.com/skywind3000/asyncrun.vim) 2.4.0 or above. Don't forget to setup:
 
 ```VimL
 let g:asyncrun_open = 6
@@ -93,7 +93,7 @@ To build and run the current file:
 
 ![](images/demo-1.png)
 
-This is the result of `:AsyncTask file-build`, the command output displays in the quickfix window and errors are matched with `errorformat`. You can navigate the command output in the quickfix window or use `cnext`/`cprev` to jump between errors.
+This is the result of `:AsyncTask file-build`, the command output displays in the quickfix window and errors are matched with `errorformat`. You can navigate the command output in the quickfix window or use `:cnext`/`:cprev` to jump between errors.
 
 There are many macros can be used in the command field and will be expanded and replaced when task starts. Having a fast, low-friction Edit/Build/Test cycle is one of the best and easiest ways to increase developer productivity, so we will map them to F5 and F9:
 
@@ -323,7 +323,6 @@ A whole tab can be used to display the internal terminal:
 
 Almost all the vim screen are occupied, is it big enough to fit your need ? This is my most favorite one. 
 
-
 The default `quickfix` can also be used to run your task, but it is not capable to handle user input, and if your program will interact with user, you may choose a real terminal.
 
 **Bonus**:
@@ -384,7 +383,7 @@ cwd=$(VIM_ROOT)
 errorformat=%f:%l:%m
 ```
 
-Here is my global `grep` task. Each time I use `:AsyncRun grep` in any of my project, it prompts me to input `keyword` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
+Here is my global `grep` task. Each time I use `:AsyncTask grep` in any of my project, it prompts me to input `keyword` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
 
 If I need other filetypes to search in certain project, I can redifine a new `grep` with different parameters for this project.
 

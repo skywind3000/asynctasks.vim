@@ -2,7 +2,7 @@
 
 # asynctasks.vim - 合理的构建任务系统
 
-为 Vim 引入类似 vscode 的 tasks 任务系统，系统化的解决各类：编译/运行任务。
+为 Vim 引入类似 vscode 的 tasks 任务系统，系统化的解决各类：编译/运行/测试/部署任务。
 
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity) [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -12,24 +12,22 @@
 - [特性说明](#特性说明)
 - [快速上手](#快速上手)
     - [安装](#安装)
-    - [使用](#使用)
-- [基本使用](#基本使用)
-    - [运行任务：AsyncTask](#运行任务asynctask)
-    - [编辑任务：AsyncEdit](#编辑任务asyncedit)
-    - [命令行宏替换](#命令行宏替换)
-    - [项目目录](#项目目录)
-    - [运行模式](#运行模式)
-    - [内置终端](#内置终端)
-    - [保持焦点](#保持焦点)
+    - [单个文件的编译运行](#单个文件的编译运行)
+    - [整个项目的编译运行](#整个项目的编译运行)
+    - [配置优先级](#配置优先级)
+    - [可用任务查询](#可用任务查询)
+    - [宏变量展开](#宏变量展开)
+    - [多种运行模式](#多种运行模式)
     - [外部终端](#外部终端)
-- [高级功能](#高级功能)
-    - [查看可用任务](#查看可用任务)
-    - [显示宏信息](#显示宏信息)
-    - [系统特定任务](#系统特定任务)
-    - [文件类型适配](#文件类型适配)
-    - [配置搜索](#配置搜索)
-    - [交互式命令](#交互式命令)
-- [感谢](#感谢)
+- [高级话题](#高级话题)
+    - [交互式任务](#交互式任务)
+    - [不同 profile 的任务](#不同-profile-的任务)
+    - [命令对操作系统的适配](#命令对操作系统的适配)
+    - [任务数据源](#任务数据源)
+    - [插件设置](#插件设置)
+- [使用案例](#使用案例)
+- [常见问题](#常见问题)
+- [Credit](#credit)
 
 <!-- /TOC -->
 
@@ -39,22 +37,11 @@
 
 ## 特性说明
 
-`Vim`/`NeoVim` 近年来发展迅速，各种：异步补全/LSP/查错，DAP 等项目相继出现，就连 vimspector 这样以前只能奢望 emacs 的项目如今都出现了，然而在编译/运行这个最基本的操作任然缺少一套优雅的方法。
+`Vim`/`NeoVim` 近年来发展迅速，各种：异步补全/LSP/查错，DAP 等项目相继出现，就连 vimspector 这样以前只能奢望 emacs 的项目如今都出现了。
 
-我看过很多 `.vimrc` 配置，大部分在关于如何编译和运行项目这方面，都在用一些非常原始的方法，这么多年下来，仍然缺少一套系统化的解决方案。我也用过不少相关插件：`neomake`，`quickrun` 以及 `dispatch`，大部分只把事情做到一半，都没能完全满足我的需求。
+然而 Vim 任然缺少一套优雅的通用的任务系统来加速你的内部开发循环（编辑，编译，测试）。很多人在处理这些 编译/测试/部署 类任务时，任然还在使用一些比较原始的方法，所以我创建了这个插件，将 vscode 的任务系统引入 Vim。
 
-理想中的任务系统应该具有如下特点：
-
-- 四大基本原则：**概念清晰**，**使用简单**，**功能强大**，**接口统一**，四者缺一不可。
-- 跟 vscode 一样，可以针对项目配置**局部任务**，同一个任务绑定同个快捷键，在不同项目中运行特定的命令。
-- 可以配置全局任务，对通用性强的项目，用**全局任务**来避免每个项目都配置一遍。
-- 任务既可以针对正在编辑的**当前文件**，也能针对**整个项目**。
-- 应该有丰富的运行模式供我选择：`异步`，`quickfix`，`内置终端`，`外部终端`，传统 `!` ，`tmux` 等，选你喜欢的方式。
-- 应该能在 `Vim` / `NeoVim` 下提供完全一致的体验（如今这个越来越难了）。
-- 应该有丰富的选项供我定制，比如为同一个任务在不同类型文件下运行不同命令，比如设定错误捕获的模板。
-- 最好提供接口导出数据，方便同我喜欢的 **fuzzyfinder** 集成。
-
-因此我制作了这个插件，希望能为 Vim 提供一套合理的，系统的构建解决方案。
+vscode 为每个项目的根目录下新建了一个 `.vscode` 目录，里面保存了一个 `tasks.json` 来定义针对该项目的任务。而 asynctasks.vim 采用类似机制，在每个项目的根文件夹下面放一个 `.tasks` 来描述针对该项目的局部任务，同时维护一份 `~/.vim/tasks.ini` 的全局任务配置，适配一些通用性很强的项目，避免每个项目重复写 `.tasks` 配置。
 
 
 ## 快速上手
@@ -73,14 +60,12 @@ Plug 'skywind3000/asyncrun.vim'
 let g:asyncrun_open = 6
 ```
 
-告诉 asyncrun 运行时自动打开高度为 6 的 quickfix 窗口，不然你看不到任何输出。
+告诉 asyncrun 运行时自动打开高度为 6 的 quickfix 窗口，不然你看不到任何输出，除非你自己手动用 `:copen` 打开它。
 
 
-### 使用
+### 单个文件的编译运行
 
-本插件在运行时会到当前文件所在目录及所有上级目录搜索所有名为 `.tasks` 的文件，并先后加载，同样一个名字的任务可以在不同的配置文件里定义多次，目录层次越深的 `.tasks` 文件拥有越高的优先级。
-
-任务配置文件 `.tasks` 采用 ini 文件格式，每个 section 定义一个任务，你可以在你某个项目的根目录下面放一个 `.tasks` 定义一些针对该项目的任务：
+我经常写一些小程序，验证一些小想法，那么在不用创建一个庞大工程的情况下，直接编译和运行单个文件就显得很有用，我们运行 `:AsyncTaskEdit` 命令，就能编辑当前项目或者当前目录的 `.tasks` 配置文件：
 
 ```ini
 # 定义一个新任务
@@ -97,137 +82,67 @@ cwd=$(VIM_FILEDIR)
 output=terminal
 ```
 
-上面定义了两个任务，那么当你在 Vim 中编辑该项目的文件时，执行：
+这里定义了两个任务：`file-build` 和 `file-run` 在包含这个 `.tasks` 配置文件的目录及其子目录下面任意一个文件，都可以用：
 
 ```VimL
 :AsyncTask file-build
+:AsyncTask file-run
 ```
 
-就可以运行名字为 `file-build` 的任务了：
+两条命令来分别编译和运行他：
 
 ![](images/demo-1.png)
 
-默认模式下（output=quickfix），命令输出会实时显示在下方的 quickfix 窗口中，编译错误会和 errorformat 匹配并显示为高亮，方便你按回车跳转到具体错误，或者用 `cnext`/`cprev` 命令快速跳转错误位置。
+上图是运行 `:AsyncTask file-build` 的效果，默认模式下（output=quickfix），命令输出会实时显示在下方的 `quickfix` 窗口中，编译错误会和 `errorformat` 匹配并显示为高亮，方便你按回车跳转到具体错误，或者用 `:cnext`/`:cprev` 命令快速跳转错误位置。
 
-除此之外还有多种运行模式可以配置例如使用内置终端或者外置终端，具体参考后面文档。
-
-如果要查看当前有哪些可用任务，则用 `:AsyncTaskList` 查看有哪些可用任务，然后当你需要编辑任务时，用 `:AsyncTaskEdit` 打开并编辑当前项目的 `.tasks` 文件。
-
-有的项目用 cmake 构建，有的项目用 ninjia 构建，基于项目目录的局部配置机制，让你可以定义同样一个任务名称，绑定同样一个快捷键，却在不同的项目里执行特定的构建命令。同时对一些通用性高的项目将任务定义到全局配置里可以避免每个项目写一遍。
-
-任务配置好了以后我们设定两个快捷键：
+任务中有丰富的以 `$(..)` 形式出现的宏，在实际执行时会被替换成具体值。能够流畅无阻碍的执行：“编辑/编译/测试” 循环，是提高你编程效率最有效的方法，所以我们把上面两个任务绑定到 F5 和 F9：
 
 ```VimL
-noremap <silent><F9> :AsyncTask file-build<cr>
-noremap <silent><F5> :AsyncTask file-run<cr>
+noremap <silent><f5> :AsyncTask file-run<cr>
+noremap <silent><f9> :AsyncTask file-build<cr>
 ```
 
-然后 `<F9>` 编译，`<F5>` 运行，是不是很简单？`asynctasks.vim` 支持非常丰富的配置项目供你定制，比如我们可以扩充一下上面的 `file-run` 任务，让它根据文件类型执行不同的命令：
+在你的 vimrc 中加入上面两句，就能按 F9 编译当前文件，F5 运行它了， 到这里你可能会说，这是 C/C++ 啊，如果我想运行 Python 代码怎么办呢？重新写个任务？不用那么麻烦，`command` 字段支持文件类型过滤：
 
 ```ini
 [file-run]
 command="$(VIM_FILEPATH)"
 command:c,cpp="$(VIM_PATHNOEXT)"
-command:python=python "$(VIM_FILEPATH)"
-command:make=make -f "$(VIM_FILEPATH)"
-command:javascript=node "$(VIM_FILEPATH)"
-command:sh=sh "$(VIM_FILEPATH)"
-command:lua=lua "$(VIM_FILEPATH)"
-command:perl=perl "$(VIM_FILEPATH)"
-command:ruby=ruby "$(VIM_FILEPATH)"
-command:fish=fish "$(VIM_FILEPATH)"
-command:php=php "$(VIM_FILEPATH)"
-command:erlang=escript "$(VIM_FILEPATH)"
+command:go="$(VIM_PATHNOEXT)"
+command:python=python "$(VIM_FILENAME)"
+command:javascript=node "$(VIM_FILENAME)"
+command:sh=sh "$(VIM_FILENAME)"
+command:lua=lua "$(VIM_FILENAME)"
+command:perl=perl "$(VIM_FILENAME)"
+command:ruby=ruby "$(VIM_FILENAME)"
 output=terminal
 cwd=$(VIM_FILEDIR)
 ```
 
-这样简单配置一下，就能针对不同的文件类型运行不同的命令，你的 quickrun/dispatch 等插件就可以卸载掉了，关于如何设定项目级别的编译，局部配置和全局配置的搭配，以及多种运行模式的定制等内容，参考下面文档。
+只需要在 `command` 字段后面加冒号，写明匹配的文件类型就行， 匹配不到的话就会使用最上面的默认命令来执行，注意文件名可能包含空格，所以要双引号，最后加了个 `-save=2` 可以在运行前保存所有改动的文件。
 
-## 基本使用
-
-### 运行任务：AsyncTask
-
-运行指定任务，格式为：
-
-```VimL
-:AsyncTask {taskname}
-```
-
-这条命令很简单，不过注意命令中各种类似 `$(VIM_FILENAME)` 的宏，会根据当前文件展开，因此，避免到一个 nerdtree 的工具窗口里去运行任务，会有很多信息缺失导致宏变量展开成空字符串。
-
-
-### 编辑任务：AsyncEdit
-
-编辑任务配置文件：
-
-```VimL
-:AsyncTaskEdit[!]
-```
-
-默认不包含叹号时，编辑的是当前项目的任务配置 `.tasks`，如果加了叹号，则会编辑全局配置 `~/.vim/tasks.ini`。
-
-配置文件不存在的话，会预先生产一个配置模板，类似：
+这样简单配置一下，你就能统一的用 F5 运行所有类型的文件了，这下你可以立马把 quickrun 这样的插件卸载掉了，它做的事情还没有上面这几行做的漂亮。接下来我们继续配置 F9 ，根据文件类型调用编译器：
 
 ```ini
-# 定义一个名为 "file-compile" 的任务
-[compile-file]
-
-# 要执行的命令，文件名之类的最好用双引号括起来，避免包含空格出错。
-# 不会写可以用 ":AsyncTaskMacro" 命令随时查看宏变量帮助
-command=gcc "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)"
-
-# 工作目录，可以写具体目录，或者宏变量的名字，$(VIM_FILEDIR) 代表文件目录
-# 而 $(VIM_ROOT) 或者直接一个 <root> 则代表项目根目录。
-cwd=$(VIM_FILEDIR)
-
-# 任务输出，可以选择 "quickfix" 或者 "terminal"
-# - quickfix: 将任务输出显示到 quickfix 窗口并进行错误匹配
-# - terminal: 在终端内运行任务
+command:c,cpp=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" -lstdc++ -lm -msse3
+command:go=go build -o "$(VIM_PATHNOEXT)" "$(VIM_FILEPATH)"
+command:make=make -f "$(VIM_FILEPATH)"
 output=quickfix
-
-# quickfix 错误匹配的模板，不提供的话会使用 vim 的 errorformat 代替。
-# 为空字符串的话，会让在 quickfix 中显示原始文本
-errorformat=%f:%l:%m
-
-# 设置成 1 会在运行前保存当前文件，2 保存所有修改过的文件。
-save=1
+cwd=$(VIM_FILEDIR)
+save=2
 ```
 
-不同任务配置的优先级是本地配置高于全局配置，深层目录的配置优先于上层目录的配置，概念有点类似 editorconfig，你可以在多级目录定义同样名称的任务，下层的任务会覆盖上层的同名任务。
+这适配了三种类型的文件，C/C++，Go，以及 Makefile，按下 F9 就可以根据当前文件类型执行对应的构建命令，并且把输出显示到 quickfix 窗口中，进行错误匹配。
 
+上面的配置你既可以放在某个目录下，作用于所有下级目录也可以放到全局配置中，整个系统起作用。比你配置什么 `makeprg` 或者 vimscript 写一大堆乱七八糟的 if else 文件类型判断，和 `asyncrun`/`neomake` 调用优雅很多。
 
-### 命令行宏替换
+这里我们看到编译类项目一般配置 `output=quickfix` （默认值，不写也一样）这样可以将编译输出显示到 quickfix 窗口进行匹配，而运行类项目一般设置 `output=terminal` 选择终端模式，终端模式下有很多不同的运行方式，比如：内置终端，外置终端，quickfix模拟终端，经典 `!` 指令，tmux 分屏等，后面会说怎么指定 `output=terminal` 时的运行方式。
 
-在 `command` 字段和 `cwd` 字段可以使用下面这些宏：
+### 整个项目的编译运行
 
-```
-$(VIM_FILEPATH)  - 当前 buffer 的文件名全路径
-$(VIM_FILENAME)  - 当前 buffer 的文件名（没有前面的路径）
-$(VIM_FILEDIR)   - 当前 buffer 的文件所在路径
-$(VIM_FILEEXT)   - 当前 buffer 的扩展名
-$(VIM_FILENOEXT) - 当前 buffer 的主文件名（没有前面路径和后面扩展名）
-$(VIM_PATHNOEXT) - 带路径的主文件名（$VIM_FILEPATH 去掉扩展名）
-$(VIM_CWD)       - 当前 Vim 目录（:pwd 命令返回的）
-$(VIM_RELDIR)    - 相对于当前路径的文件名
-$(VIM_RELNAME)   - 相对于当前路径的文件路径
-$(VIM_ROOT)      - 当前 buffer 的项目根目录
-$(VIM_CWORD)     - 光标下的单词
-$(VIM_CFILE)     - 光标下的文件名
-$(VIM_GUI)       - 是否在 GUI 下面运行？
-$(VIM_VERSION)   - Vim 版本号
-$(VIM_COLUMNS)   - 当前屏幕宽度
-$(VIM_LINES)     - 当前屏幕高度
-$(VIM_SVRNAME)   - v:servername 的值
-$(VIM_INIFILE)   - 当前任务的 ini 文件名
-$(VIM_INIHOME)   - 当前任务的 ini 文件的目录（方便调用一些和配置文件位置相关的脚本）
-```
+仅有单个文件的编译运行是不够的，大部分时候我们是工作在一个个项目中，很多 vim 插件解决单个文件编译运行还行，但是项目级别的编译运行就相形见拙了。而 `asynctasks.vim` 在这个问题上应该是同类插件中做的最好的。
 
-在命令执行前，和上面宏同样名称的环境变量也会被初始化出来。比如你的命令很复杂，你根本用不着把很多宏全部塞在命令行里，可以把任务的 `command` 设置成调用某 bash 脚本，而在该脚本里直接用 `$VIM_FILENAME` 这个环境变量就能取出当前的文件名来。
-
-### 项目目录
-
-按照各类 Vim 插件的通俗约定，asynctasks 以及所依赖的 asyncrun 采用项目标识来定位项目的根目录，从当前文件所在目录一直往上递归到根目录，直到发现某一级父目录中包含下列项目标识：
+解决项目编译运行首先需要定位项目目录，在 Vim 中，众多插件也早就采用了一套叫做 `rootmark` 的机制， 从当前文件所在目录一直往上递归到根目录，直到发现某一级父目录中包含下列项目标识：
 
 ```VimL
 let g:asyncrun_rootmarks = ['.git', '.svn', '.root', '.project', '.hg']
@@ -235,63 +150,144 @@ let g:asyncrun_rootmarks = ['.git', '.svn', '.root', '.project', '.hg']
 
 则认为该目录是当前项目的根目录，如向上搜索到根目录都没找到任何标识，则将当前文件所在目录当作项目根目录。
 
-这些标识文件名你可以配置，如果你有一个项目既不在 git 中，又不在 svn 中怎么办？或者你的 git/svn 的单个仓库下面有很多项目，你并不想让最上层作为项目根目录的话，你只要在你想要的地方新建一个空的 `.root` 文件就行了。
+如果你的项目在版本管理系统里，那么仓库的顶层文件夹就会被自动识别成项目的根目录，而如果你有一个项目既不在 `git` 中，又不在 `svn` 中怎么办？或者你的 `git`/`svn` 的单个仓库下面有很多项目，你并不想让最上层作为项目根目录的话，你只要在你想要的地方新建一个空的 `.root` 文件就行了。
 
-最后一个边界情况，如果你没有打开文件（未命名新文件窗口），或者当前 buffer 是一个非文件（比如工具窗口），怎么办呢？此时会使用 **vim 的当前文件夹**（即运行 `:pwd` 命令返回的值）作为项目目录。 
+最后一个边界情况，如果你没有打开文件（未命名新文件窗口），或者当前 buffer 是一个非文件（比如工具窗口），怎么办呢？此时会使用 vim 的**当前文件夹**（即 `:pwd` 返回的值）作为项目目录。
 
-有了项目位置信息后我们就可以在配置任务时用 `$(VIM_ROOT)` 或者 `<root>` 来代替项目位置了：
+这基本是一套多年下来行之有效的约定了，众多插件都采用这个方法确定项目位置，比如大家熟知的：`YCM`，`AsyncRun`，`CtrlP`，`LeaderF`，`ccls` 和 `Gutentags` 等等。vscode 也采用类似的方法在项目顶层放置一个隐藏的 .vscode 文件夹，来标记项目根目录。
+
+有了项目位置信息后我们就可以在任务中用 `$(VIM_ROOT)` 或者它的别名 `<root>` 来代替项目位置了：
 
 ```ini
-[make]
+[project-build]
 command=make
 # 设置在当前项目的根目录处运行 make
 cwd=$(VIM_ROOT)
 
-[make-run]
+[project-run]
 command=make run
 # <root> 是 $(VIM_ROOT) 的别名，写起来容易些
 cwd=<root>
 output=terminal
 ```
 
-注意，我们定义任务的 `.tasks` 文件 **并不是** 项目标识，因为它可以多层嵌套，同一个项目里定义好几个，还会有项目不定义自己的本地任务，只使用 `tasks.ini` 中定义的全局任务，此时并不需要一个 `.tasks` 配置放在项目中，因此 `.tasks` 配置文件和项目标识是两个维度上的事情。
-
-### 运行模式
-
-配置任务时，`output` 字段可以设置为：
-
-| 名称 | 说明 |
-|-|-|
-| `quickfix` | 默认值，实时显示输出到 quickfix 窗口，并匹配 errorformat |
-| `terminal` | 在终端内运行任务 |
-
-前者（`quickfix`）是默认模式，一般用于一些编译/grep 之类的任务，因为可以在 quickfix 窗口中匹配错误。而后者一般用于一些 “纯运行类” 任务，比如运行你刚才编译出来的程序。
-
-当你将 `output` 设置为 `terminal` 时，将会根据下面一个全局变量指定终端模式：
+我们把这两个任务分别绑定到 F6 和 F7 上面：
 
 ```VimL
-" terminal mode: tab/curwin/top/bottom/left/right/quickfix/external
-let g:asynctasks_term_pos = 'quickfix'
+noremap <silent><f6> :AsyncTask project-run<cr>
+noremap <silent><f7> :AsyncTask project-build<cr>
 ```
 
-这个值决定所有 `output=terminal` 的任务到底用什么终端运行，以及在什么地方打开终端，备选项有：
+那么我们就能轻松的使用 F7 来编译当前项目，而 F6 来运行当前项目了。那么也许你会问，上面定义的都是用 make 工具的来编译运行啊，我的项目不用 make 构建怎么办？项目又不能根上面单个文件那样通过单个文件类型来区分 command，难道我要把不同构建类型的项目定义很多个不同的 task，搞一大堆类似 `project-build-cmake` 和 `project-make-ninjia` ，然后在 F1-F12 上绑定满它们吗？
 
-| 选项 | 模式 | 说明 |
-|-|-|-|
-| `quickfix` | 模拟 | 默认模式，跳过匹配错误，直接在 quickfix 中显示原始输出 |
-| `vim` | - | 传统 vim 的 `!` 命令运行任务，有些人喜欢这种老模式 |
-| `tab` | 内置终端 | 在新的 tab 上打开内置终端 |
-| `top` | 内置终端 | 在上方打开一个可复用内置终端 |
-| `bottom` | 内置终端 | 在下方打开一个可复用内置终端 |
-| `left` | 内置终端 | 在左边打开一个可复用内置终端 |
-| `right` | 内置终端 | 在右边打开一个可复用内置终端 |
-| `external` | 系统终端 | 打开一个新的操作系统终端窗口运行命令 |
+### 配置优先级
 
-除了指定全局的 `g:asynctasks_term_pos` 外，在任务配置文件中，也可以用 `pos=?` 来强制指定该任务需要何种方式运行。
+并不需要，最简单的做法是你可以把上面两个任务（`project-build` 和 `project-run`）配置成公共任务，放到 `~/.vim/tasks.ini` 这个公共配置里，然后对于所有一般的 make 类型项目，你就不用配置了。
 
-基本上 Vim 中常见的运行模式都包含了，选择一个你喜欢的模式即可。
+而对于其他类型的项目，比如某个项目中，我还在用 `msbuild` 来构建，我就单独给这个项目的 `.tasks` 局部配置中，再定义两个名字一模一样的局部任务，比如项目 `A` 中：
 
-### 内置终端
+```ini
+[project-build]
+command=vcvars32 > nul && msbuild build/StreamNet.vcxproj /property:Configuration=Debug /nologo /verbosity:quiet
+cwd=<root>
+errorformat=%f(%l):%m
+
+[project-run]
+command=build/Debug/StreamNet.exe
+cwd=<root>
+output=terminal
+```
+
+再 `asynctasks.vim` 中，局部配置的优先级高于全局配置，下层目录的配置高于上层目录的配置（`.tasks` 可以嵌套存在）。因此，在 `A` 项目中，老朋友 `project-build` 和 `project-run` 两个任务被我们替换成了针对 `A` 项目的 msbuild 的方法。
+
+先调用 `vcvars32.bat` 初始化 `Visual C++` 环境，然后用 `&&` 符号连接 `msbuild` 命令行，并且将 `errorformat` 设置成 `%f(%l):%m` 来适配 VC++ 输出的错误信息。
+
+这样在 `A` 这个项目中，我任然可以使用 F7 来编译项目，然后 F6 来运行整个项目，不会因为项目切换而导致我的操作发生改变，我可以用统一一致的操作，处理各种不同类型的项目，这就是本地任务和全局任务协同所能产生的奇迹。
+
+PS：可以用 `:AsyncTaskEdit` 来编辑本地任务，`:AsyncTaskEdit!` 来编辑全局任务。
+
+### 可用任务查询
+
+那么当前项目下，到底有些什么可用任务呢？他们到底是局部还是全局的？一个任务到底最终是被什么配置文件给 override 掉了？我们用 `:AsyncTaskList` 命令可以查看：
+
+![](images/demo-list.png)
+
+该命令能显示可用的 task 名称，具体命令，以及来自哪个配置文件。
+
+PS：以点 `.` 开头的任务名在查询时会被隐藏，使用 `:AsyncTaskList!` 查看所有任务。
+
+### 宏变量展开
+
+前面任务配置里，用到了几个形状如同 `$(VIM_xxx)` 的宏，具体在运行时会具体替换成对应的值，常用的宏有：
+
+```bash
+$(VIM_FILEPATH)    # 当前 buffer 的文件名全路径
+$(VIM_FILENAME)    # 当前 buffer 的文件名（没有前面的路径）
+$(VIM_FILEDIR)     # 当前 buffer 的文件所在路径
+$(VIM_FILEEXT)     # 当前 buffer 的扩展名
+$(VIM_FILENOEXT)   # 当前 buffer 的主文件名（没有前面路径和后面扩展名）
+$(VIM_PATHNOEXT)   # 带路径的主文件名（$VIM_FILEPATH 去掉扩展名）
+$(VIM_CWD)         # 当前 Vim 目录（:pwd 命令返回的）
+$(VIM_RELDIR)      # 相对于当前路径的文件名
+$(VIM_RELNAME)     # 相对于当前路径的文件路径
+$(VIM_ROOT)        # 当前 buffer 的项目根目录
+$(VIM_CWORD)       # 光标下的单词
+$(VIM_CFILE)       # 光标下的文件名
+$(VIM_CLINE)       # 光标停留在当前文件的多少行（行号）
+$(VIM_GUI)         # 是否在 GUI 下面运行？
+$(VIM_VERSION)     # Vim 版本号
+$(VIM_COLUMNS)     # 当前屏幕宽度
+$(VIM_LINES)       # 当前屏幕高度
+$(VIM_SVRNAME)     # v:servername 的值
+$(VIM_DIRNAME)     # 当前文件夹目录名，比如 vim 在 ~/github/prj1/src，那就是 src
+$(VIM_PRONAME)     # 当前项目目录名，比如项目根目录在 ~/github/prj1，那就是 prj1
+$(VIM_INIFILE)     # 当前任务的 ini 文件名
+$(VIM_INIHOME)     # 当前任务的 ini 文件的目录（方便调用一些和配置文件位置相关的脚本）
+```
+
+上面这些宏基本够你日常使用了，除了替换 `command` 和 `cwd` 配置外，同名的环境变量也被设置成同样的值，例如你某个任务命令太复杂了，你倾向于写道一个 shell 脚本中，那么 `command` 配置就可以简单的调用一下脚本文件：
+
+```ini
+[project-build]
+command=build/my-build-task.sh
+cwd=<root>
+```
+
+根本不用传参，这个 `my-build-task.sh` 脚本本内部直接用 `$VIM_FILENAME` 这个环境变量就能取出文件名来，这样通过环境变量传递当前项目/文件信息的方法，结合外部脚本，能让我们定义各种相对复杂的任务，比直接裸写几行 vimscript 的 keymap 强大灵活多了。
+
+那么当前这些宏到底会被展开成什么呢？我们可以通过 `:AsyncTaskMacro` 命令查看：
+
+![](images/demo-macro-3.png)
+
+左边是宏名称，中间是说明，右边是具体展开值。这条命令很有用，当你写 task 配置忘记宏名称了，用它随时查看，不用翻文档。
+
+### 多种运行模式
+
+配置任务时，output 字段可以设置如何运行任务，它有下面两个值：
+
+- `quickfix`： 默认值，实时显示输出到 quickfix 窗口，并匹配 errorformat。
+- `terminal`：在终端内运行任务。
+
+第一个自然没啥好说，当设置为第二个 `terminal` 时，还可以通过一个全局变量：
+
+```VimL
+let g:asynctasks_term_pos = 'xxx'
+```
+
+来具体设置终端的工作位置和工作模式，它有几个可选值：
+
+- `quickfix`：默认值，使用 quickfix 窗口模拟终端，输出不匹配 errorformat。
+- `vim`：传统 vim 的 ! 命令运行任务，有些人就是迷恋这种方式。
+- `tab`：内置终端，在一个新的 tab 上打开内置终端，运行程序。
+- `top`：内置终端，在上方打开可复用内部终端。
+- `bottom`：内置终端，在下方打开可复用内部终端。
+- `left`：内置终端，在左边打开可复用内置终端。
+- `right`：内置终端，在右边打开可复用内置终端。
+- `external`： 外置终端，启动一个新的操作系统的外置终端窗口，运行程序。
+
+另外在任务配置文件中，也可以用 `pos=?` 来强制指定该任务需要何种方式运行。
+
+基本上 Vim 中常见的运行模式都包含了，选择一个你喜欢的模式即可，见到那演示一下：
 
 当 `output=terminal` 时，设置：
 
@@ -299,11 +295,11 @@ let g:asynctasks_term_pos = 'quickfix'
 let g:asynctasks_term_pos = 'bottom'
 ```
 
-那么运行 `:AsyncTask file-run` 时，就能在下方的内置终端运行任务了：
+那么运行 :AsyncTask file-run 时，就能在下方的内置终端运行任务了：
 
 ![](images/demo-2.png)
 
-终端窗口会复用，如果上一个任务结束了，再次运行时不会新建终端窗口，会先尝试复用老的已结束的终端窗口，找不到才会新建。当使设置为 `top`/`bottom`/`left`/`right` 时，可以用下面两个配置确定终端窗口大小：
+终端窗口会复用，如果上一个任务结束了，再次运行时不会新建终端窗口，会先尝试复用老的已结束的终端窗口，找不到才会新建。当使设置为 top/bottom/left/right 时，可以用下面两个配置确定终端窗口大小：
 
 ```VimL
 let g:asynctasks_term_rows = 10    " 设置纵向切割时，高度为 10
@@ -320,29 +316,16 @@ let g:asynctasks_term_pos = 'tab'
 
 ![](images/demo-3.png)
 
-整个 tab 都用于运行你的任务，应该足够大了吧？在上下左右分屏模式的终端会复用已有窗口而 tab 终端会每次新建新的 tab，要你结束后自己关闭，可以设置：
+整个 tab 都用于运行你的任务，应该足够大了吧？这是我比较喜欢的方式。
 
-```VimL
-let g:asynctasks_term_reuse = 1
-```
+默认的 `quickfix` 方式当然可以运行你的任务，但是它不能处理用户输入，当你的程序需要和用户交互时，你可能会需要一个真实的终端。
 
-设置成 `1`，让 tab 终端也可以先尝试复用已有的 tab。
+**Bonus**：
 
+- tab 模式的终端也可以复用，将 `g:asynctasks_term_reuse` 设置成 `1` 即可。
+- 如果你想在打开新分屏终端的时候保持你的焦点不改变，可以将 `g:asynctasks_term_focus` 设置成 `0` 即可。
 
-默认的 `quickfix` 模式尽管也可以运行程序，但是并不适合一些有交互的任务，比如需要用户输入点什么，`quickfix` 模式就没办法了，这时你就需要一个真实的终端，真实终端还能正确的显示颜色，这个在 `quickfix` 是无能为力的事情。
-
-当然，内置终端到 vim 8.1 才稳定下来，处于对老 vim 的支持，asynctasks 默认使用 `quickfix` 模式来运行任务。
-
-### 保持焦点
-
-使用分屏模式的内置终端时（`left`/`right`/`top`/`bottom`），默认运行任务时焦点会跳到终端窗口，这里有个选项：
-
-```VimL
-let g:asynctasks_term_focus = 0
-```
-
-默认是 `1`，代表改变焦点，如果设置成 `0` 的话，可以将焦点保持在原来的窗口上，看你个人喜欢。
-
+（PS：内置终端有时候需要调教一下才会比较顺手，这里鼓励大家使用 `ALT+HJKL` 来进行窗口切换，淘汰老旧的 `CTRL+HJKL`，再使用 `ALT+q` 来返回终端 NORMAL 模式，这几个 keymap 我用到现在都非常顺手。）
 
 ### 外部终端
 
@@ -356,110 +339,19 @@ let g:asynctasks_term_pos = 'external'
 
 ![](images/demo-4.png)
 
-是不是有点 VS 的感觉了？目前该选项仅支持 Windows，但是也很容易就能扩展成：
+是不是有点 VS 的感觉了？基本可能的运行方式都有了。
 
-- 打开新的 `tmux` 窗口来运行
-- 打开一个新的 `gnome-terminal` 窗口或者 tab 来运行
-- 打开一个新的 `xterm` 窗口来运行
-- 打开一个新的 `WSL` 窗口来运行
+本插件基本上提供了所有 Vim 中可能的运行程序的方式了，选个你喜欢的即可。
 
-视需求逐步添加完善吧。
+## 高级话题
 
-## 高级功能
+本插件 `asynctasks.vim` 还有很多高级的玩法，我们继续：
 
-### 查看可用任务
-
-列出当前可用的 task：
-
-```VimL
-:AsyncTaskList
-```
-
-效果如下：
-
-![](images/demo-list.png)
-
-该命令能显示可用的 task 名称，具体命令，以及来自哪个配置文件。
-
-### 显示宏信息
-
-显示宏变量帮助：
-
-```VimL
-:AsyncTaskMacro
-```
-
-显示效果：
-
-![](images/demo-macro-3.png)
-
-左边是宏名称，中间是说明，右边是具体展开值。
-
-这条命令很有用，当你写 task 配置忘记宏名称了，用它随时查看，不用翻文档。
-
-### 系统特定任务
-
-同样一个任务名，你可以配置是 windows 特有，还是 unix 特有：
-
-```ini
-[task1:win]
-command=echo I am in Windows.
-
-[task1:unix]
-command=echo I am in Unix.
-```
-
-在任务名后面追加一个冒号，里面可选值为 `win` 或者 `unix`，就能指定适配的操作系统了，上面两个任务，尽管都是叫做 `task1`，但是在不同系统下运行的是不同的命令。
-
-### 文件类型适配
-
-在同一个任务中，可以在 `command` 字段后面用冒号分隔写明适配的 `&filetype`，比如我们写个加强版的 `file-run` 任务：
-
-```ini
-[file-run]
-command="$(VIM_FILEPATH)"
-command:c,cpp="$(VIM_PATHNOEXT)"
-command:python=python "$(VIM_FILEPATH)"
-command:make=make -f "$(VIM_FILEPATH)"
-command:javascript=node "$(VIM_FILEPATH)"
-command:sh=sh "$(VIM_FILEPATH)"
-command:lua=lua "$(VIM_FILEPATH)"
-command:perl=perl "$(VIM_FILEPATH)"
-command:ruby=ruby "$(VIM_FILEPATH)"
-command:fish=fish "$(VIM_FILEPATH)"
-command:php=php "$(VIM_FILEPATH)"
-command:erlang=escript "$(VIM_FILEPATH)"
-output=terminal
-cwd=$(VIM_FILEDIR)
-```
-
-不加冒号的 `command` 是默认命令，而加了冒号的 `command` 如果能和 `&filetype` 匹配上，则会优先被使用。
-
-把它放到全局配置（~/.vim/tasks.ini）中，绑定 `:AsyncTask file-run` 到 `<F5>` 上面，那么每次按 F5 运行同样一个任务时，就能根据当前文件类型自动适配对应命令了，是不是很方便？
-
-### 配置搜索
-
-前面一直再说全局配置放在 `~/.vim/tasks.ini` 中，其实是会搜索所有 runtimepath 的，只要任何一个 runtimepath 中存在 `tasks.ini` 都会被加载进来，嫌名字丑没关系，你可以定义：
-
-```VimL
-let g:asynctasks_rtp_config = 'etc/tasks.ini'
-```
-
-那么就会变成到每个 runtimepath 下面的 `etc` 目录中去找 tasks.ini 了。这样设计有个好处，你可以把全局任务配置文件一起提交到你的 dotfiles 仓库里，记得加载的时候设置一下 `set rtp+=...` 就行了。
-
-对于局部任务配置，就是那个 `.tasks` 的文件名，不喜欢你也可以换：
-
-```VimL
-let g:asynctasks_config_name = '.asynctasks'
-```
-
-那么就会改为搜索名为 `.asynctasks` 的文件了。
-
-### 交互式命令
+### 交互式任务
 
 有一些任务需要用户输入点什么东西，比如你配置一个全局搜索字符串的任务，运行时如果希望用户输入关键字的话，你就会用到这项功能。
 
-任务的 `command` 字段可以接受形如 `$(?name)` 的宏，在运行 `:AsyncTask xxx` 时，如果 `command` 里包含这些宏，则会在 Vim 里提示你输入内容：
+任务的 `command` 字段可以接受形如 `$(?...)` 的宏，在运行 `:AsyncTask xxx` 时，如果 `command` 里包含这些宏，则会在 Vim 里提示你输入内容：
 
 ```ini
 [task1]
@@ -477,6 +369,154 @@ output=terminal
 
 如上图所示，该任务正确的显示了用户输入的内容。
 
-## 感谢
+真实案例（我自己用的）：
 
-TODO
+```ini
+[grep]
+command=rg -n --no-heading --color never "$(?keyword)" "<root>" -tcpp -tc -tpy -tvim -tgo -tasm
+cwd=$(VIM_ROOT)
+errorformat=%f:%l:%m
+```
+
+这是我的全局 `grep` 任务，只要运行 `:AsyncTask grep` 就会提示我输入要查找的关键字，输入后就能在当前项目中搜索符合条件的代码了。
+
+如果在另一个项目中我需要指明搜索更多类型的文件，我可以专门为该项目定义一个局部的 `grep` 任务，并用另外的参数去执行 `rg`。
+
+当然，大部分时候，这个全局的 `grep` 任务已经足够我用了，对于其他项目，`rg` 除了支持 `.gitignore` 外，还能在项目内放一个额外的 `.ignore` 文件，来指定需要跳过什么（比如一大堆测试文件我不想搜索），或者还要搜索什么。
+
+### 不同 profile 的任务
+
+单个任务允许具有多个不同的 `profile`：
+
+```ini
+[task1:release]
+command=gcc -O2 "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)"
+cwd=$(VIM_FILEDIR)
+
+[task1:debug]
+command=gcc -g "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)"
+cwd=$(VIM_FILEDIR)
+```
+
+这里定义了 `task1` 的两个不同 profile：`release` 和 `debug`。默认的 profile 是 `debug`，可以用下面命令改为 `release`：
+
+```VimL
+:AsyncTaskProfile release
+```
+
+或者：
+
+```VimL
+let g:asynctasks_profile = 'release'
+```
+
+接着，`:AsyncTask task1` 就能用 `release` 的方式运行 `task1` 了。
+
+### 命令对操作系统的适配
+
+本插件支持为不同的操作系统定义不同的命令：
+
+```ini
+[task1]
+command=echo default
+command/win32=echo win32 default
+command/linux=echo linux default
+command:c,cpp/win32=echo c/c++ for win32
+command:c,cpp/linux=echo c/c++ for linux
+```
+
+命令不当可以用前面提到的文件类型来过滤，还能用操作系统来过滤，如果无法匹配那么默认命令（第一个）就会被使用。
+
+本插件仅仅会自动检测 windows 和 linux，你可以强制设置系统类型：
+
+```VimL
+let g:asynctasks_system = 'macos'
+```
+
+这样就会匹配所有以 `/macos` 结尾的命令了。
+
+### 任务数据源
+
+当任务很多时，你可能需要各种 UI 插件给你提供任务选择，你可以用下面接口：
+
+```VimL
+let current_tasks = asynctasks#list("")
+```
+
+来取得所有任务信息，它会返回一个列表，每个 item 是一个任务，方便你同各种 fuzzy finder 集成。
+
+### 插件设置
+
+有很多设置可以具体控制本插件的行为：
+
+##### The `g:asynctasks_config_name` option
+
+修改默认 `.tasks` 配置文件的名称，不喜欢的话可以随便改成：
+
+```VimL
+let g:asynctasks_config_name = '.asynctask'
+let g:asynctasks_config_name = '.git/tasks.ini'
+```
+
+##### The `g:asynctasks_rtp_config` option
+
+修改 `~/.vim` 下面的全局配置文件 `tasks.ini` 的名称：
+
+```VimL
+let g:asynctasks_rtp_config = "asynctasks.ini"
+```
+
+##### The `g:asynctasks_extra_config` option
+
+额外全局配置，除了 `~/.vim/tasks.ini` 外，你还可以指定更多全局配置：
+
+```VimL
+let g:asynctasks_extra_config = [
+    \ '~/github/my_dotfiles/my_tasks.ini',
+    \ '~/.config/tasks/local_tasks.ini',
+    \ ]
+```
+
+他们会在加载完 `~/.vim/tasks.ini` 后马上加载。
+
+##### The `g:asynctasks_term_pos` option
+
+你想要何种命令运行 `output=terminal` 的任务，具体见 [多种运行模式](#多种运行模式).
+
+##### The `g:asynctasks_term_cols` option
+
+内置终端的宽度（使用水平分割时）。
+
+##### The `g:asynctasks_term_rows` option
+
+内置终端的高度（使用垂直分割时）。
+
+##### The `g:asynctasks_term_focus` option
+
+设置成 `0` 可以在使用分屏内置终端的时候，避免焦点切换。
+
+##### The `g:asynctasks_term_reuse` option
+
+设置成 `1` 可以复用 tab 类型的内置终端。
+
+##### The `g:asynctasks_term_hidden` option
+
+设置成 `1` 的话，所有内置终端的 buffer 会将 `bufhidden` 初始化成 `hide`。那么不管你全局有没有设置 `hidden`，该终端窗口都变成可以隐藏的。
+
+
+## 使用案例
+
+这里有很多实际使用案例：
+
+- [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
+
+## 常见问题
+
+具体见：
+
+- [FAQ](https://github.com/skywind3000/asynctasks.vim/wiki/FAQ)
+
+## Credit
+
+如果你喜欢本插件，希望能给他留下一颗星 [GitHub](https://github.com/skywind3000/asynctasks.vim)，十分感谢。欢迎关注 skywind3000 的 [Twitter](https://twitter.com/skywind3000) 和 [GitHub](https://github.com/skywind3000)。
+
