@@ -27,7 +27,7 @@
     - [插件设置](#插件设置)
 - [使用案例](#使用案例)
 - [常见问题](#常见问题)
-- [Credit](#credit)
+- [致谢](#致谢)
 
 <!-- /TOC -->
 
@@ -516,7 +516,7 @@ let g:asynctasks_extra_config = [
 
 - [FAQ](https://github.com/skywind3000/asynctasks.vim/wiki/FAQ)
 
-## Credit
+## 致谢
 
 如果你喜欢本插件，希望能给他留下一颗星 [GitHub](https://github.com/skywind3000/asynctasks.vim)，十分感谢。欢迎关注 skywind3000 的 [Twitter](https://twitter.com/skywind3000) 和 [GitHub](https://github.com/skywind3000)。
 
