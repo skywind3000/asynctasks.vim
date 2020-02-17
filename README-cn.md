@@ -391,7 +391,7 @@ let g:asynctasks_term_pos = 'external'
 
 显示效果：
 
-![](images/demo-macro.png)
+![](images/demo-macro-3.png)
 
 左边是宏名称，中间是说明，右边是具体展开值。
 

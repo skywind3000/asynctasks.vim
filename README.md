@@ -260,7 +260,7 @@ In this case, you don't have to pass any argument to `my-build-task.sh`, because
 
 There is a `:AsyncTaskMacro` command for you to display macro help:
 
-![](images/demo-macro-2.png)
+![](images/demo-macro-3.png)
 
 From left to right, is the macro name, what does it stand for and current value. You don't have to check the documentation when you are editing your task configuration.
 
