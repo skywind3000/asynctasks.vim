@@ -24,6 +24,7 @@ An efficient way to handle building/running/testing/deploying tasks by imitating
     - [Different system with different commands](#different-system-with-different-commands)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
+- [Task Examples](#task-examples)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Credit](#credit)
 
@@ -508,9 +509,17 @@ Set to `1` to reuse internal terminal when open it in a new tab.
 
 If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide`.
 
+## Task Examples
+
+There are many examples:
+
+- [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
+
 ## Frequently Asked Questions
 
-See the [FAQ](https://github.com/skywind3000/asynctasks.vim/wiki/FAQ).
+See the:
+
+- [FAQ](https://github.com/skywind3000/asynctasks.vim/wiki/FAQ)
 
 ## Credit
 
