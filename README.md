@@ -21,6 +21,7 @@ An efficient way to handle building/running/testing/deploying tasks by imitating
 - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
     - [Task with different profiles](#task-with-different-profiles)
+    - [Different system with different commands](#different-system-with-different-commands)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
 - [Frequently Asked Questions](#frequently-asked-questions)
@@ -410,11 +411,33 @@ Here we have `task1` with two different profiles `release` and `debug`. The defa
 or
 
 ```VimL
-:let g:asynctasks_profile = 'release'
+let g:asynctasks_profile = 'release'
 ```
 
 Then, `:AsyncTask task1` will run `tasks1` with profile `release`.
 
+### Different system with different commands
+
+This plugin can select command for given system:
+
+```ini
+[task1]
+command=echo default
+command/win32=echo win32 default
+command/linux=echo linux default
+command:c,cpp/win32=echo c/c++ for win32
+command:c,cpp/linux=echo c/c++ for linux
+```
+
+Both `filetype` and `system` can be used as filter. Default command (the first one) will be chosen if mismatch.
+
+Change this option to indicate your system:
+
+```VimL
+let g:asynctasks_system = 'macos'
+```
+
+Then command ending with `/macos` will be selected.
 
 ### Data source for fuzzy finders
 
