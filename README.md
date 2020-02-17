@@ -379,18 +379,16 @@ Real example used by myself:
 
 ```ini
 [grep]
-command=rg -n --no-heading --color never -g source/**/*.cpp -g include/**/*.h $(?keyword) "<root>"
-cwd=<root>
+command=rg -n --no-heading --color never "$(?keyword)" "<root>" -tcpp -tc -tpy -tvim -tgo -tasm
+cwd=$(VIM_ROOT)
 errorformat=%f:%l:%m
 ```
 
-This is a local `grep` task for my project `B`. I redefined the `grep` task in the project `B` scope to override the global one, because I want `rg` search `source` and `include` folders only (skip other testing sources).
+Here is my global `grep` task. Each time I use `:AsyncRun grep` in any of my project, it prompts me to input `keyword` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
 
-Then I use `:AsyncTask grep` in my project B, it prompts me to input `keyword` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
+If I need other filetypes to search in certain project, I can redifine a new `grep` with different parameters for this project.
 
-Because the new `grep` task is specifically for project `B`, it knows what to search and what to skip, so it's obviously faster than the default/global one.
-
-Another way for that is to use a new rg ignore file for certain project. Check rg documentation for `--ignore-file`.
+But most of time, a global `grep` task is enough, rg supports `.ignore` files for different files, I can use them to prevent searching in unnecessary files. Check rg documentation for `--ignore-file`.
 
 ### Task with different profiles
 
