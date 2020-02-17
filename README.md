@@ -235,11 +235,14 @@ $(VIM_RELNAME)     # File name relativize to current directory.
 $(VIM_ROOT)        # Project root directory.
 $(VIM_CWORD)       # Word under cursor.
 $(VIM_CFILE)       # File name under cursor.
+$(VIM_CLINE)       # Cursor line number in current buffer
 $(VIM_GUI)         # has('gui_runnin')?
 $(VIM_VERSION)     # Value of v:version.
 $(VIM_COLUMNS)     # Current screen width.
 $(VIM_LINES)       # Current screen height.
 $(VIM_SVRNAME)     # Value of v:servername.
+$(VIM_PRONAME)     # Name of current project root directory
+$(VIM_DIRNAME)     # Name of current directory
 $(VIM_INIFILE)     # Full path name of current ini (.tasks) file.
 $(VIM_INIHOME)     # Where the ini file locates.
 ```
@@ -256,7 +259,7 @@ In this case, you don't have to pass any argument to `my-build-task.sh`, because
 
 There is a `:AsyncTaskMacro` command for you to display macro help:
 
-![](images/demo-macro.png)
+![](images/demo-macro-2.png)
 
 From left to right, is the macro name, what does it stand for and current value. You don't have to check the documentation when you are editing your task configuration.
 
