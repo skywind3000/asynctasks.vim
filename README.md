@@ -137,7 +137,7 @@ Again, F9 can be used to compile many file types, same keybind, different comman
 
 Tasks for running compilers or grep may set `output=quickfix` (default), because the output can use errorformat to match errors in the quickfix window, while tasks for running your file/project may set `output=terminal`.
 
-When you set `output` to `terminal`, you can further indicate what type of terminal do you want to use exactly, like: a simulated terminal in quickfix window (without matching the errorformat)? the triditional `!` command in vim? the internal terminal ? an external terminal window ? or in a tmux split window ?? The detail will be discussed later.
+When you set `output` to `terminal`, you can further specify what type of terminal do you want to use exactly, like: a simulated terminal in quickfix window (without matching the errorformat)? the triditional `!` command in vim? the internal terminal ? an external terminal window ? or in a tmux split window ?? The detail will be discussed later.
 
 ### Build and run a project
 
@@ -271,7 +271,7 @@ There is an `output` field in each task's configuration, it can be one of:
 - `quickfix`: default mode, output to the quickfix window and match with `errorformat`.
 - `terminal`: run in a terminal.
 
-Nothing to talk about `output=quickfix`, and if you set `output` to `terminal` your can further indicate the terminal type by setting:
+Nothing to talk about `output=quickfix`, and if you set `output` to `terminal` your can further specify the terminal type by setting:
 
 ```VimL
 let g:asynctasks_term_pos = 'xxx'
@@ -432,7 +432,7 @@ command:c,cpp/linux=echo c/c++ for linux
 
 Both `filetype` and `system` can be used as filter. Default command (the first one) will be chosen if mismatch.
 
-Change this option to indicate your system:
+Change this option to specify your system:
 
 ```VimL
 let g:asynctasks_system = 'macos'
@@ -508,7 +508,7 @@ If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide
 
 ## Task Examples
 
-There are many examples about: cmake, grep, wsl and more:
+There are many examples about: cmake, grep, ninja, wsl and more:
 
 - [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
 
