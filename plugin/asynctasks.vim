@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/02/19 02:46
-" Verision: 1.5.5
+" Last Modified: 2020/02/19 03:25
+" Verision: 1.5.6
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -113,6 +113,9 @@ if exists('g:asyncrun_timer') == 0
 elseif g:asyncrun_timer < 100
 	let g:asyncrun_timer = 100
 endif
+
+" disable autocmd for each update
+let g:asyncrun_skip = 1
 
 
 "----------------------------------------------------------------------
@@ -840,6 +843,9 @@ function! s:task_option(task)
 	endfor
 	if has_key(task, 'program')
 		let opts.program = task.program
+	endif
+	if has_key(task, 'auto')
+		let opts.auto = task.auto
 	endif
 	let opts.safe = 1
 	let opts.reuse = g:asynctasks_term_reuse
