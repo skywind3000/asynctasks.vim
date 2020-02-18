@@ -508,7 +508,7 @@ If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide
 
 ## Task Examples
 
-There are many examples:
+There are many examples about: cmake, grep, wsl and more:
 
 - [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
 
