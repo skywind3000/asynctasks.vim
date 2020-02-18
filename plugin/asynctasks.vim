@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/02/17 21:38
-" Verision: 1.4.8
+" Last Modified: 2020/02/18 13:56
+" Verision: 1.5.0
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -87,6 +87,10 @@ if !exists('g:asynctasks_term_hidden')
 	let g:asynctasks_term_hidden = 0
 endif
 
+" strict to detect $(VIM_CWORD) to avoid empty string
+if !exists('g:asynctasks_strict')
+	let g:asynctasks_strict = 1
+endif
 
 
 "----------------------------------------------------------------------
@@ -106,6 +110,15 @@ function! s:errmsg(msg)
 	redraw | echo '' | redraw
 	echohl ErrorMsg
 	echom 'Error: ' . a:msg
+	echohl NONE
+	let s:index += 1
+endfunc
+
+" display in cmdline
+function! s:warning(msg)
+	redraw | echo '' | redraw
+	echohl WarningMsg
+	echom 'Warning: ' . a:msg
 	echohl NONE
 	let s:index += 1
 endfunc
@@ -788,11 +801,11 @@ function! s:command_check(command, cwd)
 			let macro = '$(VIM_' . name . ')'
 			if stridx(a:command, macro) >= 0
 				let t = 'task command contains invalid macro'
-				call s:errmsg(t . ' in current buffer')
+				call s:warning(t . ' in current buffer')
 				return 1
 			elseif stridx(a:cwd, macro) >= 0
 				let t = 'task cwd contains invalid macro'
-				call s:errmsg(t . ' in current buffer')
+				call s:warning(t . ' in current buffer')
 				return 2
 			endif
 		endfor
@@ -801,14 +814,38 @@ function! s:command_check(command, cwd)
 			let macro = '$(VIM_' . name . ')'
 			if stridx(a:command, macro) >= 0
 				let t = 'macro ' . macro . ' is empty'
-				call s:errmsg(t . ' in current buffer')
+				call s:warning(t . ' in current buffer')
 				return 3
 			elseif stridx(a:cwd, macro) >= 0
 				let t = 'macro ' . macro . ' is empty'
-				call s:errmsg(t . ' in current buffer')
+				call s:warning(t . ' in current buffer')
 				return 4
 			endif
 		endfor	
+	endif
+	if g:asynctasks_strict != 0
+		let name = '$(VIM_CWORD)'
+		if expand('<cword>') == ''
+			if stridx(a:command, name) >= 0
+				call s:warning('current word used in command is empty')
+				return 5
+			endif
+			if stridx(a:cwd, name) >= 0
+				call s:warning('current word used in cwd is empty')
+				return 6
+			endif
+		endif
+		let name = '$(VIM_CFILE)'
+		if expand('<cfile>') == ''
+			if stridx(a:command, name) >= 0
+				call s:warning('current filename used in command is empty')
+				return 5
+			endif
+			if stridx(a:cwd, name) >= 0
+				call s:warning('current filename used in cwd is empty')
+				return 6
+			endif
+		endif
 	endif
 	return 0
 endfunc
