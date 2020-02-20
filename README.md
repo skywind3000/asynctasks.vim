@@ -18,6 +18,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Macro variable substitution](#macro-variable-substitution)
     - [Task running modes](#task-running-modes)
     - [Run in an external terminal](#run-in-an-external-terminal)
+    - [Customize runners](#customize-runners)
 - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
     - [Task with different profiles](#task-with-different-profiles)
@@ -348,6 +349,24 @@ Then, every task with `output=terminal` will open a new `cmd` window:
 Familiar feeling like you are working in Visual Studio.
 
 `asynctasks.vim` provide you all the possible ways to run a command in vim with no compromise. Choose one you like.
+
+### Customize runners
+
+As a fully customizable plugin, this plugin allows you specify how to run your task by adding new item to dictionary `g:asyncrun_runner`:
+
+```VimL
+function! s:my_runner(command)
+    echo "run: " . a:command
+endfunc
+
+let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
+let g:asyncrun_runner.test = { cmd -> s:my_runner(cmd) }
+```
+
+Then, you can change `g:asynctasks_term_pos` to `"test"`, and when you are running your task, your runner function will be called.
+
+For more information, see the asyncrun wiki: [customize runner](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
+
 
 ## Advanced Topics
 
