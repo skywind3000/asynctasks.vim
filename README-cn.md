@@ -364,7 +364,7 @@ let g:asyncrun_runner.test = { cmd -> s:my_runner(cmd) }
 
 这样你就添加了一个名字叫做 `"test"` 的 runner，那么当你把  `g:asynctasks_term_pos` 设置成 `"test"` 后，你运行所有 `output=terminal` 的任务都会调用上面的自定义 runner 函数来运行。
 
-For more information, see the asyncrun wiki: [customize runner](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
+更多信息，见 `asyncrun.vim` 的 wiki：[customize runner](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
 
 ## 高级话题
 

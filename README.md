@@ -365,7 +365,7 @@ let g:asyncrun_runner.test = { cmd -> s:my_runner(cmd) }
 
 Then, you can change `g:asynctasks_term_pos` to `"test"`, and when you are running your task, your runner function will be called.
 
-For more information, see the asyncrun wiki: [customize runner](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
+For more information, see the wiki page of `asyncrun.vim`: [customize runner](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
 
 
 ## Advanced Topics
