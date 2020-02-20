@@ -353,7 +353,7 @@ let g:asynctasks_term_pos = 'external'
 
 作为一个完全可定制化的插件，本插件允许你自定义更多运行模式，通过 向字典 `g:asyncrun_runner` 里添加新的 callback 函数即可实现：
 
-```
+```VimL
 function! s:my_runner(command)
     echo "run: " . a:command
 endfunc
