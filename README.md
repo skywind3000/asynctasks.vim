@@ -23,6 +23,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Task with different profiles](#task-with-different-profiles)
     - [Different system with different commands](#different-system-with-different-commands)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
+    - [Customize runners](#customize-runners)
     - [Options](#options)
 - [Task Examples](#task-examples)
 - [Frequently Asked Questions](#frequently-asked-questions)
@@ -349,8 +350,6 @@ Familiar feeling like you are working in Visual Studio.
 
 `asynctasks.vim` provide you all the possible ways to run a command in vim with no compromise. Choose one you like.
 
-For customizing additional runners, see [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
-
 
 ## Advanced Topics
 
@@ -453,6 +452,11 @@ let current_tasks = asynctasks#list("")
 ```
 
 It returns a list of items, each item represents a task. And it can be used as the data source for fuzzy finders like `fzf.vim` or `Leaderf`.
+
+### Customize runners
+
+For customizing additional runners, see [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
+
 
 ### Options
 

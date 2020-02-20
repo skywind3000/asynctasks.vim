@@ -24,6 +24,7 @@
     - [不同 profile 的任务](#不同-profile-的任务)
     - [命令对操作系统的适配](#命令对操作系统的适配)
     - [任务数据源](#任务数据源)
+    - [自定义运行方式](#自定义运行方式)
     - [插件设置](#插件设置)
 - [使用案例](#使用案例)
 - [常见问题](#常见问题)
@@ -348,7 +349,6 @@ let g:asynctasks_term_pos = 'external'
 
 本插件基本上提供了所有 Vim 中可能的运行程序的方式了，选个你喜欢的即可。
 
-如果你还想自定义更多的运行模式，见 [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 ## 高级话题
 
@@ -451,6 +451,10 @@ let current_tasks = asynctasks#list("")
 ```
 
 来取得所有任务信息，它会返回一个列表，每个 item 是一个任务，方便你同各种 fuzzy finder 集成。
+
+### 自定义运行方式
+
+如果你还想自定义更多的运行模式，见 [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 ### 插件设置
 
