@@ -19,7 +19,6 @@
     - [宏变量展开](#宏变量展开)
     - [多种运行模式](#多种运行模式)
     - [外部终端](#外部终端)
-    - [自定义运行模式](#自定义运行模式)
 - [高级话题](#高级话题)
     - [交互式任务](#交互式任务)
     - [不同 profile 的任务](#不同-profile-的任务)
@@ -349,22 +348,7 @@ let g:asynctasks_term_pos = 'external'
 
 本插件基本上提供了所有 Vim 中可能的运行程序的方式了，选个你喜欢的即可。
 
-### 自定义运行模式
-
-作为一个完全可定制化的插件，本插件允许你自定义更多运行模式，通过 向字典 `g:asyncrun_runner` 里添加新的 callback 函数即可实现：
-
-```VimL
-function! s:my_runner(command)
-    echo "run: " . a:command
-endfunc
-
-let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
-let g:asyncrun_runner.test = { cmd -> s:my_runner(cmd) }
-```
-
-这样你就添加了一个名字叫做 `"test"` 的 runner，那么当你把  `g:asynctasks_term_pos` 设置成 `"test"` 后，你运行所有 `output=terminal` 的任务都会调用上面的自定义 runner 函数来运行。
-
-更多信息，见 `asyncrun.vim` 的 wiki：[customize runner](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
+如果你还想自定义更多的运行模式，见 [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 ## 高级话题
 
