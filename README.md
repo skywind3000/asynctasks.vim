@@ -142,7 +142,7 @@ When you set `output` to `terminal`, you can further specify what type of termin
 
 ### Build and run a project
 
-If you want to do something with a project, you must figure out where the project locates. `asynctasks.vim` and its backend `asyncrun.vim` choose a widely used method called `root markers` to indentify the project root directory. The project root is one of the nearest parent directory containing one of these markers:
+If you want to do something with a project, you must figure out where the project locates. `asynctasks.vim` and its backend `asyncrun.vim` choose a widely used method called `root markers` to indentify the project root directory. The project root is one of the nearest parent directory containing these markers:
 
 ```VimL
 let g:asyncrun_rootmarks = ['.git', '.svn', '.root', '.project', '.hg']
