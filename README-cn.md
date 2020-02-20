@@ -126,6 +126,7 @@ cwd=$(VIM_FILEDIR)
 这样简单配置一下，你就能统一的用 F5 运行所有类型的文件了，这下你可以立马把 quickrun 这样的插件卸载掉了，它做的事情还没有上面这几行做的漂亮。接下来我们继续配置 F9 ，根据文件类型调用编译器：
 
 ```ini
+[file-build]
 command:c,cpp=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" -lstdc++ -lm -msse3
 command:go=go build -o "$(VIM_PATHNOEXT)" "$(VIM_FILEPATH)"
 command:make=make -f "$(VIM_FILEPATH)"

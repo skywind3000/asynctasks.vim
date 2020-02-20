@@ -125,6 +125,7 @@ The `command` followed by a colon accepts file type list separated by comma. If 
 At this point, you can have your `F5` to run all type of files. And plugins like quickrun can be obsoleted immediately, they can't do better than this. Then we continue to polish `file-build` to support more file types:
 
 ```ini
+[file-build]
 command:c,cpp=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" -lstdc++ -lm -msse3
 command:go=go build -o "$(VIM_PATHNOEXT)" "$(VIM_FILEPATH)"
 command:make=make -f "$(VIM_FILEPATH)"
