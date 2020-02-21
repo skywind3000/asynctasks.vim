@@ -118,6 +118,7 @@ command:sh=sh "$(VIM_FILENAME)"
 command:lua=lua "$(VIM_FILENAME)"
 command:perl=perl "$(VIM_FILENAME)"
 command:ruby=ruby "$(VIM_FILENAME)"
+command:vim=:source %
 output=terminal
 cwd=$(VIM_FILEDIR)
 ```
