@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/02/19 03:25
-" Verision: 1.5.6
+" Last Modified: 2020/02/26 02:42
+" Verision: 1.5.7
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -432,7 +432,9 @@ function! s:config_merge(target, source, ininame, mode)
 	endfor
 	for key in special
 		let parts = s:trinity_split(key)
-		let name = parts[0]
+		let name = s:strip(parts[0])
+		let parts[1] = s:strip(parts[1])
+		let parts[2] = s:strip(parts[2])
 		if parts[1] != ''
 			let profile = parts[1]
 			if profile != g:asynctasks_profile
