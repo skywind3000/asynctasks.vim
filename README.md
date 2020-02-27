@@ -563,6 +563,10 @@ $ asynctask project-build ../project2       # provide a directory and run task
 $ asynctask -profile=release project-build  # build with "release" profile
 ```
 
+Interactive mode with `fzf`:
+
+![](images/commandline.gif)
+
 **Bonus**: use `-i` and `-f` with `asynctask` can allow interactive mode and you can select task with fzf.
 
 ## Frequently Asked Questions
