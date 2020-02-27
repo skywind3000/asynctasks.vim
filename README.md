@@ -555,6 +555,15 @@ Input argument (keyword): printf  # press <ENTER>
 
 Again, you don't have to go back to the project top directory, the task will run project-wide.
 
+More examples:
+
+```bash
+$ asynctask file-build hello.c              # provide a file name and run task
+$ asynctask project-build ../project2       # provide a directory and run task
+$ asynctask -profile=release project-build  # build with "release" profile
+```
+
+
 ## Frequently Asked Questions
 
 See the:
