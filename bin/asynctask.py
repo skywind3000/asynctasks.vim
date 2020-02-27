@@ -1008,6 +1008,7 @@ class TaskManager (object):
                 cmd += ' --height ' + height
             rows = []
             width = 0
+            names.reverse()
             for index, name in enumerate(names):
                 mode, command = tasks[name]
                 rows.append([name, command])
