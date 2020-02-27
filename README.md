@@ -26,6 +26,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Customize runners](#customize-runners)
     - [Options](#options)
 - [Task Examples](#task-examples)
+- [Command Line Tool](#command-line-tool)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Credit](#credit)
 
@@ -519,6 +520,40 @@ If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide
 There are many examples about: cmake, grep, ninja, wsl and more:
 
 - [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
+
+## Command Line Tool
+
+This plugin provides you an `asyncrun.py` script (in the `bin` folder) when you want to run tasks right in your shell:
+
+To use it, copy the files from `bin` to `/usr/local/bin` or `~/bin`, or simpily add `bin` folder to your `$PATH` in `bashrc`.
+
+Then, in any child directories of your project, just type:
+
+```bash
+asynctask project-build
+```
+
+You don't have to jump back to your project root manually, because `profile-build` has a `cwd=<root>`. 
+
+Example: if you have a `project-search` task in your `.tasks` file:
+
+```ini
+[project-search]
+command=rg -n --no-heading "$(?keyword)" "<root>" -tc -tcpp -tpy -tvim 
+cwd=<root>
+errorformat=%f:%l:%m
+```
+
+It will ask you input a `keyword` and then perform a project-wide search for you:
+
+```bash
+~/github/project1/src/core$ asynctask project-search  # press <ENTER>
+Input argument (keyword): printf  # press <ENTER>
+/home/skywind/github/project1/test/hello.cpp:5:  printf("Hello, World !!\n");
+/home/skywind/github/project1/test/demo.cpp:7:  printf("Hello, Demo !!\n");
+```
+
+Again, you don't have to go back to the project top directory, the task will run project-wide.
 
 ## Frequently Asked Questions
 
