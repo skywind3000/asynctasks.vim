@@ -525,49 +525,26 @@ There are many examples about: cmake, grep, ninja, wsl and more:
 
 This plugin provides you an `asyncrun.py` script (in the `bin` folder) when you want to run tasks right in your shell:
 
-To use it, copy the files from `bin` to `/usr/local/bin` or `~/bin`, or simpily add `bin` folder to your `$PATH` in `bashrc`.
-
-Then, in any child directories of your project, just type:
-
 ```bash
-asynctask project-build
+
+# run tasks in any child directory of your project 
+# no need to go back to project root directory, because "cwd=<root>".
+$ asynctask project-build
+
+# compile a file
+$ asynctask file-build hello.c
+
+# run a file
+$ asynctask file-run hello.c
 ```
 
-You don't have to jump back to your project root manually, because `profile-build` has a `cwd=<root>`. 
-
-Example: if you have a `project-search` task in your `.tasks` file:
-
-```ini
-[project-search]
-command=rg -n --no-heading "$(?keyword)" "<root>" -tc -tcpp -tpy -tvim 
-cwd=<root>
-errorformat=%f:%l:%m
-```
-
-It will ask you input a `keyword` and then perform a project-wide search for you:
-
-```bash
-~/github/project1/src/core$ asynctask project-search  # press <ENTER>
-Input argument (keyword): printf  # press <ENTER>
-/home/skywind/github/project1/test/hello.cpp:5:  printf("Hello, World !!\n");
-/home/skywind/github/project1/test/demo.cpp:7:  printf("Hello, Demo !!\n");
-```
-
-Again, you don't have to go back to the project top directory, the task will run project-wide.
-
-More examples:
-
-```bash
-$ asynctask file-build hello.c              # provide a file name and run task
-$ asynctask project-build ../project2       # provide a directory and run task
-$ asynctask -profile=release project-build  # build with "release" profile
-```
-
-Interactive mode with `fzf`:
+Use `fzf` to select task:
 
 ![](images/commandline.gif)
 
-**Bonus**: use `-i` and `-f` with `asynctask` can allow interactive mode and you can select task with fzf.
+For more information, please visit:
+
+- [Command Line Tool](https://github.com/skywind3000/asynctasks.vim/wiki/Command-Line-Tool).
 
 ## Frequently Asked Questions
 
