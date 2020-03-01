@@ -379,6 +379,9 @@ function! s:requirement(what)
 			call s:errmsg(t . '"skywind3000/asyncrun.vim"')
 			return 0
 		endif
+		if exists(':Plug')
+			call plug#load('asyncrun.vim')
+		endif
 	endif
 	return 1
 endfunc
@@ -1283,6 +1286,9 @@ endfunc
 " command AsyncTask
 "----------------------------------------------------------------------
 function! asynctasks#cmd(bang, args, ...)
+	if s:requirement('asyncrun') == 0
+		return -1
+	endif
 	let args = s:strip(a:args)
 	let path = ''
 	if args == ''
