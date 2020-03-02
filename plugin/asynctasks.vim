@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/03/02 14:05
+" Last Modified: 2020/03/02 14:08
 " Verision: 1.6.2
 "
 " for more information, please visit:
@@ -1482,11 +1482,11 @@ command! -nargs=? AsyncTaskProfile
 "----------------------------------------------------------------------
 " list source
 "----------------------------------------------------------------------
-function! asynctasks#source()
+function! asynctasks#source(maxwidth)
 	let tasks = asynctasks#list('')
 	let rows = []
 	let maxsize = -1
-	let limit = &columns * 50 / 100
+	let limit = a:maxwidth
 	let source = []
 	if len(tasks) == 0
 		return []
@@ -1512,6 +1512,9 @@ function! asynctasks#source()
 			let scope = '<script>'
 		endif
 		let rows += [[name, scope, cmd]]
+	endfor
+	for row in rows
+		let row[0] = row[0] . repeat(' ', maxsize - len(row[0]))
 	endfor
 	return rows
 endfunc
