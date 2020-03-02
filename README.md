@@ -446,13 +446,19 @@ Then command ending with `/macos` will be selected.
 
 ### Data source for fuzzy finders
 
-You can get task details by:
+A fuzzy finder can help you pick a task easily:
+
+![](images/fuzzy.png)
+
+This plugin have some apis to fetch task information, which makes integration very easy:
 
 ```VimL
 let current_tasks = asynctasks#list("")
 ```
 
 It returns a list of items, each item represents a task. And it can be used as the data source for fuzzy finders like `fzf.vim` or `Leaderf`.
+
+Here is a [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf` and `coc-list`.
 
 ### Customize runners
 
