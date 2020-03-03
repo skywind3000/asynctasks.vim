@@ -521,6 +521,14 @@ Set to `1` to reuse internal terminal when open it in a new tab.
 
 If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide`.
 
+##### The `g:asynctasks_term_listed` option
+
+Set to zero to hide terminal buffer from buffer list (`set nolisted`).
+
+##### The `g:asynctasks_template` option
+
+Set to zero to create `.tasks` file without template.
+
 ## Task Examples
 
 There are many examples about: cmake, grep, ninja, wsl and more:
