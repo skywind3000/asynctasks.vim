@@ -1,4 +1,4 @@
-![](images/icon-3.png)
+![](http://images.skywind.me/p/asynctasks/icon-3.png)
 
 # asynctasks.vim - modern task system
 
@@ -93,7 +93,7 @@ There are two tasks `file-build` and `file-run` defined in this `.tasks` file. T
 
 To build and run the current file:
 
-![](images/demo-1.png)
+![](http://images.skywind.me/p/asynctasks/demo-1.png)
 
 This is the result of `:AsyncTask file-build`, the command output displays in the quickfix window and errors are matched with `errorformat`. You can navigate the command output in the quickfix window or use `:cnext`/`:cprev` to jump between errors.
 
@@ -215,7 +215,7 @@ We can still use `F7` to build this project and `F6` to run it. We don't have to
 
 What tasks do you have in current project ? Where are they defined ? Has one global task been overrided by a local one ? We use `:AsyncTaskList` command to answer these questions:
 
-![](images/demo-list.png)
+![](http://images.skywind.me/p/asynctasks/demo-list.png)
 
 It will display task name, command and where it has been defined.
 
@@ -263,7 +263,7 @@ In this case, you don't have to pass any argument to `my-build-task.sh`, because
 
 There is a `:AsyncTaskMacro` command for you to display macro help:
 
-![](images/demo-macro-3.png)
+![](http://images.skywind.me/p/asynctasks/demo-macro-3.png)
 
 From left to right, is the macro name, what does it stand for and current value. You don't have to check the documentation when you are editing your task configuration.
 
@@ -305,7 +305,7 @@ let g:asynctasks_term_pos = 'bottom'
 
 Command `:AsyncTask file-run` will open an internal terminal under your current window:
 
-![](images/demo-2.png)
+![](http://images.skywind.me/p/asynctasks/demo-2.png)
 
 If the previous terminal session has finished, the window will be resused. When you set `g:asynctasks_term_pos` to one of `top`, `bottom`, `left` and `right`, these two options below can allow you change the terminal size:
 
@@ -322,7 +322,7 @@ let g:asynctasks_term_pos = 'tab'
 
 A whole tab can be used to display the internal terminal:
 
-![](images/demo-3.png)
+![](http://images.skywind.me/p/asynctasks/demo-3.png)
 
 Almost all the vim screen are occupied, is it big enough to fit your need ? This is my most favorite one. 
 
@@ -345,7 +345,7 @@ let g:asynctasks_term_pos = 'external'
 
 Then, every task with `output=terminal` will open a new `cmd` window:
 
-![](images/demo-4.png)
+![](http://images.skywind.me/p/asynctasks/demo-4.png)
 
 Familiar feeling like you are working in Visual Studio.
 
@@ -370,11 +370,11 @@ output=terminal
 
 When `:AsyncTask task1` happens, you can input values in the prompt area:
 
-![](images/input-ask.png)
+![](http://images.skywind.me/p/asynctasks/input-ask.png)
 
 There are two variable you need to provide, input them one by one, press `ESC` to give up and `ENTER` to confirm. The task will start when you finished:
 
-![](images/input-display.png)
+![](http://images.skywind.me/p/asynctasks/input-display.png)
 
 As you see, `$(?your name)` has been substituted with the value you just provided.
 
@@ -448,7 +448,7 @@ Then command ending with `/macos` will be selected.
 
 A fuzzy finder can help you pick a task easily:
 
-![](images/fuzzy.png)
+![](http://images.skywind.me/p/asynctasks/fuzzy.png)
 
 This plugin have some apis to fetch task information, which makes integration very easy:
 
@@ -554,7 +554,7 @@ $ asynctask file-run hello.c
 
 Use `fzf` to select task:
 
-![](images/commandline.gif)
+![](http://images.skywind.me/p/asynctasks/commandline.gif)
 
 For more information, please visit:
 
