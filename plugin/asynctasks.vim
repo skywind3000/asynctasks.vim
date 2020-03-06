@@ -83,6 +83,14 @@ let g:asynctasks_notify = get(g:, 'asynctasks_notify', '')
 " set to zero to create .tasks without template
 let g:asynctasks_template = get(g:, 'asynctasks_template', 1)
 
+" Add highlight colors if they don't exist.
+if !hlexists('AsyncRunSuccess')
+        highlight link AsyncRunSuccess ModeMsg
+endif
+
+if !hlexists('AsyncRunFailure')
+        highlight link AsyncRunFailure ErrorMsg
+endif
 
 
 "----------------------------------------------------------------------
@@ -1400,7 +1408,7 @@ function! asynctasks#finish(what)
 		exec "norm! \<esc>"
 	elseif a:what == 'echo'
 		redraw
-		echohl ModeMsg
+                execute 'echohl '.eval('g:asyncrun_status ==# "failure" ? "AsyncRunFailure" : "AsyncRunSuccess"')
 		echon "Task finished: " . g:asyncrun_status
 		echohl None
 	elseif a:what =~ '^sound:'
