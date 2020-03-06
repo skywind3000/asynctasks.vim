@@ -27,6 +27,12 @@ let s:scripthome = fnamemodify(s:scriptname, ':h:h')
 " default values
 "----------------------------------------------------------------------
 
+" global for third-party plugin support.
+let g:asynctasks_loaded = get(g:, 'asynctasks_loaded', 1)
+if !g:asynctasks_loaded
+        finish
+endif
+
 " system
 if !exists('g:asynctasks_system')
 	let g:asynctasks_system = (s:windows == 0)? 'linux' : 'win32'
