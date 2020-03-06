@@ -6,35 +6,6 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
 
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity) [![Join the chat at https://gitter.im/skywind3000/asynctasks.vim](https://badges.gitter.im/skywind3000/asynctasks.vim.svg)](https://gitter.im/skywind3000/asynctasks.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<!-- TOC -->
-
-- [Introduction](#introduction)
-- [Get Started](#get-started)
-    - [Installation](#installation)
-    - [Build and run a single file](#build-and-run-a-single-file)
-    - [Build and run a project](#build-and-run-a-project)
-    - [Task priority](#task-priority)
-    - [Query available tasks](#query-available-tasks)
-    - [Macro variable substitution](#macro-variable-substitution)
-    - [Task running modes](#task-running-modes)
-    - [Run in an external terminal](#run-in-an-external-terminal)
-- [Advanced Topics](#advanced-topics)
-    - [Ask for user input](#ask-for-user-input)
-    - [Task with different profiles](#task-with-different-profiles)
-    - [Different system with different commands](#different-system-with-different-commands)
-    - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
-    - [Customize runners](#customize-runners)
-    - [Options](#options)
-- [Task Examples](#task-examples)
-- [Command Line Tool](#command-line-tool)
-- [Frequently Asked Questions](#frequently-asked-questions)
-- [Credit](#credit)
-
-<!-- /TOC -->
-
-This readme is also available in:
-
-- 【[Chinese | 中文文档](README-cn.md)】
 
 ## Introduction
 
