@@ -65,6 +65,9 @@ db.sqlite3-journal
 instance/
 .webassets-cache
 
+# Generated tags
+doc/tags
+
 # Scrapy stuff:
 .scrapy
 
