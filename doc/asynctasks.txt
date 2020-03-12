@@ -32,6 +32,7 @@ Contents ~
     9. The |g:asynctasks_term_hidden| option
     10. The |g:asynctasks_term_listed| option
     11. The |g:asynctasks_template| option
+    12. The |g:asynctasks_confirm| option
  5. Task Examples                                    |asynctasks-task-examples|
  6. Command Line Tool                            |asynctasks-command-line-tool|
  7. Frequently Asked Questions          |asynctasks-frequently-asked-questions|
@@ -640,6 +641,11 @@ Set to zero to hide terminal buffer from buffer list ('set nolisted').
 The *g:asynctasks_template* option
 
 Set to zero to create '.tasks' file without template.
+
+-------------------------------------------------------------------------------
+The *g:asynctasks_confirm* option
+
+Set to zero to skip filename confirmation in ':AsyncTaskEdit'.
 
 ===============================================================================
                                                      *asynctasks-task-examples*
