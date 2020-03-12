@@ -515,6 +515,13 @@ let g:asynctasks_extra_config = [
 
 设置成 `1` 的话，所有内置终端的 buffer 会将 `bufhidden` 初始化成 `hide`。那么不管你全局有没有设置 `hidden`，该终端窗口都变成可以隐藏的。
 
+##### The `g:asynctasks_template` option
+
+设置成 `0` 的话，新建配置文件时就不使用模板了。
+
+##### The `g:asynctasks_confirm` option
+
+设置成 `0` 的话，使用 `:AsyncTaskEdit` 时就不需要你确认文件名了。
 
 ## 使用案例
 

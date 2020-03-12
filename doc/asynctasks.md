@@ -498,6 +498,10 @@ Set to zero to hide terminal buffer from buffer list (`set nolisted`).
 
 Set to zero to create `.tasks` file without template.
 
+##### The `g:asynctasks_confirm` option
+
+Set to zero to skip filename confirmation in `:AsyncTaskEdit`.
+
 ## Task Examples
 
 There are many examples about: cmake, grep, ninja, wsl and more:
