@@ -462,8 +462,7 @@ Here is a [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-In
 
 ### Customize runners
 
-For customizing additional runners, see [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
-
+For customizing additional runners, or to run task in `tmux` pane and `gnome-terminal` tab/window, please visit [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 ### Options
 
@@ -537,7 +536,7 @@ There are many examples about: cmake, grep, ninja, wsl and more:
 
 ## Command Line Tool
 
-This plugin provides you an `asyncrun.py` script (in the `bin` folder) when you want to run tasks right in your shell:
+This plugin provides you an `asynctask.py` script (in the `bin` folder) when you want to run tasks right in your shell:
 
 ```bash
 

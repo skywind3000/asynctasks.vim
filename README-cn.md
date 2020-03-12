@@ -27,6 +27,7 @@
     - [自定义运行方式](#自定义运行方式)
     - [插件设置](#插件设置)
 - [使用案例](#使用案例)
+- [命令行工具](#命令行工具)
 - [常见问题](#常见问题)
 - [致谢](#致谢)
 
@@ -454,7 +455,7 @@ let current_tasks = asynctasks#list("")
 
 ### 自定义运行方式
 
-如果你还想自定义更多的运行模式，见 [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
+如果你还想在 tmux 的 split 里或者 gnome-terminal 的 window/tab 里运行任务，以及自定义更多的运行模式，见 [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 ### 插件设置
 
@@ -520,6 +521,31 @@ let g:asynctasks_extra_config = [
 这里有很多实际使用案例：
 
 - [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
+
+## 命令行工具
+
+本插件提供一个名为 `asynctask.py` 的脚本 (在 `bin` 文件夹内)，可帮你在 shell 中运行任务:
+
+```bash
+
+# 再你项目的任意一个子目录中运行任务
+# 不需要 cd 回到项目根目录，因为任务中有过 '-cwd=<root>' 的配置
+$ asynctask project-build
+
+# 编译文件
+$ asynctask file-build hello.c
+
+# 运行文件
+$ asynctask file-run hello.c
+```
+
+使用 `fzf` 来选择任务:
+
+![](https://skywind3000.github.io/images/p/asynctasks/commandline.gif)
+
+更多内容，请访问:
+
+- [Command Line Tool](https://github.com/skywind3000/asynctasks.vim/wiki/Command-Line-Tool).
 
 ## 常见问题
 
