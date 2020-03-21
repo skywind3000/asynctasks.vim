@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/03/17 11:43
-" Verision: 1.6.8
+" Last Modified: 2020/03/21 20:54
+" Verision: 1.6.9
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -274,6 +274,7 @@ function! s:search_parent(name, cwd)
 		let name = fnamemodify(name, ':p')
 		let output += [s:abspath(name)]
 	endfor
+	call reverse(output)
 	return output
 endfunc
 
@@ -1072,11 +1073,11 @@ function! asynctasks#start(bang, taskname, path, ...)
 		redraw
 		echo ""
 		redraw
-		return 0
+		return -8
 	endif
 	let command = s:command_environ(command)
 	if command == ''
-		return 0
+		return -9
 	endif
 	let opts = s:task_option(task)
 	let opts.name = a:taskname
