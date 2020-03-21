@@ -554,7 +554,7 @@ Command:
 
     :AsyncTaskEdit cargo
 
-Will create an new file with the template "cargo", if the file doesn't exist.
+Will create a new file with the template "cargo", if the file doesn't exist.
 
 ## Task Examples
 
