@@ -512,6 +512,7 @@ let g:asynctasks_template.cargo = [
 			\ "[project-build]",
 			\ "command=cargo build",
 			\ "cwd=<root>",
+			\ "errorformat=%. %#--> %f:%l:%c",
 			\ "",
 			\ "[project-run]",
 			\ "command=cargo run",
