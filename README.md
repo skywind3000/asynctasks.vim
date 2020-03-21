@@ -524,13 +524,37 @@ If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide
 
 Set to zero to hide terminal buffer from buffer list (`set nolisted`).
 
-##### The `g:asynctasks_template` option
-
-Set to zero to create `.tasks` file without template.
-
 ##### The `g:asynctasks_confirm` option
 
 Set to zero to skip filename confirmation in `:AsyncTaskEdit`.
+
+##### The `g:asynctasks_template` option
+
+Command `:AsyncTaskEdit` accept a template name, the content of template will be used if you are creating a new task config file:
+
+```VimL
+let g:asynctasks_template = {}
+let g:asynctasks_template.cargo = [
+			\ "[project-init]",
+			\ "command=cargo update",
+			\ "cwd=<root>",
+			\ "",
+			\ "[project-build]",
+			\ "command=cargo build",
+			\ "cwd=<root>",
+			\ "",
+			\ "[project-run]",
+			\ "command=cargo run",
+			\ "cwd=<root>",
+			\ "output=terminal",
+			\ ]
+```
+
+Command:
+
+    :AsyncTaskEdit cargo
+
+Will create an new file with the template "cargo", if the file doesn't exist.
 
 ## Task Examples
 
