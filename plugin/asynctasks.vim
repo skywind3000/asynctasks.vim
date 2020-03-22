@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/03/21 22:13
-" Verision: 1.7.1
+" Last Modified: 2020/03/22 16:36
+" Verision: 1.7.2
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -224,10 +224,10 @@ endfunc
 
 " returns nearest parent directory contains one of the markers
 function! s:find_root(name, markers, strict)
-	let name = fnamemodify((a:name != '')? a:name : bufname(), ':p')
+	let name = fnamemodify((a:name != '')? a:name : bufname(0), ':p')
 	let finding = ''
 	" iterate all markers
-	for marker in split(a:markers, ',')
+	for marker in a:markers
 		if marker != ''
 			" search as a file
 			let x = findfile(marker, name . '/;')
@@ -1264,8 +1264,28 @@ function! s:task_edit(mode, path, template)
 		endif
 	elseif type(g:asynctasks_template) == type({})
 		let template = ['# vim: set fenc=utf-8 ft=dosini:', '']
-		if has_key(g:asynctasks_template, a:template)
-			let template = g:asynctasks_template[a:template]
+		if a:template == ''
+			if get(g:, 'asynctasks_template_ask', 1) != 0
+				let choices = ['&0 empty']
+				let names = keys(g:asynctasks_template)
+				for key in names
+					if len(choices) < 9
+						let idx = len(choices)
+						let choices += ['&'.idx . ' ' . key]
+					endif
+				endfor
+				let options = join(choices, "\n")
+				if len(choices) > 1 && newfile
+					let t = 'Select a template, ESC for giveup'
+					let choice = confirm(t, options)
+					if choice > 1
+						let key = names[choice - 2]
+						let template += g:asynctasks_template[key]
+					endif
+				endif
+			endif
+		elseif has_key(g:asynctasks_template, a:template)
+			let template += g:asynctasks_template[a:template]
 		endif
 	endif
 	if newfile
@@ -1650,4 +1670,6 @@ function! asynctasks#timing()
 	echo s:private.rtp.config
 	return tt
 endfunc
+
+
 
