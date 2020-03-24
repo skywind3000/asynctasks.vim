@@ -378,6 +378,8 @@ There are two variable you need to provide, input them one by one, press `ESC` t
 
 As you see, `$(?your name)` has been substituted with the value you just provided.
 
+_Hint: use `$(?prompt:default)` to provide a default value, and `$(?prompt:)` to remember input history._
+
 Real example used by myself:
 
 ```ini
