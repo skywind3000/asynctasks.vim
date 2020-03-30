@@ -284,7 +284,7 @@ to specify what terminal do you want to use, available options are:
 
 | Name | Type | Description |
 |-|-|-|
-| `quickfix` | Simulation | Default, simulate a terminal in quickfix window (output will not match the errorformat) |
+| `quickfix` | simulation | Default, simulate a terminal in quickfix window (output will not match the errorformat) |
 | `vim` | - | Use the old `!` command to run your task, some people still like it |
 | `tab` | internal terminal | open a new internal terminal in a new tab |
 | `top` | internal terminal | open a reusable internal terminal above current window |
