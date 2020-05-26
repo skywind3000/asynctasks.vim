@@ -537,7 +537,7 @@ let g:asynctasks_extra_config = [
 
 ```bash
 
-# 再你项目的任意一个子目录中运行任务
+# 在你项目的任意一个子目录中运行任务
 # 不需要 cd 回到项目根目录，因为任务中有过 '-cwd=<root>' 的配置
 $ asynctask project-build
 
