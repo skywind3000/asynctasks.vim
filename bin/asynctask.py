@@ -855,7 +855,7 @@ class TaskManager (object):
             except KeyboardInterrupt:
                 return ''
             p3 = mark.find(':')
-            if p3 >= 0 and not text:
+            if p3 >= 0 and (not text):
                 text = mark[p3 + 1:-1]
             text = text.strip()
             if not text:
