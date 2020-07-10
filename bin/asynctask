@@ -10,10 +10,10 @@ if [ ! -e "$SCRIPT" ]; then
 fi
 
 if [ -e "$SCRIPT" ]; then
-	if [ -x "$(which python 2> /dev/null)" ]; then
-		python "$SCRIPT" "$@"
-	elif [ -x "$(which python3 2> /dev/null)" ]; then
+	if [ -x "$(which python3 2> /dev/null)" ]; then
 		python3 "$SCRIPT" "$@"
+	elif [ -x "$(which python 2> /dev/null)" ]; then
+		python "$SCRIPT" "$@"
 	elif [ -x "$(which python2 2> /dev/null)" ]; then
 		python2 "$SCRIPT" "$@"
 	elif [ -x "/usr/bin/python" ]; then

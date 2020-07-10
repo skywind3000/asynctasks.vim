@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/03/17 11:43
-" Verision: 1.6.8
+" Last Modified: 2020/03/25 04:37
+" Verision: 1.7.5
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -224,10 +224,10 @@ endfunc
 
 " returns nearest parent directory contains one of the markers
 function! s:find_root(name, markers, strict)
-	let name = fnamemodify((a:name != '')? a:name : bufname(), ':p')
+	let name = fnamemodify((a:name != '')? a:name : bufname(0), ':p')
 	let finding = ''
 	" iterate all markers
-	for marker in split(a:markers, ',')
+	for marker in a:markers
 		if marker != ''
 			" search as a file
 			let x = findfile(marker, name . '/;')
@@ -274,6 +274,7 @@ function! s:search_parent(name, cwd)
 		let name = fnamemodify(name, ':p')
 		let output += [s:abspath(name)]
 	endfor
+	call reverse(output)
 	return output
 endfunc
 
@@ -769,11 +770,20 @@ function! s:command_input(command, taskname, remember)
 		if p2 < 0
 			break
 		endif
+		let remember = a:remember
 		let name = strpart(command, p1 + size_open, p2 - p1 - size_open)
 		let mark = mark_open . name . mark_close
 		let text = ''
+		let kiss = stridx(name, ':')
+		if kiss >= 0
+			let text = s:strip(strpart(name, kiss + 1))
+			let name = s:strip(strpart(name, 0, kiss))
+			if text == ''
+				let remember = 1
+			endif
+		endif
 		let rkey = a:taskname . ':' . name
-		if a:remember
+		if remember && text == ''
 			let text = get(g:asynctasks_history, rkey, '')
 			" echom 'remember: <' . text . '>'
 		endif
@@ -859,6 +869,9 @@ function! s:task_option(task)
 			elseif pos == 'quickfix'
 				let opts.mode = 'async'
 				let opts.raw = 1
+			elseif pos == 'hide'
+				let opts.mode = 'term'
+				let opts.pos = 'hide'
 			elseif pos != 'external' && pos != 'system' && pos != 'os'
 				let opts.mode = 'term'
 				let opts.pos = pos
@@ -869,7 +882,7 @@ function! s:task_option(task)
 				let opts.mode = 'system'
 			else
 				let opts.mode = 'term'
-				let opts.pos = 'bottom'
+				let opts.pos = pos
 				let opts.cols = g:asynctasks_term_cols
 				let opts.rows = g:asynctasks_term_rows
 				let opts.focus = g:asynctasks_term_focus
@@ -879,6 +892,8 @@ function! s:task_option(task)
 			let opts.raw = 1
 		elseif output == 'vim'
 			let opts.mode = 'bang'
+		elseif output == 'hide'
+			let opts.mode = 'hide'
 		endif
 	endif
 	if has_key(task, 'silent') && task.silent
@@ -1072,11 +1087,11 @@ function! asynctasks#start(bang, taskname, path, ...)
 		redraw
 		echo ""
 		redraw
-		return 0
+		return -8
 	endif
 	let command = s:command_environ(command)
 	if command == ''
-		return 0
+		return -9
 	endif
 	let opts = s:task_option(task)
 	let opts.name = a:taskname
@@ -1197,7 +1212,7 @@ let s:template = [
 "----------------------------------------------------------------------
 " edit task
 "----------------------------------------------------------------------
-function! s:task_edit(mode, path)
+function! s:task_edit(mode, path, template)
 	let name = a:path
 	if s:requirement('asyncrun') == 0
 		return -1
@@ -1243,6 +1258,39 @@ function! s:task_edit(mode, path)
 			endif
 		endif
 	endfor
+	let template = s:template
+	if type(g:asynctasks_template) == 0
+		if g:asynctasks_template == 0
+			let template = ['# vim: set fenc=utf-8 ft=dosini:', '']
+		endif
+	elseif type(g:asynctasks_template) == type({})
+		let template = ['# vim: set fenc=utf-8 ft=dosini:', '']
+		if a:template == ''
+			if get(g:, 'asynctasks_template_ask', 1) != 0
+				let choices = ['&0 empty']
+				let names = keys(g:asynctasks_template)
+				for key in names
+					if len(choices) < 10
+						let idx = len(choices)
+						let choices += ['&'.idx . ' ' . key]
+					endif
+				endfor
+				let options = join(choices, "\n")
+				if len(choices) > 1 && newfile
+					let t = 'Select a template (ESC to quit):'
+					let choice = confirm(t, options)
+					if choice == 0
+						return 0
+					elseif choice > 1
+						let key = names[choice - 2]
+						let template += g:asynctasks_template[key]
+					endif
+				endif
+			endif
+		elseif has_key(g:asynctasks_template, a:template)
+			let template += g:asynctasks_template[a:template]
+		endif
+	endif
 	let mods = s:strip(g:asynctasks_edit_split)
 	if mods == ''
 		exec "split " . fnameescape(name)
@@ -1256,10 +1304,6 @@ function! s:task_edit(mode, path)
 		exec mods . " split " . fnameescape(name)
 	endif
 	setlocal ft=dosini
-	let template = s:template
-	if g:asynctasks_template == 0
-		let template = ['# vim: set fenc=utf-8 ft=dosini:', '']
-	endif
 	if newfile
 		exec "normal ggVGx"
 		call append(line('.') - 1, template)
@@ -1430,9 +1474,6 @@ function! asynctasks#cmd(bang, args, ...)
 	elseif args ==# '-L'
 		call s:task_list('', 1)
 		return 0
-	elseif args ==# '-e' || args ==# '-E'
-		call s:task_edit(args, path)
-		return 0
 	elseif args ==# '-m'
 		call s:task_macro(0)
 		return 0
@@ -1442,6 +1483,11 @@ function! asynctasks#cmd(bang, args, ...)
 	endif
 	let [args, opts] = s:ExtractOpt(args)
 	let args = s:strip(args)
+	if has_key(opts, 'e') || has_key(opts, 'E')
+		let mode = has_key(opts, 'e')? '-e' : '-E'
+		call s:task_edit(mode, '', args)
+		return 0
+	endif
 	if has_key(opts, 'p')
 		let profile = args
 		if profile != ''
@@ -1530,13 +1576,33 @@ function! s:complete(ArgLead, CmdLine, CursorPos)
 	endif
 	let tasks = s:private.tasks
 	let rows = []
-	let size = len(a:ArgLead)
 	for task in tasks.avail
-		if task =~ '^\.' && (!(a:ArgLead =~ '^\.'))
-			continue
+		if task != ''
+			if task =~ '^\.' && (!(a:ArgLead =~ '^\.'))
+				continue
+			endif
+			if stridx(task, a:ArgLead) == 0
+				let candidate += [task]
+			endif
 		endif
-		if stridx(task, a:ArgLead) == 0
-			let candidate += [task]
+	endfor
+	return candidate
+endfunc
+
+
+"----------------------------------------------------------------------
+" complete for template
+"----------------------------------------------------------------------
+function! s:complete_edit(ArgLead, CmdLine, CursorPos)
+	if type(g:asynctasks_template) != type({})
+		return []
+	endif
+	let candidate = []
+	for key in keys(g:asynctasks_template)
+		if key != ''
+			if stridx(key, a:ArgLead) == 0
+				let candidate += [key]
+			endif
 		endif
 	endfor
 	return candidate
@@ -1554,8 +1620,9 @@ command! -bang -nargs=* -range=0 -complete=customlist,s:complete AsyncTask
 "----------------------------------------------------------------------
 " help commands
 "----------------------------------------------------------------------
-command! -bang -nargs=0 AsyncTaskEdit
-			\ call asynctasks#cmd('', ('<bang>' == '')? '-e' : '-E')
+command! -bang -nargs=? -complete=customlist,s:complete_edit AsyncTaskEdit 
+			\ call asynctasks#cmd('', 
+			\ (('<bang>' == '')? '-e' : '-E') . ' ' . <q-args>)
 
 command! -bang -nargs=0 AsyncTaskList 
 			\ call asynctasks#cmd('', ('<bang>' == '')? '-l' : '-L')
@@ -1619,4 +1686,6 @@ function! asynctasks#timing()
 	echo s:private.rtp.config
 	return tt
 endfunc
+
+
 
