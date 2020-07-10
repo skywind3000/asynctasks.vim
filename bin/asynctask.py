@@ -6,8 +6,8 @@
 #
 # Maintainer: skywind3000 (at) gmail.com, 2020
 #
-# Last Modified: 2020/03/17 11:54
-# Verision: 1.0.8
+# Last Modified: 2020/03/21 20:52
+# Verision: 1.0.9
 #
 # for more information, please visit:
 # https://github.com/skywind3000/asynctasks.vim
@@ -465,6 +465,10 @@ class configure (object):
                 if not marker:
                     continue
                 test = os.path.join(base, marker)
+                if ('*' in test) or ('?' in test) or ('[' in test):
+                    import glob
+                    if glob.glob(test):
+                        return base
                 if os.path.exists(test):
                     return base
             if os.path.normcase(parent) == os.path.normcase(base):
@@ -646,6 +650,7 @@ class configure (object):
             if os.path.normcase(path) == os.path.normcase(parent):
                 break
             path = parent
+        output.reverse()
         return output
 
     # search for local configs
@@ -809,13 +814,13 @@ class TaskManager (object):
                 macro = '$(WSL_CFILE)'
             else:
                 macro = '$(VIM_' + name + ')'
-            if name in command:
+            if macro in command:
                 t = '%s is invalid in command line'%macro
                 pretty.error(t)
                 if ini: print('from %s:'%ini)
                 pretty.perror(cc, 'command=' + command)
                 return 3
-            if name in cwd:
+            if macro in cwd:
                 t = '%s is invalid in command line'%macro
                 pretty.error(t)
                 if ini: print('from %s:'%ini)
