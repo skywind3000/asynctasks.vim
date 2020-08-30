@@ -98,6 +98,8 @@ let g:asynctasks_history = get(g:, 'asynctasks_history', {})
 " control how to open a split window in AsyncTaskEdit
 let g:asynctasks_edit_split = get(g:, 'asynctasks_edit_split', '')
 
+let g:asynctasks_enable_multiple_binary = get(g:, 'asynctasks_enable_multiple_binary ', 0)
+
 " Add highlight colors if they don't exist.
 if !hlexists('AsyncRunSuccess')
         highlight link AsyncRunSuccess ModeMsg
@@ -1061,6 +1063,28 @@ function! asynctasks#start(bang, taskname, path, ...)
 		call s:errmsg('no command defined in ' . source)
 		return -3
 	endif
+    if command[:2] == '$[!'
+        let p1 = stridx(command, ']')
+        if p1 > 0
+            let binary_paths = split(command[3:p1 - 1], ',')
+            let bcount = len(binary_paths)
+            for idx in range(bcount)
+                let binary_paths[idx] = substitute(binary_paths[idx], '^\s*\(.\{-}\)\s*$', '\1', '')
+            endfor
+            if g:asynctasks_enable_multiple_binary == 1
+                let bchoice = inputlist([ 'Select your binary:' ]
+                                      \ + map(copy(binary_paths), '(v:key+1).". ".v:val')) - 1
+                redraw
+                if bchoice < 0 || bchoice >= bcount
+                    call s:errmsg('no binary file selected')
+                    return -10
+                endif
+            else
+                let bchoice = 0
+            endif
+            let command = binary_paths[bchoice] . command[p1 + 1:]
+		endif
+    endif
 	if exists(':AsyncRun') == 0
 		let t = 'asyncrun is required, install from '
 		call s:errmsg(t . '"skywind3000/asyncrun.vim"')
