@@ -843,102 +843,49 @@ endfunc
 "----------------------------------------------------------------------
 function! s:task_option(task)
 	let task = a:task
-	let opts = {'mode':''}
-	if has_key(task, 'cwd')
-		let opts.cwd = task.cwd
-	endif
-	if has_key(task, 'mode')
-		let opts.mode = task.mode
-	endif
-	if has_key(task, 'raw')
-		let opts.raw = task.raw
-	endif
-	if has_key(task, 'save')
-		let opts.save = task.save
-	endif
-	if has_key(task, 'output')
-		let output = task.output
-		let opts.mode = 'async'
-		if output == 'quickfix'
-			let opts.mode = 'async'
-		elseif output == 'term' || output == 'terminal'
-			let pos = get(a:task, 'pos', g:asynctasks_term_pos)
-			let gui = get(g:, 'asyncrun_gui', 0)
-			if pos == 'vim' || pos == 'bang'
-				let opts.mode = 'bang'
-			elseif pos == 'quickfix'
-				let opts.mode = 'async'
-				let opts.raw = 1
-			elseif pos == 'hide'
-				let opts.mode = 'term'
-				let opts.pos = 'hide'
-			elseif pos != 'external' && pos != 'system' && pos != 'os'
-				let opts.mode = 'term'
-				let opts.pos = pos
-				let opts.cols = g:asynctasks_term_cols
-				let opts.rows = g:asynctasks_term_rows
-				let opts.focus = g:asynctasks_term_focus
-			elseif s:windows && gui != 0
-				let opts.mode = 'system'
-			else
-				let opts.mode = 'term'
-				let opts.pos = pos
-				let opts.cols = g:asynctasks_term_cols
-				let opts.rows = g:asynctasks_term_rows
-				let opts.focus = g:asynctasks_term_focus
-			endif
-		elseif output == 'quickfix-raw' || output == 'raw'
-			let opts.mode = 'async'
-			let opts.raw = 1
-		elseif output == 'vim'
-			let opts.mode = 'bang'
-		elseif output == 'hide'
-			let opts.mode = 'hide'
-		endif
-	endif
-	if has_key(task, 'silent') && task.silent
-		let opts.silent = 1
-	endif
-	if has_key(task, 'errorformat')
-		let opts.errorformat = task.errorformat
-		if task.errorformat == ''
-			let opts.raw = 1
-		endif
-	endif
-	if has_key(task, 'strip')
-		let opts.strip = task.strip
-	endif
+	let opts = {
+				\ 'mode':        get(task, 'mode', 'async'),
+				\ 'cwd':         get(task, 'cwd', ''),
+				\ 'raw':         get(task, 'raw', 1),
+				\ 'save':        get(task, 'save', 1),
+				\ 'silent':      get(task, 'silent', 0),
+				\ 'program':     get(task, 'program', ''),
+				\ 'auto':        get(task, 'auto', 0),
+				\ 'errorformat': get(task, 'errorformat', ''),
+				\ 'strip':       get(task, 'strip', 0),
+				\ 'output':      get(task, 'output', 'quickfix'),
+				\ 'listed':      get(task, 'listed', g:asynctasks_term_listed),
+				\ 'safe':        get(task, 'safe', g:asynctasks_term_safe),
+				\ 'reuse':       g:asynctasks_term_reuse,
+				\ 'hidden':      g:asynctasks_term_hidden,
+				\}
 	for key in ['pos', 'rows', 'cols', 'focus']
 		if has_key(task, key)
 			let opts[key] = task[key]
 		endif
 	endfor
-	if has_key(task, 'program')
-		let opts.program = task.program
+	if opts.output != 'quickfix'
+		let output = opts.output
+		let opts.mode = 'async'
+		if output == 'vim'
+			let opts.mode = 'bang'
+		elseif output == 'hide'
+			let opts.mode = 'hide'
+		elseif s:windows && get(g:, 'asyncrun_gui', 0) != 0
+			let opts.mode = 'system'
+		elseif output =~ '^term'
+			let opts.mode = 'term'
+			let opts.output = 'term'
+			let opts.pos = match(output, ':') > 0 ? split(output, ':')[1] : 'bottom'
+			let opts.cols = g:asynctasks_term_cols
+			let opts.rows = g:asynctasks_term_rows
+			let opts.focus = g:asynctasks_term_focus
+		endif
 	endif
-	if has_key(task, 'auto')
-		let opts.auto = task.auto
+	if opts.errorformat == ''
+		let opts.raw = 1
 	endif
-	let opts.safe = g:asynctasks_term_safe
-	let opts.reuse = g:asynctasks_term_reuse
-	if g:asynctasks_term_hidden != 0
-		let opts.hidden = 1
-	endif
-	let listed = g:asynctasks_term_listed
-	if has_key(task, 'listed')
-		let listed = task.listed
-	endif
-	if listed == 0
-		let opts.listed = 0
-	endif
-	if has_key(task, 'safe')
-		let opts.safe = task.safe
-	endif
-	let notify = g:asynctasks_notify
-	if has_key(task, 'notify')
-		let notify = task.notify
-	endif
-	let notify = s:strip(notify)
+	let notify = s:strip(get(task, 'notify', g:asynctasks_notify))
 	if notify != ''
 		let notify = s:replace(notify, "'", "''")
 		let opts.post = "call asynctasks#finish('".notify."')"
