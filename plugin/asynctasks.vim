@@ -876,7 +876,7 @@ function! s:task_option(task)
 		elseif output =~ '^term'
 			let opts.mode = 'term'
 			let opts.output = 'term'
-			let opts.pos = match(output, ':') > 0 ? split(output, ':')[1] : 'bottom'
+			let opts.pos = match(output, ':') > 0 ? split(output, ':')[1] : get(task, 'pos', 'bottom')
 			let opts.cols = g:asynctasks_term_cols
 			let opts.rows = g:asynctasks_term_rows
 			let opts.focus = g:asynctasks_term_focus
