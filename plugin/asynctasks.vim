@@ -846,12 +846,12 @@ function! s:task_option(task)
 	let opts = {
 				\ 'mode':        get(task, 'mode', 'async'),
 				\ 'cwd':         get(task, 'cwd', ''),
-				\ 'raw':         get(task, 'raw', 1),
+				\ 'raw':         get(task, 'raw', 0),
 				\ 'save':        get(task, 'save', 1),
 				\ 'silent':      get(task, 'silent', 0),
 				\ 'program':     get(task, 'program', ''),
 				\ 'auto':        get(task, 'auto', 0),
-				\ 'errorformat': get(task, 'errorformat', ''),
+				\ 'errorformat': get(task, 'errorformat', &errorformat),
 				\ 'strip':       get(task, 'strip', 0),
 				\ 'output':      get(task, 'output', 'quickfix'),
 				\ 'listed':      get(task, 'listed', g:asynctasks_term_listed),
@@ -871,6 +871,8 @@ function! s:task_option(task)
 			let opts.mode = 'bang'
 		elseif output == 'hide'
 			let opts.mode = 'hide'
+		elseif output == 'raw'
+			let opts.raw = 1
 		elseif s:windows && get(g:, 'asyncrun_gui', 0) != 0
 			let opts.mode = 'system'
 		elseif output =~ '^term'
