@@ -98,6 +98,8 @@ let g:asynctasks_history = get(g:, 'asynctasks_history', {})
 " control how to open a split window in AsyncTaskEdit
 let g:asynctasks_edit_split = get(g:, 'asynctasks_edit_split', '')
 
+let g:asynctasks_dropdown_choose_first_directly = get(g:, 'asynctasks_dropdown_choose_first_directly', 0)
+
 " Add highlight colors if they don't exist.
 if !hlexists('AsyncRunSuccess')
         highlight link AsyncRunSuccess ModeMsg
@@ -759,6 +761,8 @@ function! s:command_input(command, taskname, remember)
 	let command = a:command
 	let mark_open = '$(?'
 	let mark_close = ')'
+	let dropdown_open = '['
+	let dropdown_close = ']'
 	let size_open = strlen(mark_open)
 	let size_close = strlen(mark_close)
 	while 1
@@ -781,7 +785,23 @@ function! s:command_input(command, taskname, remember)
 			if text == ''
 				let remember = 1
 			endif
+		else
+			let p3 = stridx(name, dropdown_open)
+			if p3 >= 0
+				let p4 = stridx(name, dropdown_close, p3)
+				if p4 >= 0
+					let text = strpart(name, p3 + 1, p4 - p3 - 1)
+					if text == ''
+						let remember = 1
+					endif
+					let text = split(text, ",")
+					let name = s:strip(strpart(name, 0, p3))
+					" break regex pattern []
+					let mark = mark[:size_open + p3 - 1] . '\' . mark[size_open + p3: size_open + p4 - 1] . '\' . mark[size_open + p4:]
+				endif
+			endif
 		endif
+
 		let rkey = a:taskname . ':' . name
 		if remember && text == ''
 			let text = get(g:asynctasks_history, rkey, '')
@@ -789,11 +809,34 @@ function! s:command_input(command, taskname, remember)
 		endif
 		echohl Type
 		call inputsave()
-		try
-			let t = input('Input argument (' . name . '): ', text)
-		catch /^Vim:Interrupt$/
-			let t = ""
-		endtry
+		if type(text) == 1
+			try
+				let t = input('Input argument (' . name . '): ', text)
+			catch /^Vim:Interrupt$/
+				let t = ""
+			endtry
+		elseif type(text) == 3
+			let dcount = len(text)
+			for idx in range(dcount)
+				let text[idx] = s:strip(text[idx])
+			endfor
+			if g:asynctasks_dropdown_choose_first_directly == 0
+				try
+					redraw
+					let dchoice = inputlist([ 'Choose item (' . name . '):' ]
+										  \ + map(copy(text), '(v:key+1).". ".v:val')) - 1
+					if dchoice < 0 || dchoice >= dcount
+						call s:errmsg('no option selected')
+					else
+						let t = text[dchoice]
+					endif
+				catch /^Vim:Interrupt$/
+					let t = ""
+				endtry
+			else
+				let t = text[0]
+			endif
+		endif
 		call inputrestore()
 		echohl None
 		let g:asynctasks_history[rkey] = t
