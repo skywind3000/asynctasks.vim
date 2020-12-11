@@ -37,6 +37,9 @@ let g:asynctasks_profile = get(g:, 'asynctasks_profile', 'debug')
 
 " local config
 let g:asynctasks_config_name = get(g:, 'asynctasks_config_name', '.tasks')
+if type(g:asynctasks_config_name) == type('')
+	let g:asynctasks_config_name = [g:asynctasks_config_name]
+endif
 
 " global config in every runtimepath
 let g:asynctasks_rtp_config = get(g:, 'asynctasks_rtp_config', 'tasks.ini')
@@ -572,7 +575,12 @@ endfunc
 " fetch local config
 "----------------------------------------------------------------------
 function! s:compose_local_config(path)
-	let names = s:search_parent(g:asynctasks_config_name, a:path)
+	for config_name in g:asynctasks_config_name
+		let names = s:search_parent(config_name, a:path)
+		if !empty(names)
+			break
+		endif
+	endfor
 	let config = {}
 	for name in names
 		let s:error = ''
@@ -1220,7 +1228,7 @@ function! s:task_edit(mode, path, template)
 	if name == ''
 		if a:mode ==# '-e'
 			let name = asyncrun#get_root('%')
-			let name = name . '/' . g:asynctasks_config_name
+			let name = name . '/' . g:asynctasks_config_name[0]
 		elseif has('nvim')
 			if $XDG_CONFIG_HOME != ''
 				let name = $XDG_CONFIG_HOME . '/' . g:asynctasks_rtp_config
