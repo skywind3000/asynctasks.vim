@@ -378,7 +378,7 @@ There are two variable you need to provide, input them one by one, press `ESC` t
 
 As you see, `$(?your name)` has been substituted with the value you just provided.
 
-_Hint: use `$(?prompt:default)` to provide a default value, and `$(?prompt:)` to remember input history._
+_Hint: use `$(?prompt:default)` to provide a default value, and `$(?prompt:)` to remember input history. and `$(?prompt:choice1,choice2)` to provide choices._
 
 Real example used by myself:
 
@@ -477,7 +477,7 @@ let g:asynctasks_config_name = '.asynctask'
 let g:asynctasks_config_name = '.git/tasks.ini'
 ```
 
-When you have multiple local configurations to load, a comma separated list (or just a list) can also be accepted:
+When you get multiple local configurations to load, a comma separated list (or just a list) can also be accepted:
 
 ```VimL
 let g:asynctasks_config_name = '.tasks,.git/tasks.ini,.svn/tasks.ini'
