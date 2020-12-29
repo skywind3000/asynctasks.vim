@@ -472,6 +472,13 @@ let g:asynctasks_config_name = '.asynctask'
 let g:asynctasks_config_name = '.git/tasks.ini'
 ```
 
+如果你多个本地配置文件，可以用逗号分隔不同配置名字，或者直接用列表：
+
+```VimL
+let g:asynctasks_config_name = '.tasks,.git/tasks.ini,.svn/tasks.ini'
+let g:asynctasks_config_name = ['.tasks', '.git/tasks.ini', '.svn/tasks.ini']
+```
+
 ##### The `g:asynctasks_rtp_config` option
 
 修改 `~/.vim` 下面的全局配置文件 `tasks.ini` 的名称：

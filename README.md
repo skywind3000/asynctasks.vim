@@ -477,6 +477,13 @@ let g:asynctasks_config_name = '.asynctask'
 let g:asynctasks_config_name = '.git/tasks.ini'
 ```
 
+When you have multiple local configurations to load, a comma separated list (or just a list) can also be accepted:
+
+```VimL
+let g:asynctasks_config_name = '.tasks,.git/tasks.ini,.svn/tasks.ini'
+let g:asynctasks_config_name = ['.tasks', '.git/tasks.ini', '.svn/tasks.ini']
+```
+
 ##### The `g:asynctasks_rtp_config` option
 
 Don't like the global `tasks.ini` file name in your `~/.vim` ? Change it to:
