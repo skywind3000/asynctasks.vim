@@ -377,7 +377,7 @@ output=terminal
 
 如上图所示，该任务正确的显示了用户输入的内容。
 
-_提示：使用 `$(?prompt:default)` 可以提供一个默认值，同时 `$(?prompt:)` 会记住上次的输入。使用 `$(?prompt:choice1,choice2)` 来给用户提供备选。_
+_提示：使用 `$(?prompt:default)` 可以提供一个默认值，同时 `$(?prompt:)` 会记住上次的输入。使用 `$(?gender:&male,&female)` 来给用户提供备选。_
 
 真实案例（我自己用的）：
 

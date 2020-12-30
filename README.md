@@ -378,7 +378,7 @@ There are two variable you need to provide, input them one by one, press `ESC` t
 
 As you see, `$(?your name)` has been substituted with the value you just provided.
 
-_Hint: use `$(?prompt:default)` to provide a default value, and `$(?prompt:)` to remember input history. and `$(?prompt:choice1,choice2)` to provide choices._
+_Hint: use `$(?prompt:default)` to provide a default value, `$(?prompt:)` to remember input history. and `$(?gender:&male,&female)` to provide multiple choices._
 
 Real example used by myself:
 
