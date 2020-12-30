@@ -423,6 +423,13 @@ let g:asynctasks_profile = 'release'
 
 Then, `:AsyncTask task1` will run `tasks1` with profile `release`.
 
+Bonus: When using `AsyncTaskProfile` command with more than one arguments:
+
+```VimL
+:AsyncTaskProfile debug release
+```
+
+A dialog will popup to allow you pick between `debug` and `release`, and previous selected item is remembered.
 ### Different system with different commands
 
 This plugin can select command for given system:
