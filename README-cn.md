@@ -1,4 +1,4 @@
-![](https://skywind3000.gitlab.io/images/p/asynctasks/icon-3.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/icon-3.png)
 
 # asynctasks.vim - 现代化的构建任务系统
 
@@ -95,7 +95,7 @@ output=terminal
 
 两条命令来分别编译和运行他：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/demo-1.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo-1.png)
 
 上图是运行 `:AsyncTask file-build` 的效果，默认模式下（output=quickfix），命令输出会实时显示在下方的 `quickfix` 窗口中，编译错误会和 `errorformat` 匹配并显示为高亮，方便你按回车跳转到具体错误，或者用 `:cnext`/`:cprev` 命令快速跳转错误位置。
 
@@ -215,7 +215,7 @@ PS：可以用 `:AsyncTaskEdit` 来编辑本地任务，`:AsyncTaskEdit!` 来编
 
 那么当前项目下，到底有些什么可用任务呢？他们到底是局部还是全局的？一个任务到底最终是被什么配置文件给 override 掉了？我们用 `:AsyncTaskList` 命令可以查看：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/demo-list.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo-list.png)
 
 该命令能显示可用的 task 名称，具体命令，以及来自哪个配置文件。
 
@@ -262,7 +262,7 @@ cwd=<root>
 
 那么当前这些宏到底会被展开成什么呢？我们可以通过 `:AsyncTaskMacro` 命令查看：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/demo-macro-3.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo-macro-3.png)
 
 左边是宏名称，中间是说明，右边是具体展开值。这条命令很有用，当你写 task 配置忘记宏名称了，用它随时查看，不用翻文档。
 
@@ -304,7 +304,7 @@ let g:asynctasks_term_pos = 'bottom'
 
 那么运行 :AsyncTask file-run 时，就能在下方的内置终端运行任务了：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/demo-2.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo-2.png)
 
 终端窗口会复用，如果上一个任务结束了，再次运行时不会新建终端窗口，会先尝试复用老的已结束的终端窗口，找不到才会新建。当使设置为 top/bottom/left/right 时，可以用下面两个配置确定终端窗口大小：
 
@@ -321,7 +321,7 @@ let g:asynctasks_term_pos = 'tab'
 
 这样基本就能使用整个 vim 全屏大小的区域了：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/demo-3.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo-3.png)
 
 整个 tab 都用于运行你的任务，应该足够大了吧？这是我比较喜欢的方式。
 
@@ -344,7 +344,7 @@ let g:asynctasks_term_pos = 'external'
 
 那么对于所有 `output=terminal` 的任务，就能使用外部系统终端了：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/demo-4.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo-4.png)
 
 是不是有点 VS 的感觉了？基本可能的运行方式都有了。
 
@@ -369,11 +369,11 @@ output=terminal
 
 在你使用 `:AsyncTask task1` 运行任务时，该任务会在 Vim 中要求你输入参数：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/input-ask.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-ask.png)
 
 命令行里有两个参数需要输入，问完第一个会问第二个，按 ESC 放弃，回车确认，完成后将会把输入的值替换到上面的命令中，然后开始执行：
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/input-display.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-display.png)
 
 如上图所示，该任务正确的显示了用户输入的内容。
 
@@ -557,7 +557,7 @@ $ asynctask file-run hello.c
 
 使用 `fzf` 来选择任务:
 
-![](https://skywind3000.gitlab.io/images/p/asynctasks/commandline.gif)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/commandline.gif)
 
 更多内容，请访问:
 
