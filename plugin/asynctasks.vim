@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2020/12/30 13:22
-" Verision: 1.8.2
+" Last Modified: 2021/01/28 17:39
+" Verision: 1.8.3
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -979,6 +979,10 @@ function! s:task_option(task)
 			let opts.mode = 'bang'
 		elseif output == 'hide'
 			let opts.mode = 'hide'
+		elseif output == 'python' || output == 'wait'
+			let opts.mode = 3
+		elseif output == 'system'
+			let opts.mode = 'system'
 		endif
 	endif
 	if has_key(task, 'silent') && task.silent
