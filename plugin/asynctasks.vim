@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020
 "
-" Last Modified: 2021/02/02 19:43
-" Verision: 1.8.4
+" Last Modified: 2021/02/03 14:13
+" Verision: 1.8.5
 "
 " for more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -1015,6 +1015,9 @@ function! s:task_option(task)
 	endif
 	if has_key(task, 'auto')
 		let opts.auto = task.auto
+	endif
+	if has_key(task, 'close')
+		let opts.close = task.close
 	endif
 	let opts.safe = g:asynctasks_term_safe
 	let opts.reuse = g:asynctasks_term_reuse

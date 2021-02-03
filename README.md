@@ -287,6 +287,7 @@ to specify what terminal do you want to use, available options are:
 | `quickfix` | simulation | Default, simulate a terminal in quickfix window (output will not match the errorformat) |
 | `vim` | - | Use the old `!` command to run your task, some people still like it |
 | `tab` | internal terminal | open a new internal terminal in a new tab |
+| `TAB` | internal terminal | open a new internal terminal in a new tab on the left side |
 | `top` | internal terminal | open a reusable internal terminal above current window |
 | `bottom` | internal terminal | open a reusable internal terminal under current window |
 | `left` | internal terminal | open a reusable internal terminal on the left |
