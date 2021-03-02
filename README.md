@@ -22,6 +22,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Ask for user input](#ask-for-user-input)
     - [Task with different profiles](#task-with-different-profiles)
     - [Different system with different commands](#different-system-with-different-commands)
+    - [Environment variables](#environment-variables)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Customize runners](#customize-runners)
     - [Options](#options)
@@ -431,6 +432,7 @@ Bonus: When using `AsyncTaskProfile` command with more than one arguments:
 ```
 
 A dialog will popup to allow you pick between `debug` and `release`, and previous selected item is remembered.
+
 ### Different system with different commands
 
 This plugin can select command for given system:
@@ -454,6 +456,24 @@ let g:asynctasks_system = 'macos'
 
 Then command ending with `/macos` will be selected.
 
+### Environment variables
+
+Internal environment variables can be defined as a dictionary in `g:asynctasks_environment`:
+
+```VimL
+let g:asynctasks_environ = {'hello': '1234', 'world': '5678'}
+```
+
+Patterns which match `$(VIM:var_name)` in the `command` option will be substituted with the value in the `g:asynctasks_environ`. eg:
+
+```ini
+[test]
+command=echo Hi $(VIM:world) !!
+```
+
+Will output: "Hi 5678 !!".
+
+
 ### Data source for fuzzy finders
 
 A fuzzy finder can help you pick a task easily:
@@ -468,7 +488,7 @@ let current_tasks = asynctasks#list("")
 
 It returns a list of items, each item represents a task. And it can be used as the data source for fuzzy finders like `fzf.vim` or `Leaderf`.
 
-Here is a [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf` and `coc-list`.
+Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf` and `coc-list`.
 
 ### Customize runners
 
@@ -547,25 +567,41 @@ Set to zero to skip filename confirmation in `:AsyncTaskEdit`.
 
 ##### The `g:asynctasks_template` option
 
-Command `:AsyncTaskEdit` accept a template name, the content of template will be used if you are creating a new task config file:
+Command `:AsyncTaskEdit` accept a template file name, the content of template will be used if you are creating a new task config file:
 
 ```VimL
-let g:asynctasks_template = {}
-let g:asynctasks_template.cargo = [
-			\ "[project-init]",
-			\ "command=cargo update",
-			\ "cwd=<root>",
-			\ "",
-			\ "[project-build]",
-			\ "command=cargo build",
-			\ "cwd=<root>",
-			\ "errorformat=%. %#--> %f:%l:%c",
-			\ "",
-			\ "[project-run]",
-			\ "command=cargo run",
-			\ "cwd=<root>",
-			\ "output=terminal",
-			\ ]
+let g:asynctask_template = '~/.vim/task_template.ini'
+```
+
+And templates can be defined in your `~/.vim/task_template.ini` like:
+
+```ini
+{cmake}
+
+[project-init]
+command=mkdir build && cd build && cmake ..
+cwd=<root>
+[project-build]
+command=cmake --build build
+cwd=<root>
+errorformat=%. %#--> %f:%l:%c
+[project-run]
+command=build/$(VIM_PRONAME)
+cwd=<root>
+output=terminal
+
+{cargo}
+
+[project-init]
+command=cargo update
+cwd=<root>
+[project-build]
+command=cargo build
+cwd=<root>
+[project-run]
+command=cargo run
+cwd=<root>
+output=terminal
 ```
 
 Command:
