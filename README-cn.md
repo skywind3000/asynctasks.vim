@@ -23,7 +23,7 @@
     - [交互式任务](#%E4%BA%A4%E4%BA%92%E5%BC%8F%E4%BB%BB%E5%8A%A1)
     - [不同 profile 的任务](#%E4%B8%8D%E5%90%8C-profile-%E7%9A%84%E4%BB%BB%E5%8A%A1)
     - [命令对操作系统的适配](#%E5%91%BD%E4%BB%A4%E5%AF%B9%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%80%82%E9%85%8D)
-    - [环境变量](#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
+    - [内部变量](#%E5%86%85%E9%83%A8%E5%8F%98%E9%87%8F)
     - [任务数据源](#%E4%BB%BB%E5%8A%A1%E6%95%B0%E6%8D%AE%E6%BA%90)
     - [自定义运行方式](#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F)
     - [插件设置](#%E6%8F%92%E4%BB%B6%E8%AE%BE%E7%BD%AE)
@@ -454,22 +454,28 @@ let g:asynctasks_system = 'macos'
 
 这样就会匹配所有以 `/macos` 结尾的命令了。
 
-### 环境变量
+### 内部变量
 
-可以通过 `g:asynctasks_environment` 定义内部环境变量:
-
-```VimL
-let g:asynctasks_environ = {'hello': '1234', 'world': '5678'}
-```
-
-在 `command` 配置里，类似 `$(VIM:var_name)` 模式的变量都会背替换成 `g:asynctasks_environ` 里面等价的值，例如：
+内部变量可以在配置文件的 `[*]` 区域定义：
 
 ```ini
+[*]
+foo=100
+bar=200
+
 [test]
-command=echo Hi $(VIM:world) !!
+command=echo foo is $(VIM:foo) !!
 ```
 
-可以输出: "Hi 5678 !!".
+在 `command` 配置项中，任何符合 `$(VIM:var_name)` 的文本都会被替换成星号区域定义的内容，所以，上面 test 任务的命令最终会变成： 
+
+    echo foo is 100
+
+内部变量同样也可以定义到字典 `g:asynctasks_environ` 中:
+
+    let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
+
+如果一个变量同时在 `[*]` 配置区以及 `g:asynctasks_environ` 字典里被定义，那么字典里的值会有更高的优先级。
 
 ### 任务数据源
 

@@ -22,7 +22,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Ask for user input](#ask-for-user-input)
     - [Task with different profiles](#task-with-different-profiles)
     - [Different system with different commands](#different-system-with-different-commands)
-    - [Environment variables](#environment-variables)
+    - [Internal variables](#internal-variables)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Customize runners](#customize-runners)
     - [Options](#options)
@@ -456,22 +456,30 @@ let g:asynctasks_system = 'macos'
 
 Then command ending with `/macos` will be selected.
 
-### Environment variables
+### Internal variables
 
-Internal environment variables can be defined as a dictionary in `g:asynctasks_environment`:
-
-```VimL
-let g:asynctasks_environ = {'hello': '1234', 'world': '5678'}
-```
-
-Patterns which match `$(VIM:var_name)` in the `command` option will be substituted with the value in the `g:asynctasks_environ`. eg:
+Internal variables can be defined in the `[*]` section:
 
 ```ini
+[*]
+foo=100
+bar=200
+
 [test]
-command=echo Hi $(VIM:world) !!
+command=echo foo is $(VIM:foo) !!
 ```
 
-Will output: "Hi 5678 !!".
+Patterns which match `$(VIM:var_name)` in the `command` field will be substituted with the corresponding value defined in the `[*]` section. 
+
+Which means, the new command will become:
+
+    echo foo is 100
+
+Internal variable can also be defined in `g:asynctasks_environ`:
+
+    let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
+
+If a variable is defined both in the `[*]` section and `g:asynctasks_environ` dict, the one in the `g:asynctasks_environ` will get higher priority.
 
 
 ### Data source for fuzzy finders
