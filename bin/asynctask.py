@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 #======================================================================
 #
-# asynctask.py - 
+# asynctask.py - execute tasks in command line
 #
 # Maintainer: skywind3000 (at) gmail.com, 2020
 #
-# Last Modified: 2020/12/30 01:16
-# Verision: 1.1.1
+# Last Modified: 2021/03/02 22:44
+# Verision: 1.1.3
 #
 # for more information, please visit:
 # https://github.com/skywind3000/asynctasks.vim
@@ -38,7 +38,7 @@ UNIX = (sys.platform[:3] != 'win') and True or False
 #----------------------------------------------------------------------
 # macros
 #----------------------------------------------------------------------
-MACROS_HELP = { 
+MACROS_HELP = {
 	'VIM_FILEPATH': 'File name of current buffer with full path',
 	'VIM_FILENAME': 'File name of current buffer without path',
 	'VIM_FILEDIR': 'Full path of current buffer without the file name',
@@ -60,7 +60,7 @@ MACROS_HELP = {
 	'VIM_GUI': 'Is running under gui ?',
 	'VIM_VERSION': 'Value of v:version',
 	'VIM_COLUMNS': "How many columns in vim's screen",
-	'VIM_LINES': "How many lines in vim's screen", 
+	'VIM_LINES': "How many lines in vim's screen",
 	'VIM_SVRNAME': 'Value of v:servername for +clientserver usage',
     'VIM_PROFILE': 'Current building profile (debug/release/...)',
 	'WSL_FILEPATH': '(WSL) File name of current buffer with full path',
@@ -68,7 +68,7 @@ MACROS_HELP = {
 	'WSL_FILEDIR': '(WSL) Full path of current buffer without the file name',
 	'WSL_FILEEXT': '(WSL) File extension of current buffer',
     'WSL_FILENOEXT':  # noqa: E261
-      '(WSL) File name of current buffer without path and extension', 
+      '(WSL) File name of current buffer without path and extension',
 	'WSL_PATHNOEXT':
 	  '(WSL) Current file name with full path but without extension',
 	'WSL_CWD': '(WSL) Current directory',
@@ -428,6 +428,7 @@ class configure (object):
         self.tasks = {}
         self.environ = {}
         self.config = {}
+        self.avail = []
         self._load_config()
         if self.target == 'file':
             self.filetype = self.match_ft(self.path)
@@ -599,6 +600,11 @@ class configure (object):
                     target[key]['__name__'] = ininame
                 if mode:
                     target[key]['__mode__'] = mode
+            elif key == '*':
+                if '*' not in target:
+                    target['*'] = {}
+                for name in source['*']:
+                    target['*'][name] = source['*'][name]
         for key in special:
             parts = self.trinity_split(key)
             parts = [ n.strip('\r\n\t ') for n in parts ]
@@ -637,7 +643,7 @@ class configure (object):
         names = newname
         for name in names:
             obj = self.read_ini(name)
-            self.config_merge(self.tasks, obj, name, 'global')        
+            self.config_merge(self.tasks, obj, name, 'global')
         return 0
 
     # search parent
@@ -673,6 +679,14 @@ class configure (object):
         self.tasks = {}
         self.collect_rtp_config()
         self.collect_local_config()
+        self.environ = self.tasks.get('*', {})
+        self.avail = []
+        keys = list(self.tasks.keys())
+        keys.sort()
+        for key in keys:
+            if key == '*':
+                continue
+            self.avail.append(key)
         return 0
 
     # extract file type
@@ -754,7 +768,25 @@ class configure (object):
         text = text.replace('<root>', macros.get('VIM_ROOT', ''))
         text = text.replace('<cwd>', macros.get('VIM_CWD', ''))
         return text
-        
+
+    def environ_replace (self, text):
+        mark_open = '$(VIM:'
+        mark_close = ')'
+        size_open = len(mark_open)
+        while True:
+            p1 = text.find(mark_open)
+            if p1 < 0:
+                break
+            p2 = text.find(mark_close, p1)
+            if p2 < 0:
+                break
+            name = text[p1 + size_open:p2]
+            mark = mark_open + name + mark_close
+            name = name.strip()
+            data = self.environ.get(name, '')
+            text = text.replace(mark, data)
+        return text
+
 
 #----------------------------------------------------------------------
 # manager
@@ -806,7 +838,7 @@ class TaskManager (object):
                         if ini: print('from %s:'%ini)
                         pretty.perror(cc, 'command=' + command)
                         return 1
-                    if macro in cwd: 
+                    if macro in cwd:
                         pretty.error('task cwd requires a file name')
                         if ini: print('from %s:'%ini)
                         pretty.perror(cc, 'cwd=' + cwd)
@@ -924,6 +956,7 @@ class TaskManager (object):
                 macros['WSL_RELDIR'] = self.config.path_win2unix(x)
                 macros['WSL_RELNAME'] = self.config.path_win2unix(y)
         command = self.config.macros_replace(command, macros)
+        command = self.config.environ_replace(command)
         command = command.strip()
         for name in macros:
             value = macros.get(name, None)
@@ -976,10 +1009,8 @@ class TaskManager (object):
         c2 = 'cyan'
         c3 = 'white'
         c4 = 'BLACK'
-        names = list(self.config.tasks.keys())
-        names.sort()
         if raw:
-            for name in names:
+            for name in self.config.avail:
                 if (not all) and name.startswith('.'):
                     continue
                 task = self.config.tasks[name]
@@ -989,7 +1020,7 @@ class TaskManager (object):
             pretty.tabulify(rows)
             return 0
         rows.append([(c0, 'Task'), (c0, 'Type'), (c0, 'Detail')])
-        for name in names:
+        for name in self.config.avail:
             if (not all) and name.startswith('.'):
                 continue
             task = self.config.tasks[name]
