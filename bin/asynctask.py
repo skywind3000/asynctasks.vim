@@ -1102,10 +1102,10 @@ class TaskManager (object):
         else:
             setting = self.config.config['default']
             fzf = setting.get('fzf', 'fzf')
-            cmd = '--nth 1 --reverse --inline-info --tac '
+            cmd = '--nth 1 --reverse --inline-info --tac'
             flag = setting.get('fzf_flag', '')
-            flag = (not flag) and '+s ' or flag
-            cmd = (fzf and fzf or 'fzf') + ' ' + cmd + ' ' + flag
+            flag = flag or '+s'
+            cmd = (fzf or 'fzf') + ' ' + cmd + ' ' + flag
             cmd += ' --height 35%'
             rows = []
             width = 0
