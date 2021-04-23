@@ -981,6 +981,12 @@ function! s:task_option(task)
 			elseif pos == 'hide'
 				let opts.mode = 'term'
 				let opts.pos = 'hide'
+            elseif pos == 'floaterm' || pos == 'floaterm_reuse'
+                let opts.mode = 'term'
+                let opts.pos = pos
+                if has_key(task, 'position')
+                    let opts.position = task.position
+                endif
 			elseif pos != 'external' && pos != 'system' && pos != 'os'
 				let opts.mode = 'term'
 				let opts.pos = pos
