@@ -135,3 +135,5 @@ dmypy.json
 *.bat
 
 *.pdn
+update.cmd
+

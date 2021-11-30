@@ -8,8 +8,9 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
 
 <!-- TOC -->
 
-- [Introduction](#introduction)
-- [Get Started](#get-started)
+- [asynctasks.vim - modern task system](#asynctasksvim---modern-task-system)
+  - [Introduction](#introduction)
+  - [Get Started](#get-started)
     - [Installation](#installation)
     - [Build and run a single file](#build-and-run-a-single-file)
     - [Build and run a project](#build-and-run-a-project)
@@ -18,7 +19,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Macro variable substitution](#macro-variable-substitution)
     - [Task running modes](#task-running-modes)
     - [Run in an external terminal](#run-in-an-external-terminal)
-- [Advanced Topics](#advanced-topics)
+  - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
     - [Task with different profiles](#task-with-different-profiles)
     - [Different system with different commands](#different-system-with-different-commands)
@@ -26,10 +27,10 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Customize runners](#customize-runners)
     - [Options](#options)
-- [Task Examples](#task-examples)
-- [Command Line Tool](#command-line-tool)
-- [Frequently Asked Questions](#frequently-asked-questions)
-- [Credit](#credit)
+  - [Task Examples](#task-examples)
+  - [Command Line Tool](#command-line-tool)
+  - [Frequently Asked Questions](#frequently-asked-questions)
+  - [Credit](#credit)
 
 <!-- /TOC -->
 
@@ -39,11 +40,11 @@ This readme is also available in:
 
 ## Introduction
 
-As vim 8.0 released in 2017, we have got many wonderful plugins like: LSP, DAP and asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector) which could only been imagined in emacs in the past, now become reality in vim.
+As vim 8.0 was released in 2017, we have got many wonderful plugins like LSP, DAP, and asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector) which could only be imagined in emacs in the past, now become reality in vim.
 
-However, vim is still lack of an elegent task system to speed up your inner software development cycle (edit, compile, test). A lot of people are still dealing with those building, testing and deploying tasks in such a primitive or flaky way. Therefor, I decide to create this plugin and introduce vscode's task like machanisms to vim. 
+However, vim is still lack of an elegant task system to speed up your inner software development cycle (edit, compile, test). A lot of people are still dealing with those building, testing, and deploying tasks in such a primitive or flaky way. Therefore, I decided to create this plugin and introduce vscode's task like mechanisms to vim. 
 
-Vscode creates a `.vscode` folder in your project root directory and use a `.vscode/tasks.json` file to define project specific tasks. Similar, `asynctasks.vim` uses a `.tasks` file in your project folders for local tasks and use `~/.vim/tasks.ini` to define global tasks for generic projects.
+Vscode creates a `.vscode` folder in your project root directory and uses a `.vscode/tasks.json` file to define project-specific tasks. Similar, `asynctasks.vim` uses a `.tasks` file in your project folders for local tasks and use `~/.vim/tasks.ini` to define global tasks for generic projects.
 
 This is very simple, but most good designs always start from a very simple concept. You will benefit a lot from the productivity and possibility of this task system.
 
