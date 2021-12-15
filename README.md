@@ -27,6 +27,19 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Customize runners](#customize-runners)
     - [Options](#options)
+        - [The `g:asynctasks_config_name` option](#the-gasynctasks_config_name-option)
+        - [The `g:asynctasks_rtp_config` option](#the-gasynctasks_rtp_config-option)
+        - [The `g:asynctasks_extra_config` option](#the-gasynctasks_extra_config-option)
+        - [The `g:asynctasks_term_pos` option](#the-gasynctasks_term_pos-option)
+        - [The `g:asynctasks_term_cols` option](#the-gasynctasks_term_cols-option)
+        - [The `g:asynctasks_term_rows` option](#the-gasynctasks_term_rows-option)
+        - [The `g:asynctasks_term_focus` option](#the-gasynctasks_term_focus-option)
+        - [The `g:asynctasks_term_reuse` option](#the-gasynctasks_term_reuse-option)
+        - [The `g:asynctasks_term_hidden` option](#the-gasynctasks_term_hidden-option)
+        - [The `g:asynctasks_term_listed` option](#the-gasynctasks_term_listed-option)
+        - [The `g:asynctasks_term_close` option](#the-gasynctasks_term_close-option)
+        - [The `g:asynctasks_confirm` option](#the-gasynctasks_confirm-option)
+        - [The `g:asynctasks_template` option](#the-gasynctasks_template-option)
   - [Task Examples](#task-examples)
   - [Command Line Tool](#command-line-tool)
   - [Frequently Asked Questions](#frequently-asked-questions)
@@ -569,6 +582,10 @@ If it is set to `1`, the internal terminal buffers will set `bufhidden` to `hide
 ##### The `g:asynctasks_term_listed` option
 
 Set to zero to hide terminal buffer from buffer list (`set nolisted`).
+
+##### The `g:asynctasks_term_close` option
+
+Set to `1` to close the terminal window when task finished.
 
 ##### The `g:asynctasks_confirm` option
 
