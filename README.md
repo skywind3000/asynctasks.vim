@@ -295,6 +295,7 @@ to specify what terminal do you want to use, available options are:
 | `left` | internal terminal | open a reusable internal terminal on the left |
 | `right` | internal terminal | open a reusable internal terminal on the right |
 | `external` | external terminal | use a new system terminal to run your task |
+| `hide` | hidden | run in the background |
 
 You can set a `pos` field in a task to override global `g:asynctasks_term_pos` value in the given task.
 
