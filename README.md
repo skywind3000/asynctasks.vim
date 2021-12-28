@@ -26,7 +26,6 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Different system with different commands](#different-system-with-different-commands)
     - [Internal variables](#internal-variables)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
-    - [Customize runners](#customize-runners)
     - [Options](#options)
   - [Task Examples](#task-examples)
   - [Command Line Tool](#command-line-tool)
@@ -365,11 +364,41 @@ Powered by AsyncRun's [customizable runners](https://github.com/skywind3000/asyn
 | `gnome` | run in a new gnome terminal | gnome-terminal | [gnome.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome.vim) |
 | `gnome_tab` | run in a new gnome terminal tab | gnome-terminal | [gnome_tab.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome_tab.vim) |
 | `xterm` | run in a xterm window | xterm | [xterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xterm.vim) |
-| `tmux` | run in a separated tmux pane | [Vimux](https://github.com/preservim/vimux) | [tmux.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/tmux.vim) |
+| `tmux` | run in a separated tmux split | [Vimux](https://github.com/preservim/vimux) | [tmux.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/tmux.vim) |
 | `floaterm` | run in a new floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
 | `floaterm_reuse` | run in a reusable floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm_reuse.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
-| `quickui` | run in a quickui terminal | [vim-quickui](https://github.com/skywind3000/vim-quickui) | [quickui.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/quickui.vim) |
+| `quickui` | run in a quickui window | [vim-quickui](https://github.com/skywind3000/vim-quickui) | [quickui.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/quickui.vim) |
 | `toggleterm` | run in a toggleterm window | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | [toggleterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/toggleterm.vim) |
+
+When a runner is defined for AsyncRun, it can be used by providing a `pos` option:
+
+```ini
+[file-run]
+command=python "$(VIM_FILEPATH)"
+cwd=<root>
+output=terminal
+pos=gnome
+```
+
+Then use:
+
+```VimL
+:AsyncTask file-run
+```
+
+The task will be executed in `gnome-terminal`. If you have many tasks need this `pos` option, no need to specify them one-by-one, the global settings may be helpful:
+
+```VimL
+let g:asynctasks_term_pos = 'gnome'
+```
+
+After that, every task with `output=terminal` option could be executed in the `gnome-terminal`:
+
+Remember, the `output` option must be `terminal` and the local option `pos` has higher priority and can override global option `g:asynctasks_term_pos`.
+
+It is quite easy to create a new runner, see the [asyncrun wiki](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner).
+
+
 
 ## Advanced Topics
 
@@ -515,9 +544,6 @@ It returns a list of items, each item represents a task. And it can be used as t
 
 Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf` and `coc-list`.
 
-### Customize runners
-
-For customizing additional runners, or to run task in `tmux` pane and `gnome-terminal` tab/window, please visit [customize runners](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 ### Options
 
