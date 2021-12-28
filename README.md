@@ -19,6 +19,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Macro variable substitution](#macro-variable-substitution)
     - [Task running modes](#task-running-modes)
     - [Run in an external terminal](#run-in-an-external-terminal)
+    - [Extra runners](#extra-runners)
   - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
     - [Task with different profiles](#task-with-different-profiles)
@@ -355,6 +356,20 @@ Familiar feeling like you are working in Visual Studio.
 
 `asynctasks.vim` provide you all the possible ways to run a command in vim with no compromise. Choose one you like.
 
+### Extra runners
+
+Powered by AsyncRun's [customizable runners](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner), tasks can be executed in any way you want. Here is a list of pre-included runners:
+
+| Runner | Description | Requirement | Link |
+|-|-|-|-|
+| `gnome` | run in a new gnome terminal | gnome-terminal | [gnome.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome.vim) |
+| `gnome_tab` | run in a new gnome terminal tab | gnome-terminal | [gnome_tab.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome_tab.vim) |
+| `xterm` | run in a xterm window | xterm | [xterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xterm.vim) |
+| `tmux` | run in a separated tmux pane | [Vimux](https://github.com/preservim/vimux) | [tmux.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/tmux.vim) |
+| `floaterm` | run in a new floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
+| `floaterm_reuse` | run in a reusable floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm_reuse.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
+| `quickui` | run in a quickui terminal | [vim-quickui](https://github.com/skywind3000/vim-quickui) | [quickui.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/quickui.vim) |
+| `toggleterm` | run in a toggleterm window | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | [toggleterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/toggleterm.vim) |
 
 ## Advanced Topics
 
