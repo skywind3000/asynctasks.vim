@@ -456,20 +456,27 @@ let g:asynctasks_system = 'macos'
 
 ### 内部变量
 
-内部变量可以在配置文件的 `[*]` 区域定义：
+如果 build 的时候有多个 target 经常要切换来切换去，那么除了改命令字段外，内部变量提供了一种更高效的方式来管理他们，可以在配置文件的 `[*]` 区域定义：
 
 ```ini
 [*]
-foo=100
-bar=200
+build_target=build_x86
+test_target=test_x86
 
-[test]
-command=echo foo is $(VIM:foo) !!
+[project-build]
+command=make $(VIM:build_target)
+cwd=<root>
+
+[project-test]
+command=make $(VIM:test_target)
+cwd=<root>
 ```
 
 在 `command` 配置项中，任何符合 `$(VIM:var_name)` 的文本都会被替换成星号区域定义的内容，所以，上面 test 任务的命令最终会变成： 
 
-    echo foo is 100
+    make build_x86
+
+想要切换 `project-build` 任务的 target 的话，直接打开配置修改 `[*]` 区域内的变量值就行，不用每次去修改 `command` 配置项。
 
 内部变量同样也可以定义到字典 `g:asynctasks_environ` 中:
 

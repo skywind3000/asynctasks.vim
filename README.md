@@ -375,7 +375,7 @@ When a runner is defined for AsyncRun, it can be used by providing a `pos` optio
 ```ini
 [file-run]
 command=python "$(VIM_FILEPATH)"
-cwd=<root>
+cwd=$(VIM_FILEDIR)
 output=terminal
 pos=gnome
 ```
@@ -392,12 +392,11 @@ The task will be executed in `gnome-terminal`. If you have many tasks need this 
 let g:asynctasks_term_pos = 'gnome'
 ```
 
-After that, every task with `output=terminal` option could be executed in the `gnome-terminal`:
+After that, every task with `output=terminal` option could be executed in the `gnome-terminal`.
 
 Remember, the `output` option must be `terminal` and the local option `pos` has higher priority and can override global option `g:asynctasks_term_pos`.
 
 It is quite easy to create a new runner, see the [customize-runner](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
-
 
 
 ## Advanced Topics
@@ -504,22 +503,29 @@ Then command ending with `/macos` will be selected.
 
 ### Internal variables
 
-Internal variables can be defined in the `[*]` section:
+Internal variables can be used to manage multiple building targets. They can be defined in the `[*]` section of `.tasks` files:
 
 ```ini
 [*]
-foo=100
-bar=200
+build_target=build_x86
+test_target=test_x86
 
-[test]
-command=echo foo is $(VIM:foo) !!
+[project-build]
+command=make $(VIM:build_target)
+cwd=<root>
+
+[project-test]
+command=make $(VIM:test_target)
+cwd=<root>
 ```
 
 Patterns which match `$(VIM:var_name)` in the `command` field will be substituted with the corresponding value defined in the `[*]` section. 
 
-Which means, the new command will become:
+Which means, the new command in "project-build" will become:
 
-    echo foo is 100
+    make build_x86
+
+It is a efficient way to switch current building target by changing the variable values in the `[*]` section without modifying the `command` option every time.
 
 Internal variable can also be defined in `g:asynctasks_environ`:
 
