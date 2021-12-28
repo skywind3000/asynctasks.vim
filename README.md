@@ -396,7 +396,7 @@ After that, every task with `output=terminal` option could be executed in the `g
 
 Remember, the `output` option must be `terminal` and the local option `pos` has higher priority and can override global option `g:asynctasks_term_pos`.
 
-It is quite easy to create a new runner, see the [wiki](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
+It is quite easy to create a new runner, see the [customize-runner](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner).
 
 
 
