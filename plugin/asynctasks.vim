@@ -5,7 +5,7 @@
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
 " Last Modified: 2021/12/29 18:01
-" Verision: 1.8.23
+" Verision: 1.8.25
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -907,6 +907,56 @@ function! s:api_confirm(msg, ...)
 		endtry
 		call inputrestore()
 		return hr
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" notify text
+"----------------------------------------------------------------------
+function! s:api_notify(msg, mode)
+	if has_key(g:asynctasks_api_hook, 'notify')
+		call g:asynctasks_api_hook.notify(a:msg, a:mode)
+	elseif has('nvim') != 0 && has('nvim-0.6.0')
+		let msg = a:msg
+		let mode = a:mode
+		lua vim.notify(vim.api.nvim_eval('msg'), vim.api.nvim_eval('mode'))
+	else
+		redraw
+		if a:mode == 'info'
+			echohl AsyncRunSuccess
+		elseif a:mode == 'error'
+			echohl AsyncRunFailure
+		endif
+		echom a:msg
+		echohl None
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" sound play
+"----------------------------------------------------------------------
+function! s:api_sound_play(filename)
+	if has_key(g:asynctasks_api_hook, 'sound_play')
+		return g:asynctasks_api_hook.sound_play(a:filename)
+	elseif exists('*sound_playfile')
+		return sound_playfile(a:filename)
+	else
+		call s:errmsg('unable to play sound, need +sound feature')
+		return -1
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" sound stop
+"----------------------------------------------------------------------
+function! s:api_sound_stop(sound_id)
+	if has_key(g:asynctasks_api_hook, 'sound_stop')
+		silent! call g:asynctasks_api_hook.sound_stop(a:sound_id)
+	elseif exists('*sound_stop')
+		silent! call sound_stop(a:sound_id)
 	endif
 endfunc
 
@@ -1838,31 +1888,34 @@ function! asynctasks#finish(what)
 		endif
 		echom t . ((g:asyncrun_code != 0)? 'failure' : 'success')
 		echohl None
+	elseif a:what == 'true'
+		let t = 'Task finished: '
+		if g:asyncrun_name != ''
+			let t = 'Task [' . g:asyncrun_name . '] finished: '
+		endif
+		let t .= ((g:asyncrun_code != 0)? 'failure' : 'success')
+		call s:api_notify(t, ((g:asyncrun_code == 0)? 'info' : 'error'))
 	elseif a:what =~ '^sound:'
-		if exists('*sound_playfile')
-			let previous = get(s:, 'sound_id', '')	
-			if previous
-				silent! call sound_stop(previous)
-			endif
-			let part = split(s:strip(strpart(a:what, 6)), ',')
-			if g:asyncrun_code == 0
-				let name = (len(part) > 0)? part[0] : ''
-			else
-				if len(part) > 1
-					let name = part[1]
-				else
-					let name = (len(part) > 0)? part[0] : ''
-				endif
-			endif
-			let name = s:strip(name)
-			if stridx(name, '~') >= 0
-				let name = expand(name)
-			endif
-			if name != '' && filereadable(name)
-				let s:sound_id = sound_playfile(name)
-			endif
+		let previous = get(s:, 'sound_id', '')	
+		if previous
+			call s:api_sound_stop(previous)
+		endif
+		let part = split(s:strip(strpart(a:what, 6)), ',')
+		if g:asyncrun_code == 0
+			let name = (len(part) > 0)? part[0] : ''
 		else
-			call s:errmsg('unable to play sound, need +sound feature')
+			if len(part) > 1
+				let name = part[1]
+			else
+				let name = (len(part) > 0)? part[0] : ''
+			endif
+		endif
+		let name = s:strip(name)
+		if stridx(name, '~') >= 0
+			let name = expand(name)
+		endif
+		if name != '' && filereadable(name)
+			let s:sound_id = s:api_sound_play(name)
 		endif
 	elseif a:what =~ '^:'
 		let part = s:strip(strpart(a:what, 1))
