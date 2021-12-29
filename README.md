@@ -392,7 +392,9 @@ The task will be executed in `gnome-terminal`. If you have many tasks need this 
 let g:asynctasks_term_pos = 'gnome'
 ```
 
-After that, every task with `output=terminal` option could be executed in the `gnome-terminal`.
+After that, every task with `output=terminal` option could be executed in the `gnome-terminal`:
+
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/runner-gnome.png)
 
 Remember, the `output` option must be `terminal` and the local option `pos` has higher priority and can override global option `g:asynctasks_term_pos`.
 
@@ -503,7 +505,7 @@ Then command ending with `/macos` will be selected.
 
 ### Internal variables
 
-Internal variables can be used to manage multiple building targets. They can be defined in the `[*]` section of `.tasks` files:
+Internal variables can be used in many ways, eg. to manage multiple building targets. They are defined in the `[*]` section of `.tasks` files:
 
 ```ini
 [*]
