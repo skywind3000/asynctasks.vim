@@ -386,15 +386,17 @@ Then use:
 :AsyncTask file-run
 ```
 
-The task will be executed in `gnome-terminal`. If you have many tasks need this `pos` option, no need to specify them one-by-one, the global settings may be helpful:
+The task will be executed in `gnome-terminal`:
+
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/runner-gnome.png)
+
+If you have many tasks need this `pos` option, no need to specify them one-by-one, the global settings may be helpful:
 
 ```VimL
 let g:asynctasks_term_pos = 'gnome'
 ```
 
-After that, every task with `output=terminal` option could be executed in the `gnome-terminal`:
-
-![](https://github.com/skywind3000/images/raw/master/p/asynctasks/runner-gnome.png)
+After that, every task with `output=terminal` option could be executed in the `gnome-terminal`.
 
 Remember, the `output` option must be `terminal` and the local option `pos` has higher priority and can override global option `g:asynctasks_term_pos`.
 
