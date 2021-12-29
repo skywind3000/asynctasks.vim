@@ -364,6 +364,7 @@ Powered by AsyncRun's [customizable runners](https://github.com/skywind3000/asyn
 | `gnome` | run in a new gnome terminal | gnome-terminal | [gnome.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome.vim) |
 | `gnome_tab` | run in a new gnome terminal tab | gnome-terminal | [gnome_tab.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome_tab.vim) |
 | `xterm` | run in a xterm window | xterm | [xterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xterm.vim) |
+| `xfce` | run in a new xfce terminal | xfce4-terminal | [xfce.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xfce.vim) |
 | `tmux` | run in a separated tmux split | [Vimux](https://github.com/preservim/vimux) | [tmux.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/tmux.vim) |
 | `floaterm` | run in a new floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
 | `floaterm_reuse` | run in a reusable floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm_reuse.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
