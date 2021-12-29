@@ -386,7 +386,7 @@ Then use:
 :AsyncTask file-run
 ```
 
-The task will be executed in `gnome-terminal`:
+The task will be executed in the `gnome-terminal`:
 
 ![](https://github.com/skywind3000/images/raw/master/p/asynctasks/runner-gnome.png)
 
