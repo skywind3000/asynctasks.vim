@@ -28,7 +28,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
   - [Task Config](#task-config)
-  - [Task Examples](#task-examples)
+  - [More Examples](#more-examples)
   - [Command Line Tool](#command-line-tool)
   - [Frequently Asked Questions](#frequently-asked-questions)
   - [Credit](#credit)
@@ -687,7 +687,7 @@ A full configuration list is here:
 
 - [Task Config](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Config)
 
-## Task Examples
+## More Examples
 
 There are many examples about: cmake, grep, ninja, wsl and more:
 
