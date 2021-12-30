@@ -548,7 +548,7 @@ If a variable is defined both in the `[*]` section and `g:asynctasks_environ` di
 
 A fuzzy finder can help you pick a task easily:
 
-![](https://github.com/skywind3000/images/raw/master/p/asynctasks/fuzzy.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/demo.gif)
 
 This plugin have some apis to fetch task information, which makes integration very easy:
 
