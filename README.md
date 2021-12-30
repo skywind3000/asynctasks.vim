@@ -28,8 +28,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Run last task](#run-last-task)
     - [Options](#options)
-  - [Task Config](#task-config)
-  - [More Examples](#more-examples)
+  - [Configuration](#configuration)
   - [Command Line Tool](#command-line-tool)
   - [Frequently Asked Questions](#frequently-asked-questions)
   - [Credit](#credit)
@@ -692,15 +691,13 @@ Command:
 
 Will create a new file with the template "cargo", if the file doesn't exist.
 
-## Task Config
+## Configuration
 
-A full configuration list is here:
+A full configuration specification can be found here:
 
 - [Task Config](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Config)
 
-## More Examples
-
-There are many examples about: cmake, grep, ninja, wsl and more:
+And there are many examples about: cmake, grep, ninja, wsl and more:
 
 - [Task Examples](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Examples)
 
