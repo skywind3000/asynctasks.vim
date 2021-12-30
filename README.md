@@ -26,6 +26,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Different system with different commands](#different-system-with-different-commands)
     - [Internal variables](#internal-variables)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
+    - [Run last task](#run-last-task)
     - [Options](#options)
   - [Task Config](#task-config)
   - [More Examples](#more-examples)
@@ -560,6 +561,16 @@ It returns a list of items, each item represents a task. And it can be used as t
 
 Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf` and `coc-list`.
 
+
+### Run last task
+
+There is a command to run last task without typing its name again:
+
+```VimL
+:AsyncTaskLast
+```
+
+Little help for repeatedly running task.
 
 ### Options
 
