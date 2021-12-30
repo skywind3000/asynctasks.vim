@@ -27,6 +27,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Internal variables](#internal-variables)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Options](#options)
+  - [Task Config](#task-config)
   - [Task Examples](#task-examples)
   - [Command Line Tool](#command-line-tool)
   - [Frequently Asked Questions](#frequently-asked-questions)
@@ -679,6 +680,12 @@ Command:
     :AsyncTaskEdit cargo
 
 Will create a new file with the template "cargo", if the file doesn't exist.
+
+## Task Config
+
+A full configuration list is here:
+
+- [Task Config](https://github.com/skywind3000/asynctasks.vim/wiki/Task-Config)
 
 ## Task Examples
 
