@@ -570,7 +570,7 @@ There is a command to run last task without typing its name again:
 :AsyncTaskLast
 ```
 
-Little help for repeatedly running task.
+Can be binded to a hotkey for repeatedly running task.
 
 ### Options
 
