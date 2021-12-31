@@ -28,7 +28,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Run last task](#run-last-task)
     - [Options](#options)
-  - [Configuration](#configuration)
+  - [Specification](#specification)
   - [Command Line Tool](#command-line-tool)
   - [Frequently Asked Questions](#frequently-asked-questions)
   - [Credit](#credit)
@@ -691,7 +691,7 @@ Command:
 
 Will create a new file with the template "cargo", if the file doesn't exist.
 
-## Configuration
+## Specification
 
 A full configuration specification can be found here:
 
