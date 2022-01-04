@@ -371,7 +371,7 @@ Powered by AsyncRun's [customizable runners](https://github.com/skywind3000/asyn
 | `floaterm_reuse` | run in a reusable floaterm window | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm_reuse.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
 | `quickui` | run in a quickui window | [vim-quickui](https://github.com/skywind3000/vim-quickui) | [quickui.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/quickui.vim) |
 | `toggleterm` | run in a toggleterm window | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | [toggleterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/toggleterm.vim) |
-| `termhelp` | run in terminal help | [terminal-help](https://github.com/skywind3000/vim-terminal-help) | [termhelp.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/termhelp.vim) |
+| `termhelp` | run in terminal help | [vim-terminal-help](https://github.com/skywind3000/vim-terminal-help) | [termhelp.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/termhelp.vim) |
 | `xfce` | run in a new xfce terminal | xfce4-terminal | [xfce.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xfce.vim) |
 | `konsole` | run in a new konsole terminal | KDE | [konsole.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/konsole.vim) |
 | `macos` | run in a macOS system terminal | macos | [macos.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/macos.vim) |
