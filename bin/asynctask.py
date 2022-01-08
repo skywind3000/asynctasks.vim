@@ -6,8 +6,8 @@
 #
 # Maintainer: skywind3000 (at) gmail.com, 2020
 #
-# Last Modified: 2021/03/02 23:01
-# Verision: 1.1.3
+# Last Modified: 2022/01/09 05:57
+# Verision: 1.2.0
 #
 # for more information, please visit:
 # https://github.com/skywind3000/asynctasks.vim
@@ -39,43 +39,43 @@ UNIX = (sys.platform[:3] != 'win') and True or False
 # macros
 #----------------------------------------------------------------------
 MACROS_HELP = {
-	'VIM_FILEPATH': 'File name of current buffer with full path',
-	'VIM_FILENAME': 'File name of current buffer without path',
-	'VIM_FILEDIR': 'Full path of current buffer without the file name',
-	'VIM_FILEEXT': 'File extension of current buffer',
-	'VIM_FILETYPE': 'File type (value of &ft in vim)',
+    'VIM_FILEPATH': 'File name of current buffer with full path',
+    'VIM_FILENAME': 'File name of current buffer without path',
+    'VIM_FILEDIR': 'Full path of current buffer without the file name',
+    'VIM_FILEEXT': 'File extension of current buffer',
+    'VIM_FILETYPE': 'File type (value of &ft in vim)',
     'VIM_FILENOEXT': # noqa: E261
-      'File name of current buffer without path and extension',
-	'VIM_PATHNOEXT':
-      'Current file name with full path but without extension',
-	'VIM_CWD': 'Current directory',
-	'VIM_RELDIR': 'File path relativize to current directory',
-	'VIM_RELNAME': 'File name relativize to current directory',
-	'VIM_ROOT': 'Project root directory',
-	'VIM_PRONAME': 'Name of current project root directory',
-	'VIM_DIRNAME': "Name of current directory",
-	'VIM_CWORD': 'Current word under cursor',
-	'VIM_CFILE': 'Current filename under cursor',
-	'VIM_CLINE': 'Cursor line number in current buffer',
-	'VIM_GUI': 'Is running under gui ?',
-	'VIM_VERSION': 'Value of v:version',
-	'VIM_COLUMNS': "How many columns in vim's screen",
-	'VIM_LINES': "How many lines in vim's screen",
-	'VIM_SVRNAME': 'Value of v:servername for +clientserver usage',
+    'File name of current buffer without path and extension',
+    'VIM_PATHNOEXT':
+    'Current file name with full path but without extension',
+    'VIM_CWD': 'Current directory',
+    'VIM_RELDIR': 'File path relativize to current directory',
+    'VIM_RELNAME': 'File name relativize to current directory',
+    'VIM_ROOT': 'Project root directory',
+    'VIM_PRONAME': 'Name of current project root directory',
+    'VIM_DIRNAME': "Name of current directory",
+    'VIM_CWORD': 'Current word under cursor',
+    'VIM_CFILE': 'Current filename under cursor',
+    'VIM_CLINE': 'Cursor line number in current buffer',
+    'VIM_GUI': 'Is running under gui ?',
+    'VIM_VERSION': 'Value of v:version',
+    'VIM_COLUMNS': "How many columns in vim's screen",
+    'VIM_LINES': "How many lines in vim's screen",
+    'VIM_SVRNAME': 'Value of v:servername for +clientserver usage',
     'VIM_PROFILE': 'Current building profile (debug/release/...)',
-	'WSL_FILEPATH': '(WSL) File name of current buffer with full path',
-	'WSL_FILENAME': '(WSL) File name of current buffer without path',
-	'WSL_FILEDIR': '(WSL) Full path of current buffer without the file name',
-	'WSL_FILEEXT': '(WSL) File extension of current buffer',
+    'WSL_FILEPATH': '(WSL) File name of current buffer with full path',
+    'WSL_FILENAME': '(WSL) File name of current buffer without path',
+    'WSL_FILEDIR': '(WSL) Full path of current buffer without the file name',
+    'WSL_FILEEXT': '(WSL) File extension of current buffer',
     'WSL_FILENOEXT':  # noqa: E261
-      '(WSL) File name of current buffer without path and extension',
-	'WSL_PATHNOEXT':
-	  '(WSL) Current file name with full path but without extension',
-	'WSL_CWD': '(WSL) Current directory',
-	'WSL_RELDIR': '(WSL) File path relativize to current directory',
-	'WSL_RELNAME': '(WSL) File name relativize to current directory',
-	'WSL_ROOT': '(WSL) Project root directory',
-	'WSL_CFILE': '(WSL) Current filename under cursor',
+    '(WSL) File name of current buffer without path and extension',
+    'WSL_PATHNOEXT':
+    '(WSL) Current file name with full path but without extension',
+    'WSL_CWD': '(WSL) Current directory',
+    'WSL_RELDIR': '(WSL) File path relativize to current directory',
+    'WSL_RELNAME': '(WSL) File name relativize to current directory',
+    'WSL_ROOT': '(WSL) Project root directory',
+    'WSL_CFILE': '(WSL) Current filename under cursor',
 }
 
 
@@ -340,7 +340,7 @@ class PrettyText (object):
                 if avail <= 0:
                     break
                 size = len(output)
-                pretty.echo(color, output[:avail])
+                self.echo(color, output[:avail])
                 avail -= size
             sys.stdout.write('\n')
         self.set_color(-1)
@@ -427,8 +427,11 @@ class configure (object):
         self.filetype = None
         self.tasks = {}
         self.environ = {}
+        self.setting = {}
         self.config = {}
         self.avail = []
+        self.shadow = {}
+        self.reserved = ['*', '+', '-', '%', '#']
         self._load_config()
         if self.target == 'file':
             self.filetype = self.match_ft(self.path)
@@ -589,22 +592,23 @@ class configure (object):
 
     def config_merge (self, target, source, ininame, mode):
         special = []
+        setting = self.reserved
         for key in source:
             if ':' in key:
                 special.append(key)
             elif '/' in key:
                 special.append(key)
-            elif key != '*':
+            elif key not in setting:
                 target[key] = source[key]
                 if ininame:
                     target[key]['__name__'] = ininame
                 if mode:
                     target[key]['__mode__'] = mode
-            elif key == '*':
-                if '*' not in target:
-                    target['*'] = {}
-                for name in source['*']:
-                    target['*'][name] = source['*'][name]
+            else:
+                if key not in target:
+                    target[key] = {}
+                for name in source[key]:
+                    target[key][name] = source[key][name]
         for key in special:
             parts = self.trinity_split(key)
             parts = [ n.strip('\r\n\t ') for n in parts ]
@@ -680,11 +684,16 @@ class configure (object):
         self.collect_rtp_config()
         self.collect_local_config()
         self.environ = self.tasks.get('*', {})
+        self.environ.update(self.tasks.get('+', {}))
+        self.setting = {}
+        setting = self.reserved
+        for name in setting:
+            self.setting[name] = self.tasks.get(name, {})
         self.avail = []
         keys = list(self.tasks.keys())
         keys.sort()
         for key in keys:
-            if key == '*':
+            if key in setting:
                 continue
             self.avail.append(key)
         return 0
@@ -769,9 +778,7 @@ class configure (object):
         text = text.replace('<cwd>', macros.get('VIM_CWD', ''))
         return text
 
-    def environ_replace (self, text):
-        mark_open = '$(VIM:'
-        mark_close = ')'
+    def mark_replace (self, text, mark_open, mark_close, handler):
         size_open = len(mark_open)
         while True:
             p1 = text.find(mark_open)
@@ -782,9 +789,40 @@ class configure (object):
                 break
             name = text[p1 + size_open:p2]
             mark = mark_open + name + mark_close
-            name = name.strip()
-            data = self.environ.get(name, '')
+            data = handler(name.strip('\r\n\t '))
+            if data is None:
+                return ''
+            elif isinstance(data, list):
+                if len(data) > 0:
+                    msg = 'in ' + mark + ': '
+                    pretty.error(msg + data[0])
+                return ''
             text = text.replace(mark, data)
+        return text
+
+    def _handle_environ (self, text):
+        key, sep, default = text.strip().partition(':')
+        key = key.strip()
+        if '+' in self.shadow:
+            shadow = self.shadow['+']
+            if key in shadow:
+                return shadow[key]
+        if key not in self.environ:
+            if sep == '':
+                return ['Internal variable "' + key + '" is undefined']
+            else:
+                return default
+        return self.environ[key]
+
+    def _handle_osenv (self, text):
+        key, sep, default = text.strip().partition(':')
+        key = key.strip()
+        return os.environ.get(key, default.strip())
+
+    def environ_replace (self, text):
+        text = self.mark_replace(text, '$(+', ')', self._handle_environ)
+        text = self.mark_replace(text, '$(VIM:', ')', self._handle_environ)
+        text = self.mark_replace(text, '$(%', ')', self._handle_osenv)
         return text
 
 
@@ -877,58 +915,51 @@ class TaskManager (object):
             return ''
         return text
 
-    def command_input (self, command):
-        mark_open = '$(?'
-        mark_close = ')'
-        size_open = len(mark_open)
-        if '$(VIM_CWORD)' in command:
-            command = command.replace('$(VIM_CWORD)', '$(?CWORD)')
-        while True:
-            p1 = command.find(mark_open)
-            if p1 < 0:
-                break
-            p2 = command.find(mark_close, p1)
-            if p2 < 0:
-                break
-            name = command[p1 + size_open:p2]
-            mark = mark_open + name + mark_close
-            tail = ''
-            p3 = name.find(':')
-            if p3 >= 0:
-                tail = name[p3 + 1:].strip()
-                name = name[:p3].strip()
-            if ',' not in tail:
+    def _handle_input (self, varname):
+        name, sep, tail = varname.strip().partition(':')
+        name = name.strip()
+        tail = tail.strip()
+        if '-' in self.config.shadow:
+            shadow = self.config.shadow['-']
+            if name in shadow:
+                return shadow[name]
+        if ',' not in tail:
+            prompt = 'Input argument (%s): '%name
+            text = self.raw_input(prompt)
+            if not text:
+                text = tail.strip()
+        else:
+            select = []
+            for part in tail.split(','):
+                part = part.replace('&', '').strip()
+                if part:
+                    select.append(part)
+            if len(select) == 0:
                 prompt = 'Input argument (%s): '%name
                 text = self.raw_input(prompt)
-                if not text:
-                    text = tail.strip()
             else:
-                select = []
-                names = []
-                for part in tail.split(','):
-                    part = part.replace('&', '').strip()
-                    if part:
-                        select.append(part)
-                if len(select) == 0:
-                    prompt = 'Input argument (%s): '%name
-                    text = self.raw_input(prompt)
-                else:
-                    print('Select argument (%s): '%name)
-                    for index, part in enumerate(select):
-                        print('%d. %s'%(index + 1, part))
-                    text = ''
-                    if len(select) > 0:
-                        index = self.raw_input('Type number: ')
-                        try:
-                            index = int(index)
-                        except:
-                            index = 0
-                        if index > 0 and index <= len(select):
-                            text = select[index - 1]
-            text = text.strip()
-            if not text:
-                return ''
-            command = command.replace(mark, text)
+                print('Select argument (%s): '%name)
+                for index, part in enumerate(select):
+                    print('%d. %s'%(index + 1, part))
+                text = ''
+                if len(select) > 0:
+                    index = self.raw_input('Type number: ')
+                    try:
+                        index = int(index)
+                    except:
+                        index = 0
+                    if index > 0 and index <= len(select):
+                        text = select[index - 1]
+        text = text.strip()
+        if not text:
+            return None
+        return text
+
+    def command_input (self, command):
+        if '$(VIM_CWORD)' in command:
+            command = command.replace('$(VIM_CWORD)', '$(?CWORD)')
+        command = self.config.mark_replace(command, '$(-', ')', self._handle_input)
+        command = self.config.mark_replace(command, '$(?', ')', self._handle_input)
         return command
 
     def task_option (self, task):
@@ -1163,7 +1194,7 @@ def getopt (argv):
         arg = argv[index]
         if arg != '':
             head = arg[:1]
-            if head != '-':
+            if head not in ('-', '+'):
                 break
             if arg == '-':
                 break
@@ -1240,14 +1271,24 @@ def main(args = None):
     if len(args) == 0:
         pretty.error('require task name, use %s -h for help'%prog)
         return 1
-    taskname = args[0]
-    path = ''
-    if len(args) >= 2:
-        path = args[1]
+    taskname = ''
+    if args[0][:1] not in ('+', '-'):
+        taskname = args[0]
+        args = args[1:]
+    opt2, extra = getopt(args)
+    path = (len(extra) > 0) and extra[-1] or ''
+    path = path.strip('\r\n\t ')
     if path and (not os.path.exists(path)):
         pretty.error('path not exists: %s'%path)
         return 2
     tm = TaskManager(path)
+    tm.config.shadow['+'] = {}
+    tm.config.shadow['-'] = {}
+    for key in opt2:
+        if key.startswith('+'):
+            tm.config.shadow['+'][key[1:]] = opt2[key]
+        else:
+            tm.config.shadow['-'][key] = opt2[key]
     tm.setup(opts)
     hr = tm.task_run(taskname)
     return hr

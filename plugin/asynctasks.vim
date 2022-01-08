@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2021/12/31 01:05
-" Verision: 1.8.32
+" Last Modified: 2022/01/09 05:36
+" Verision: 1.9.1
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -399,15 +399,17 @@ endfunc
 function! s:ExtractOpt(command)
 	let cmd = substitute(a:command, '^\s*\(.\{-}\)\s*$', '\1', '')
 	let opts = {}
-	while cmd =~# '^-\%(\w\+\)\%([= ]\|$\)'
-		let opt = matchstr(cmd, '^-\zs\w\+')
-		if cmd =~ '^-\w\+='
-			let val = matchstr(cmd, '^-\w\+=\zs\%(\\.\|\S\)*')
+	while cmd =~# '^[-+]\%(\w\+\)\%([= ]\|$\)'
+		let opt = matchstr(cmd, '^[-+]\zs\w\+')
+		let opt = ((cmd =~ '^+')? '+' : '') . opt
+		if cmd =~ '^[-+]\w\+='
+			let val = matchstr(cmd, '^[-+]\w\+=\zs\%(\\.\|\S\)*')
 		else
-			let val = (opt == 'cwd')? '' : 1
+			let val = (opt == 'cwd' || opt == 'encoding')? '' : 1
 		endif
 		let opts[opt] = substitute(val, '\\\(\s\)', '\1', 'g')
-		let cmd = substitute(cmd, '^-\w\+\%(=\%(\\.\|\S\)*\)\=\s*', '', '')
+		let pattern = '^[-+]\w\+\%(=\%(\\.\|\S\)*\)\=\s*'
+		let cmd = substitute(cmd, pattern, '', '')
 	endwhile
 	return [cmd, opts]
 endfunc
@@ -420,6 +422,17 @@ function! s:pathcase(path)
 	else
 		return tolower(tr(a:path, '/', '\'))
 	endif
+endfunc
+
+
+" parse task args into [task, opts, args]
+function! s:task_extract(command)
+	let cmd = s:strip(a:command)
+	let name = matchstr(cmd, '^\w\+')
+	let text = matchstr(cmd, '^\w\+\zs.*')
+	let [args, opts] = s:ExtractOpt(text)
+	let args = s:strip(args)
+	return [name, opts, args]
 endfunc
 
 
@@ -527,12 +540,13 @@ endfunc
 "----------------------------------------------------------------------
 function! s:config_merge(target, source, ininame, mode)
 	let special = []
+	let setting = ['*', '+', '-', '%', '#']
 	for key in keys(a:source)
 		if stridx(key, ':') >= 0
 			let special += [key]
 		elseif stridx(key, '/') >= 0
 			let special += [key]
-		elseif key != '*'
+		elseif index(setting, key) < 0
 			let a:target[key] = a:source[key]
 			if a:ininame != ''
 				let a:target[key].__name__ = a:ininame
@@ -540,12 +554,12 @@ function! s:config_merge(target, source, ininame, mode)
 			if a:mode != ''
 				let a:target[key].__mode__ = a:mode
 			endif
-		elseif key == '*'
-			if has_key(a:target, '*') == 0
-				let a:target['*'] = {}
+		else
+			if has_key(a:target, key) == 0
+				let a:target[key] = {}
 			endif
-			for name in keys(a:source['*'])
-				let a:target['*'][name] = a:source['*'][name]
+			for name in keys(a:source[key])
+				let a:target[key][name] = a:source[key][name]
 			endfor
 		endif
 	endfor
@@ -695,8 +709,9 @@ function! asynctasks#collect_config(path, force)
 	endfor
 	let avail = []
 	let modes = {'global':2, 'script':1, 'local':0}
+	let setting = ['*', '+', '-', '%', '#']
 	for key in keys(tasks.config)
-		if key != '*'
+		if index(setting, key) < 0
 			let tasks.names[key] = 1
 			let avail += [[key, modes[tasks.config[key].__mode__]]]
 		endif
@@ -705,7 +720,21 @@ function! asynctasks#collect_config(path, force)
 	for item in avail
 		let tasks.avail += [item[0]]
 	endfor
-	let tasks.environ = get(tasks.config, '*', {})
+	let tasks.environ = {}
+	let tasks.setting = {}
+	for key in setting
+		let source = get(tasks.config, key, {})
+		let tasks.setting[key] = {}
+		for name in keys(source)
+			let tasks.setting[key][name] = source[name]
+		endfor
+	endfor
+	for key in ['*', '+']
+		let source = get(tasks.config, key, {})
+		for name in keys(source)
+			let tasks.environ[name] = source[name]
+		endfor
+	endfor
 	let s:private.tasks = tasks
 	" echo s:private.tasks.environ
 	return (s:index == 0)? 0 : -1
@@ -975,12 +1004,12 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" ask user what to do
+" command substitution
 "----------------------------------------------------------------------
-function! s:command_input(command, taskname, remember)
+function! s:command_sub(command, mark_open, mark_close, handler)
 	let command = a:command
-	let mark_open = '$(?'
-	let mark_close = ')'
+	let mark_open = a:mark_open
+	let mark_close = a:mark_close
 	let size_open = strlen(mark_open)
 	let size_close = strlen(mark_close)
 	while 1
@@ -992,54 +1021,139 @@ function! s:command_input(command, taskname, remember)
 		if p2 < 0
 			break
 		endif
-		let remember = a:remember
-		let name = strpart(command, p1 + size_open, p2 - p1 - size_open)
-		let mark = mark_open . name . mark_close
-		let text = ''
-		let kiss = stridx(name, ':')
-		if kiss >= 0
-			let text = s:strip(strpart(name, kiss + 1))
-			let name = s:strip(strpart(name, 0, kiss))
-			if text == ''
-				let remember = 1
+		let text = strpart(command, p1 + size_open, p2 - p1 - size_open)
+		let mark = mark_open . text . mark_close
+		let text = s:strip(text)
+		let hr = call(a:handler, [text])
+		if type(hr) == type('')
+			let t = hr
+			let command = s:replace(command, mark, t)
+		elseif type(hr) == type([])
+			let msg = 'in ' . mark . ''
+			if len(hr) > 0
+				let msg = msg . ': ' . hr[0]
 			endif
-		endif
-		let rkey = a:taskname . ':' . name
-		let ikey = rkey . ':pos'
-		let select = []
-		let lastid = -1
-		if remember && text == ''
-			let text = get(g:asynctasks_history, rkey, '')
-			" echom 'remember: <' . text . '>'
-		elseif stridx(text, ',') >= 0
-			for part in split(text, ',')
-				let part = s:strip(part)
-				if part != ''
-					let select += [part]
-				endif
-			endfor
-			let lastid = str2nr(get(g:asynctasks_history, ikey, ''))
-		endif
-		if len(select) == 0
-			echohl Type
-			let t = s:api_input('Input argument (' . name . '): ', text)
-			echohl None
-			let g:asynctasks_history[rkey] = t
+			call s:warning(msg)
+			return ''
+		elseif type(hr) == type(1)
+			return ''
 		else
-			let items = join(select, "\n")
-			let t = ''
-			let choice = s:api_confirm('Choice argument (' . name . ')', items, lastid)
-			if choice > 0
-				let g:asynctasks_history[ikey] = choice
-				let t = s:replace(select[choice - 1], '&', '')
-			endif
-		endif
-		if t == ''
+			let msg = 'Bad handler return: ' . mark . ''
+			call s:warning(msg)
 			return ''
 		endif
-		let command = s:replace(command, mark, t)
 	endwhile
 	return command
+endfunc
+
+
+"----------------------------------------------------------------------
+" handle input
+"----------------------------------------------------------------------
+function! s:handle_input(text)
+	let name = s:strip(a:text)
+	let remember = get(s:, 'handle_remember', 0)
+	let taskname = get(s:, 'handle_taskname', 'task')
+	let text = ''
+	let kiss = stridx(name, ':')
+	if kiss >= 0
+		let text = s:strip(strpart(name, kiss + 1))
+		let name = s:strip(strpart(name, 0, kiss))
+		if text == ''
+			let remember = 1
+		endif
+	endif
+	let rkey = taskname . ':' . name
+	let ikey = rkey . ':<pos>'
+	let select = []
+	let lastid = -1
+	if has_key(s:private, 'shadow')
+		let shadow = get(s:private.shadow, '-', {})
+		if has_key(shadow, name)
+			return shadow[name]
+		endif
+	endif
+	if remember && text == ''
+		let text = get(g:asynctasks_history, rkey, '')
+		" echom 'remember: <' . text . '>'
+	elseif stridx(text, ',') >= 0
+		for part in split(text, ',')
+			let part = s:strip(part)
+			if part != ''
+				let select += [part]
+			endif
+		endfor
+		let lastid = str2nr(get(g:asynctasks_history, ikey, ''))
+	endif
+	if len(select) == 0
+		echohl Type
+		let t = s:api_input('Input argument (' . name . '): ', text)
+		echohl None
+		let g:asynctasks_history[rkey] = t
+	else
+		let items = join(select, "\n")
+		let t = ''
+		let choice = s:api_confirm('Choice argument (' . name . ')', items, lastid)
+		if choice > 0
+			let g:asynctasks_history[ikey] = choice
+			let t = s:replace(select[choice - 1], '&', '')
+		endif
+	endif
+	if t == ''
+		return 0
+	endif
+	return t
+endfunc
+
+
+"----------------------------------------------------------------------
+" handler: environ
+"----------------------------------------------------------------------
+function! s:handle_environ(text)
+	let [name, sep, default] = s:partition(a:text, ':')
+	let key = s:strip(name)
+	if has_key(s:private, 'shadow')
+		let shadow = get(s:private.shadow, '+', {})
+		if has_key(shadow, key)
+			return shadow[key]
+		endif
+	endif
+	if has_key(g:asynctasks_environ, key) == 0
+		if has_key(s:private.tasks.environ, key) == 0
+			if s:strip(sep) == ''
+				let msg = 'Internal variable "'. key . '" is underfined'
+				return [msg]
+			else
+				return s:strip(default)
+			endif
+		endif
+	endif
+	let t = get(s:private.tasks.environ, key, '')
+	let t = get(g:asynctasks_environ, key, t)
+	return t
+endfunc
+
+
+"----------------------------------------------------------------------
+" os environment
+"----------------------------------------------------------------------
+function! s:handle_osenv(text)
+	let [name, sep, default] = s:partition(a:text, ':')
+	let key = '$' . s:strip(name)
+	return (key == '$')? '' : (exists(key)? eval(key) : s:strip(default))
+endfunc
+
+
+"----------------------------------------------------------------------
+" ask user what to do
+"----------------------------------------------------------------------
+function! s:command_input(command, taskname, remember)
+	let s:handle_taskname = a:taskname
+	let s:handle_remember = a:remember
+	let cmd = a:command
+	let cmd = s:command_sub(cmd, '$(?', ')', 's:handle_input')
+	let cmd = s:command_sub(cmd, '$(-', ')', 's:handle_input')
+	return cmd
 endfunc
 
 
@@ -1047,35 +1161,13 @@ endfunc
 " internal environment replace
 "----------------------------------------------------------------------
 function! s:command_environ(command)
-	let command = a:command
-	let mark_open = '$(VIM:'
-	let mark_close = ')'
-	let size_open = strlen(mark_open)
-	let size_close = strlen(mark_close)
-	while 1
-		let p1 = stridx(command, mark_open)
-		if p1 < 0
-			break
-		endif
-		let p2 = stridx(command, mark_close, p1)
-		if p2 < 0
-			break
-		endif
-		let name = strpart(command, p1 + size_open, p2 - p1 - size_open)
-		let mark = mark_open . name . mark_close
-		let key = s:strip(name)
-		if has_key(g:asynctasks_environ, key) == 0
-			if has_key(s:private.tasks.environ, key) == 0
-				let msg = 'Internal variable "'. name . '" is underfined'
-				call s:warning(msg)
-				return ''
-			endif
-		endif
-		let t = get(s:private.tasks.environ, key, '')
-		let t = get(g:asynctasks_environ, key, t)
-		let command = s:replace(command, mark, t)
-	endwhile
-	return command
+	let text = a:command
+	let text = s:command_sub(text, '$(VIM:', ')', 's:handle_environ')
+	if text != ''
+		let text = s:command_sub(text, '$(+', ')', 's:handle_environ')
+	endif
+	let text = s:command_sub(text, '$(%', ')', 's:handle_osenv')
+	return text
 endfunc
 
 
@@ -1925,11 +2017,25 @@ function! asynctasks#cmd(bang, args, ...)
 		call s:errmsg('require task name, use :AsyncTask -h for help')
 		return -1
 	endif
+	let [name, opts, extra] = s:task_extract(args)
+	let name = s:strip(name)
+	let s:private.shadow = {}
+	let s:private.shadow['+'] = {}
+	let s:private.shadow['-'] = {}
+	for key in keys(opts)
+		if key =~ '^+'
+			let value = opts[key]
+			let key = strpart(key, 1)
+			let s:private.shadow['+'][key] = value
+		else
+			let s:private.shadow['-'][key] = opts[key]
+		endif
+	endfor
 	let s:last_task = args
 	if (a:0 < 3) || (a:0 >= 3 && a:1 <= 0)
-		call asynctasks#start(a:bang, args, '')
+		call asynctasks#start(a:bang, name, '')
 	else
-		call asynctasks#start(a:bang, args, '', a:1, a:2, a:3)
+		call asynctasks#start(a:bang, name, '', a:1, a:2, a:3)
 	endif
 endfunc
 
