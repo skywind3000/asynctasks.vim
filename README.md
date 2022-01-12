@@ -528,7 +528,7 @@ The one with higher priority will overshadow the lower one.
 
 Another example, we have two tasks `file-build` and `project-find` in the global config `~/.vim/tasks.ini`:
 
-```VimL
+```ini
 [file-build]
 command=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" $(-cflags:) 
 cwd=$(VIM_FILEDIR)
@@ -541,7 +541,7 @@ errorformat=%f:%l:%m
 
 Both of them have introduced a variable with a default value of empty string. Sometimes, we don't need to redefine the tasks, just init the two variables in the local `.tasks`:
 
-```VimL
+```ini
 [+]
 clags=-g -gprof
 findargs=-tcpp
