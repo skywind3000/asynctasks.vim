@@ -352,6 +352,60 @@ let g:asynctasks_term_pos = 'external'
 
 本插件基本上提供了所有 Vim 中可能的运行程序的方式了，选个你喜欢的即可。
 
+### Runner
+
+得益于 AsyncRun 的 [customizable runners](https://github.com/skywind3000/asyncrun.vim/wiki/Customize-Runner) 机制，任务可以按你想要的任何方式执行，插件发布包含了一批默认 runner：
+
+| Runner | 描 述 | 需 求 | 链 接 |
+|-|-|-|-|
+| `gnome` | 在新的 Gnome 终端里运行 | GNOME | [gnome.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome.vim) |
+| `gnome_tab` | 在另一个 Gnome 终端的 Tab 里运行 | GNOME | [gnome_tab.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/gnome_tab.vim) |
+| `xterm` | 在新的 xterm 窗口内运行 | xterm | [xterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xterm.vim) |
+| `tmux` | 在一个新的 tmux 的 pane 里运行 | [Vimux](https://github.com/preservim/vimux) | [tmux.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/tmux.vim) |
+| `floaterm` | 在 floaterm 的新窗口里运行 | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
+| `floaterm_reuse` | 再一个可复用的 floaterm 窗口内运行 | [floaterm](https://github.com/voldikss/vim-floaterm) | [floaterm_reuse.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/floaterm.vim) |
+| `quickui` | 在 quickui 的浮窗里运行 | [vim-quickui](https://github.com/skywind3000/vim-quickui) | [quickui.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/quickui.vim) |
+| `toggleterm` | 使用 toggleterm 窗口运行 | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | [toggleterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/toggleterm.vim) |
+| `termhelp` |在 terminal-help 的终端里运行 | [vim-terminal-help](https://github.com/skywind3000/vim-terminal-help) | [termhelp.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/termhelp.vim) |
+| `xfce` | 在 xfce 终端中运行 | xfce4-terminal | [xfce.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/xfce.vim) |
+| `konsole` | 在 KDE 的自带终端里运行 | KDE | [konsole.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/konsole.vim) |
+| `macos` | 在 macOS 的系统终端内运行 | macos | [macos.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/macos.vim) |
+| `iterm` | 在 iTerm2 的 tab 中运行 | macos + iTerm2 | [iterm.vim](https://github.com/skywind3000/asyncrun.vim/blob/master/autoload/asyncrun/runner/iterm.vim) |
+
+当为 AsyncRun 定义了一个 runner，可以在本插件的任务配置里用 `pos` 配置来指定：
+
+```ini
+[file-run]
+command=python "$(VIM_FILEPATH)"
+cwd=$(VIM_FILEDIR)
+output=terminal
+pos=gnome
+```
+
+当你使用:
+
+```VimL
+:AsyncTask file-run
+```
+
+这个任务将会在 `gnome-terminal` 的 runner 里执行:
+
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/runner-gnome.png)
+
+在 gnome 下用 gvim 时，在新弹出的终端窗口里运行程序，和 IDE 里开发的体验完全一致。
+
+如果你想避免为大部分任务设置 `pos` 配置，设置全局配置会方便很多：
+
+```VimL
+let g:asynctasks_term_pos = 'gnome'
+```
+
+全局配置生效后，任何 `output=terminal` 的任务如果没有包含 `pos` 字段，都将默认用 `gnome-terminal` 来运行任务。
+
+注意，任务配置里的 `option` 字段必须为 `terminal`，同时任务配置里的 `pos` 会比全局配置 `g:asynctasks_term_pos` 拥有更高的优先级。
+
+如果你想自定义一个 runner，可以参考 asyncrun 的文档：[customize-runner](https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner)。
+
 
 ## 高级话题
 
@@ -361,17 +415,17 @@ let g:asynctasks_term_pos = 'external'
 
 有一些任务需要用户输入点什么东西，比如你配置一个全局搜索字符串的任务，运行时如果希望用户输入关键字的话，你就会用到这项功能。
 
-任务的 `command` 字段可以接受形如 `$(?...)` 的宏，在运行 `:AsyncTask xxx` 时，如果 `command` 里包含这些宏，则会在 Vim 里提示你输入内容：
+任务的 `command` 字段可以接受形如 `$(-...)` 的宏，在运行 `:AsyncTask xxx` 时，如果 `command` 里包含这些宏，则会在 Vim 里提示你输入内容：
 
 ```ini
 [task1]
-command=echo hello $(?your name), you are a $(?gender).
+command=echo hello $(-name), you are a $(-gender).
 output=terminal
 ```
 
 在你使用 `:AsyncTask task1` 运行任务时，该任务会在 Vim 中要求你输入参数：
 
-![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-ask.png)
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-ask2.png)
 
 命令行里有两个参数需要输入，问完第一个会问第二个，按 ESC 放弃，回车确认，完成后将会把输入的值替换到上面的命令中，然后开始执行：
 
@@ -379,22 +433,115 @@ output=terminal
 
 如上图所示，该任务正确的显示了用户输入的内容。
 
-_提示：使用 `$(?prompt:default)` 可以提供一个默认值，同时 `$(?prompt:)` 会记住上次的输入。使用 `$(?gender:&male,&female)` 来给用户提供备选。_
+你也可以在 `:AsyncTask {任务名}` 命令的后面用 `-varname=xxx` 的形式显示提供值：
+
+```VimL
+:AsyncTask task1 -name=Batman -gender=boy
+```
+
+当你在命令行里提供这些值了，AsyncTask 就不会再问你要输入了。
+
+_提示：使用 `$(-prompt:default)` 可以提供一个默认值，同时 `$(-prompt:)` 会记住上次的输入。使用 `$(-gender:&male,&female)` 来给用户提供备选。_
 
 真实案例（我自己用的）：
 
 ```ini
 [grep]
-command=rg -n --no-heading --color never "$(?keyword)" "<root>" -tcpp -tc -tpy -tvim -tgo -tasm
+command=rg -n --no-heading --color never "$(-word)" "<root>" -tcpp -tc -tpy -tvim -tgo -tasm
 cwd=$(VIM_ROOT)
 errorformat=%f:%l:%m
 ```
 
 这是我的全局 `grep` 任务，只要运行 `:AsyncTask grep` 就会提示我输入要查找的关键字，输入后就能在当前项目中搜索符合条件的代码了。
 
+当然，这个 `$(-word)` 的值你也可以用命令参数提供：
+
+```VimL
+:AsyncTask grep -word=hello
+```
+
 如果在另一个项目中我需要指明搜索更多类型的文件，我可以专门为该项目定义一个局部的 `grep` 任务，并用另外的参数去执行 `rg`。
 
 当然，大部分时候，这个全局的 `grep` 任务已经足够我用了，对于其他项目，`rg` 除了支持 `.gitignore` 外，还能在项目内放一个额外的 `.ignore` 文件，来指定需要跳过什么（比如一大堆测试文件我不想搜索），或者还要搜索什么。
+
+
+### 内部变量
+
+内部变量有很多种不同的用途，比如可用来管理不同的 building target。可以在配置文件的 `[+]` 区域定义内部变量：
+
+```ini
+[+]
+build_target=build_x86
+test_target=test_x86
+
+[project-build]
+command=make $(VIM:build_target)
+cwd=<root>
+
+[project-test]
+command=make $(VIM:test_target)
+cwd=<root>
+```
+
+在 `command` 配置项中，任何符合 `$(+var_name)` 的文本都会被替换成星号区域定义的内容，所以，上面 test 任务的命令最终会变成： 
+
+    make build_x86
+
+想要切换 `project-build` 任务的 target 的话，直接打开配置修改 `[+]` 区域内的变量值就行，不用每次去修改 `command` 配置项。
+
+同样，内部变量的值也可以通过命令行参数，以 `+varname=value` 的形式传递覆盖：
+
+```VimL
+:AsyncTask project-test  +test_target=mytest
+```
+
+Default values can be defined as $(+varname:default) form, it will be used if variables are absent in both [+] section and :AsyncTask xxx arguments.
+
+变量可以有默认值，默认值定义为 `$(+变量名:默认值)` ：
+
+```ini
+[project-test]
+command=make $(+test_target:testall)
+cwd=<root>
+```
+
+如果该变量即没有在 `[+]` 区域里定义，也没有在 `:AsyncTask xxx` 的命令行后提供，那么默认值就会生效。
+
+内部变量还有第三种定义方法，可以在 `g:asynctasks_environ` 中定义，方便 vimscript 操作：
+
+    let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
+
+由于同样的变量可以在多处定义，那么他们的优先级是：
+
+- 低优先级: 全局配置的 `[+]` 区间。
+- 中优先级：本地 `.tasks` 配置的 `[+]` 区间。
+- 高优先级：vimscript 的字典变量 `g:asynctasks_environ`。
+- 最高优先级: 位于 `:AsyncTask 任务名` 命令后面的 `+varname=value` 参数。
+
+高优先级定义的值会覆盖低优先级的内容，利用这个特性很多类似的任务可以只定义一遍。
+
+比如我们在全局配置中定义了两个任务：
+
+```ini
+[file-build]
+command=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" $(-cflags:) 
+cwd=$(VIM_FILEDIR)
+
+[project-find]
+command=rg -n --no-heading --color never "$(-word)" "<root>" $(-findargs:)
+cwd=$(VIM_ROOT)
+errorformat=%f:%l:%m
+```
+
+他们都各自引入了一个默认值为空字符的变量（cflags, findargs），如果本地项目里我们有两个同名但是参数略微不同的任务，我们不需要复制粘贴再定义一次，只需要在本地 `.tasks` 配置中：
+
+```ini
+[+]
+clags=-g -gprof
+findargs=-tcpp
+```
+
+这样定义一下就能获得不同的命令效果了，这个可以很方便的简化很多类似任务的定义。
 
 ### 不同 profile 的任务
 
@@ -454,36 +601,6 @@ let g:asynctasks_system = 'macos'
 ```
 
 这样就会匹配所有以 `/macos` 结尾的命令了。
-
-### 内部变量
-
-内部变量有很多种不同的用途，比如可用来管理不同的 building target。可以在配置文件的 `[*]` 区域定义内部变量：
-
-```ini
-[*]
-build_target=build_x86
-test_target=test_x86
-
-[project-build]
-command=make $(VIM:build_target)
-cwd=<root>
-
-[project-test]
-command=make $(VIM:test_target)
-cwd=<root>
-```
-
-在 `command` 配置项中，任何符合 `$(VIM:var_name)` 的文本都会被替换成星号区域定义的内容，所以，上面 test 任务的命令最终会变成： 
-
-    make build_x86
-
-想要切换 `project-build` 任务的 target 的话，直接打开配置修改 `[*]` 区域内的变量值就行，不用每次去修改 `command` 配置项。
-
-内部变量同样也可以定义到字典 `g:asynctasks_environ` 中:
-
-    let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
-
-如果一个变量同时在 `[*]` 配置区以及 `g:asynctasks_environ` 字典里被定义，那么字典里的值会有更高的优先级。
 
 ### 任务数据源
 

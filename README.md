@@ -524,9 +524,9 @@ Same variable can be defined in the different places, priorities are:
 - High priority: vimscript object `g:asynctasks_environ`.
 - The highest priority: `+varname=value` arguments of `:AsyncTask` command.
 
-The one with higher priority will overshadow the lower one.
+The one with higher priority will overshadow the lower one. By utilizing this feature, we can simplify most similar tasks.
 
-Another example, we have two tasks `file-build` and `project-find` in the global config `~/.vim/tasks.ini`:
+e.g. we have two tasks `file-build` and `project-find` in the global config `~/.vim/tasks.ini`:
 
 ```ini
 [file-build]
