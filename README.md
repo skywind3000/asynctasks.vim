@@ -22,9 +22,9 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Extra runners](#extra-runners)
   - [Advanced Topics](#advanced-topics)
     - [Ask for user input](#ask-for-user-input)
+    - [Internal variables](#internal-variables)
     - [Task with different profiles](#task-with-different-profiles)
     - [Different system with different commands](#different-system-with-different-commands)
-    - [Internal variables](#internal-variables)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
     - [Run last task](#run-last-task)
     - [Options](#options)
@@ -418,40 +418,107 @@ Continue hacking in `asynctasks.vim`:
 
 Some tasks, eg finding strings in current project, may need to ask user to input some keywords before start.
 
-If `command` field contains macros in `$(?...)` form, when you run `:AsyncTask xxx`, you are required to input something in the vim:
+If `command` field contains macros in the `$(-...)` pattern:
 
 ```ini
 [task1]
-command=echo hello $(?your name), you are a $(?gender).
+command=echo hello $(-name), you are a $(-gender).
 output=terminal
 ```
 
-When `:AsyncTask task1` happens, you can input values in the prompt area:
+When you start the task by:
 
-![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-ask.png)
+```VimL
+:AsyncTask task1
+```
+
+You are required to input the values of `$(-name)` and `$(-gender)` in the prompt area:
+
+![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-ask2.png)
 
 There are two variable you need to provide, input them one by one, press `ESC` to give up and `ENTER` to confirm. The task will start when you finished:
 
 ![](https://github.com/skywind3000/images/raw/master/p/asynctasks/input-display.png)
 
-As you see, `$(?your name)` has been substituted with the value you just provided.
+As you see, `$(-name)` has been substituted with the value you just provided.
 
-_Hint: use `$(?prompt:default)` to provide a default value, `$(?prompt:)` to remember input history. and `$(?gender:&male,&female)` to provide multiple choices._
+Input value can also be provided as command arguments of `AsyncTask {name}`:
+
+```VimL
+:AsyncTask task1 -name=Batman -gender=boy
+```
+
+If the value is present in the arguments, AsyncTask will not ask you repeatly.
+
+_Hint: use `$(-prompt:default)` to provide a default value, `$(-prompt:)` to remember input history. and `$(-gender:&male,&female)` to provide multiple choices._
 
 Real example used by myself:
 
 ```ini
 [grep]
-command=rg -n --no-heading --color never "$(?keyword)" "<root>" -tcpp -tc -tpy -tvim -tgo -tasm
+command=rg -n --no-heading --color never "$(-word)" "<root>" -tcpp -tc -tpy -tvim -tgo -tasm
 cwd=$(VIM_ROOT)
 errorformat=%f:%l:%m
 ```
 
-Here is my global `grep` task. Each time I use `:AsyncTask grep` in any of my project, it prompts me to input `keyword` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
+Here is my global `grep` task. Each time I use `:AsyncTask grep` in any of my project, it prompts me to input `word` before searching, I can use `<C-r><C-w>` to pickup word under cursor or input something new.
+
+The value of `word` can also be provided in the arguments:
+
+```VimL
+:AsyncTask grep -word=hello
+```
 
 If I need other filetypes to search in certain project, I can redifine a new `grep` with different parameters for this project.
 
 But most of time, a global `grep` task is enough, rg supports `.ignore` files for different files, I can use them to prevent searching in unnecessary files. Check rg documentation for `--ignore-file`.
+
+### Internal variables
+
+Internal variables can be used in many ways, eg. to manage multiple building targets. They are defined in the `[+]` section of `.tasks` files:
+
+```ini
+[+]
+build_target=build_x86
+test_target=test_x86
+
+[project-build]
+command=make $(+build_target)
+cwd=<root>
+
+[project-test]
+command=make $(+test_target)
+cwd=<root>
+```
+
+Patterns which match `$(+var_name)` in the `command` field will be substituted with the corresponding value defined in the `[+]` section. 
+
+Which means, the new command in "project-build" will become:
+
+    make build_x86
+
+It is a efficient way to switch current building target by changing the variable values in the `[+]` section without modifying the `command` option every time.
+
+Internal variables can be provided as in the argument list as `+varname=value`:
+
+```VimL
+:AsyncTask project-test  +test_target=mytest
+```
+
+Default values will be used if variables are absent in both arguments and `[+]` section:
+
+```ini
+[project-test]
+command=make $(+test_target:testall)
+cwd=<root>
+```
+
+The global dictionary `g:asynctasks_environ` is a convenient place to define variables in vimscript without modifying ini files:
+
+    let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
+
+If a variable is defined both in the `[+]` section and `g:asynctasks_environ` dict, the one in the `g:asynctasks_environ` will get higher priority.
+
 
 ### Task with different profiles
 
@@ -511,38 +578,6 @@ let g:asynctasks_system = 'macos'
 ```
 
 Then command ending with `/macos` will be selected.
-
-### Internal variables
-
-Internal variables can be used in many ways, eg. to manage multiple building targets. They are defined in the `[*]` section of `.tasks` files:
-
-```ini
-[*]
-build_target=build_x86
-test_target=test_x86
-
-[project-build]
-command=make $(VIM:build_target)
-cwd=<root>
-
-[project-test]
-command=make $(VIM:test_target)
-cwd=<root>
-```
-
-Patterns which match `$(VIM:var_name)` in the `command` field will be substituted with the corresponding value defined in the `[*]` section. 
-
-Which means, the new command in "project-build" will become:
-
-    make build_x86
-
-It is a efficient way to switch current building target by changing the variable values in the `[*]` section without modifying the `command` option every time.
-
-Internal variable can also be defined in `g:asynctasks_environ`:
-
-    let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
-
-If a variable is defined both in the `[*]` section and `g:asynctasks_environ` dict, the one in the `g:asynctasks_environ` will get higher priority.
 
 
 ### Data source for fuzzy finders
