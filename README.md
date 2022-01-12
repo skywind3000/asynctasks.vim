@@ -41,13 +41,13 @@ This readme is also available in:
 
 ## Introduction
 
-As vim 8.0 was released in 2017, we have got many wonderful plugins like LSP, DAP, and asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector) which could only be imagined in emacs in the past, now become reality in vim.
+As vim 8.0 was released in 2017, we have got many wonderful plugins like LSP, DAP, and asynchronous linters. Even things like [vimspector](https://github.com/puremourning/vimspector), which could only be imagined in emacs in the past, now become a reality in vim.
 
-However, vim is still lack of an elegant task system to speed up your inner software development cycle (edit, compile, test). A lot of people are still dealing with those building, testing, and deploying tasks in such a primitive or flaky way. Therefore, I decided to create this plugin and introduce vscode's task like mechanisms to vim. 
+However, vim still lack an elegant task system to speed up your inner software development cycle (edit, compile, test). Many people are still dealing with those building, testing, and deploying tasks in such a primitive or flaky way. Therefore, I decided to create this plugin and introduce vscode's task-like mechanisms to vim. 
 
-Vscode creates a `.vscode` folder in your project root directory and uses a `.vscode/tasks.json` file to define project-specific tasks. Similar, `asynctasks.vim` uses a `.tasks` file in your project folders for local tasks and use `~/.vim/tasks.ini` to define global tasks for generic projects.
+Vscode creates a `.vscode` folder in your project root directory and uses a `.vscode/tasks.json` file to define project-specific tasks. Similar, `asynctasks.vim` uses a `.tasks` file in your project folders for local tasks and uses `~/.vim/tasks.ini` to define global tasks for generic projects.
 
-This is very simple, but most good designs always start from a very simple concept. You will benefit a lot from the productivity and possibility of this task system.
+This is very simple, but most good designs always start from simple concepts. You will benefit a lot from the productivity and possibility of this task system.
 
 ## Get Started
 
@@ -475,7 +475,7 @@ But most of time, a global `grep` task is enough, rg supports `.ignore` files fo
 
 ### Internal variables
 
-Internal variables can be used in many ways, eg. to manage multiple building targets. They are defined in the `[+]` section of `.tasks` files:
+Internal variables can be used in many ways, e.g., to manage multiple building targets. They are defined in the `[+]` section of `.tasks` files:
 
 ```ini
 [+]
@@ -499,13 +499,13 @@ Which means, the new command in "project-build" will become:
 
 It is a efficient way to switch current building target by changing the variable values in the `[+]` section without modifying the `command` option every time.
 
-Internal variables can be provided as in the argument list as `+varname=value`:
+Internal variables can be provided in the argument list as `+varname=value`:
 
 ```VimL
 :AsyncTask project-test  +test_target=mytest
 ```
 
-Default values will be used if variables are absent in both arguments and `[+]` section:
+Default values can be defined as `$(+varname:default)` form, it will be used if variables are absent in both `[+]` section and `:AsyncTask xxx` arguments.
 
 ```ini
 [project-test]
@@ -513,11 +513,41 @@ command=make $(+test_target:testall)
 cwd=<root>
 ```
 
-The global dictionary `g:asynctasks_environ` is a convenient place to define variables in vimscript without modifying ini files:
+The global dictionary `g:asynctasks_environ` is the third way to define a variable, it's a convenient place for vimscript:
 
     let g:asynctasks_environ = {'foo': '100', 'bar': '200' }
 
-If a variable is defined both in the `[+]` section and `g:asynctasks_environ` dict, the one in the `g:asynctasks_environ` will get higher priority.
+Same variable can be defined in the different places, priorities are:
+
+- Low priority: global `[+]` section.
+- Normal priority: local `[+]` section.
+- High priority: vimscript object `g:asynctasks_environ`.
+- The highest priority: `+varname=value` arguments of `:AsyncTask` command.
+
+The one with higher priority will overshadow the lower one.
+
+Another example, we have two tasks `file-build` and `project-find` in the global config `~/.vim/tasks.ini`:
+
+```VimL
+[file-build]
+command=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" $(-cflags:) 
+cwd=$(VIM_FILEDIR)
+
+[project-find]
+command=rg -n --no-heading --color never "$(-word)" "<root>" $(-findargs:)
+cwd=$(VIM_ROOT)
+errorformat=%f:%l:%m
+```
+
+Both of them have introduced a variable with a default value of empty string. Sometimes, we don't need to redefine the tasks, just init the two variables in the local `.tasks`:
+
+```VimL
+[+]
+clags=-g -gprof
+findargs=-tcpp
+```
+
+It's more flexable if we have the same local tasks with similar arguments.
 
 
 ### Task with different profiles
