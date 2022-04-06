@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2022/01/09 13:40
-" Verision: 1.9.2
+" Last Modified: 2022/04/06 20:14
+" Verision: 1.9.3
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -107,6 +107,9 @@ let g:asynctasks_edit_split = get(g:, 'asynctasks_edit_split', '')
 
 " callbacks: replace input() / confirm() and so on
 let g:asynctasks_api_hook = get(g:, 'asynctasks_api_hook', {})
+
+" last task
+let g:asynctasks_last = ''
 
 
 " Add highlight colors if they don't exist.
@@ -2044,6 +2047,7 @@ function! asynctasks#cmd(bang, args, ...)
 		endif
 	endfor
 	let s:last_task = args
+	let g:asynctasks_last = s:last_task
 	if (a:0 < 3) || (a:0 >= 3 && a:1 <= 0)
 		call asynctasks#start(a:bang, name, '')
 	else
