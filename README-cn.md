@@ -475,11 +475,11 @@ build_target=build_x86
 test_target=test_x86
 
 [project-build]
-command=make $(VIM:build_target)
+command=make $(+build_target)
 cwd=<root>
 
 [project-test]
-command=make $(VIM:test_target)
+command=make $(+test_target)
 cwd=<root>
 ```
 
