@@ -17,6 +17,7 @@ from __future__ import print_function, unicode_literals
 import sys
 import os
 import copy
+import readline
 import fnmatch
 import pprint
 import tempfile
@@ -928,9 +929,12 @@ class TaskManager (object):
                 return shadow[name]
         if ',' not in tail:
             prompt = 'Input argument (%s): '%name
-            text = self.raw_input(prompt)
-            if not text:
-                text = tail.strip()
+            text = ''
+            try:
+                readline.set_startup_hook(lambda: readline.insert_text(tail))
+                text = self.raw_input(prompt)
+            finally:
+                readline.set_startup_hook()
         else:
             select = []
             for part in tail.split(','):
