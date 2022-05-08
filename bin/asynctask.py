@@ -17,7 +17,6 @@ from __future__ import print_function, unicode_literals
 import sys
 import os
 import copy
-import readline
 import fnmatch
 import pprint
 import tempfile
@@ -35,6 +34,8 @@ if sys.version_info[0] >= 3:
 
 UNIX = (sys.platform[:3] != 'win') and True or False
 
+if UNIX:
+    import readline
 
 #----------------------------------------------------------------------
 # macros
@@ -929,12 +930,17 @@ class TaskManager (object):
                 return shadow[name]
         if ',' not in tail:
             prompt = 'Input argument (%s): '%name
-            text = ''
-            try:
-                readline.set_startup_hook(lambda: readline.insert_text(tail))
+            if UNIX: # for linux like system, using readline for editable default value
+                text = ''
+                try:
+                    readline.set_startup_hook(lambda: readline.insert_text(tail))
+                    text = self.raw_input(prompt)
+                finally:
+                    readline.set_startup_hook()
+            else:
                 text = self.raw_input(prompt)
-            finally:
-                readline.set_startup_hook()
+                if not text:
+                    text = tail.strip()
         else:
             select = []
             for part in tail.split(','):
