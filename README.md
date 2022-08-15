@@ -624,7 +624,7 @@ let current_tasks = asynctasks#list("")
 
 It returns a list of items, each item represents a task. And it can be used as the data source for fuzzy finders like `fzf.vim` or `Leaderf`.
 
-Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf` and `coc-list`.
+Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf`, `coc-list` and `fzf-lua`.
 
 
 ### Run last task

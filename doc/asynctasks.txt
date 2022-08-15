@@ -562,7 +562,8 @@ very easy:
 It returns a list of items, each item represents a task. And it can be used as
 the data source for fuzzy finders like 'fzf.vim' or 'Leaderf'.
 
-Here is a instruction [20] to integrate with 'fzf', 'leaderf' and 'coc-list'.
+Here is a instruction [20] to integrate with 'fzf', 'leaderf', 'coc-list' and
+'fzf-lua'.
 
 -------------------------------------------------------------------------------
                                                  *asynctasks-customize-runners*
