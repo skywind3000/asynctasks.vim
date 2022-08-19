@@ -629,7 +629,7 @@ Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-I
 
 ### Extensions
 
-Existing UI extensions for fuzzy finders:
+Existing UI extensions for fuzzy-finders:
 
 | Extension | Author | Description |
 |-|-|-|
