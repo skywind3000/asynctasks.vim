@@ -629,6 +629,8 @@ Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-I
 
 ### Extensions
 
+Existing UI extensions for fuzzy finders:
+
 | Extension | Author | Description |
 |-|-|-|
 | [fzf-lua-asynctasks](https://github.com/deathmaz/fzf-lua-asynctasks) | Yaroslav Mazuryk  | fzf-lua integration |
