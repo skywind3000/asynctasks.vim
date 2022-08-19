@@ -26,6 +26,7 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Task with different profiles](#task-with-different-profiles)
     - [Different system with different commands](#different-system-with-different-commands)
     - [Data source for fuzzy finders](#data-source-for-fuzzy-finders)
+    - [Extensions](#extensions)
     - [Run last task](#run-last-task)
     - [Options](#options)
   - [Specification](#specification)
@@ -625,6 +626,14 @@ let current_tasks = asynctasks#list("")
 It returns a list of items, each item represents a task. And it can be used as the data source for fuzzy finders like `fzf.vim` or `Leaderf`.
 
 Here is an [instruction](https://github.com/skywind3000/asynctasks.vim/wiki/UI-Integration) to integrate with `fzf`, `leaderf`, `coc-list` and `fzf-lua`.
+
+### Extensions
+
+| Extension | Author | Description |
+|-|-|-|
+| [fzf-lua-asynctasks](https://github.com/deathmaz/fzf-lua-asynctasks) | Yaroslav Mazuryk  | fzf-lua integration |
+| [telescope-asynctasks.nvim](https://github.com/GustavoKatel/telescope-asynctasks.nvim) | Gustavo Sampaio | telescope integration |
+| [coc-tasks](https://github.com/voldikss/coc-tasks) | voldikss | coc integration |
 
 
 ### Run last task
