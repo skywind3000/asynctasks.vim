@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2022/08/24 00:30
-" Verision: 1.9.4
+" Last Modified: 2022/08/24 01:45
+" Verision: 1.9.5
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -2293,6 +2293,102 @@ function! asynctasks#timing()
 	echo s:private.rtp.config
 	return tt
 endfunc
+
+
+"----------------------------------------------------------------------
+" AsyncTaskEnviron 
+"----------------------------------------------------------------------
+function! s:task_environ(bang, ...)
+	let args = a:000
+	let nargs = len(args)
+	if nargs == 0
+		let rows = []
+		let rows += [['Variable', 'Value']]
+		let highmap = {}
+		let index = 0
+		let highmap['0,0'] = 'Title'
+		let highmap['0,1'] = 'Title'
+		let names = keys(g:asynctasks_environ)
+		call sort(names)
+		for name in names
+			let key = printf('%s', name)
+			let value = printf('%s', g:asynctasks_environ[name])
+			let index += 1
+			let rows += [[key, value]]
+			let highmap[index . ',0'] = 'Keyword'
+			let highmap[index . ',1'] = 'Number'
+		endfor
+		call s:print_table(rows, highmap)
+	elseif nargs == 1
+		let name = args[0]
+		if name == '-h'
+			call s:environ_help()
+		elseif a:bang == ''
+			if has_key(g:asynctasks_environ, name)
+				echohl Keyword
+				echon name
+				echohl Comment
+				echon '='
+				echohl Number
+				echon g:asynctasks_environ[name]
+				echohl None
+			else
+				let t = "invalid name '" . name . "'"
+				call s:errmsg(t . ', use AsyncTaskEnviron -h for help')
+			endif
+		else
+			if has_key(g:asynctasks_environ, name)
+				unlet g:asynctasks_environ[name]
+				echo "variable '" . name . "' has been removed"
+			else
+				let t = "invalid name '" . name . "'"
+				call s:errmsg(t . ', use AsyncTaskEnviron -h for help')
+			endif
+		endif
+	elseif nargs == 2
+		let name = args[0]
+		let g:asynctasks_environ[name] = args[1]
+		echohl Keyword
+		echon name
+		echohl Comment
+		echon '='
+		echohl Number
+		echon g:asynctasks_environ[name]
+		echohl None
+	else
+		call s:errmsg('too many arguments, use AsyncTaskEnviron -h for help')
+	endif
+	return 0
+endfunc
+
+function! s:environ_help()
+	echo 'usage:  :AsyncTaskEnviron <operation>'
+	let t = '    :AsyncTaskEnviron'
+	echo 'operations:'
+	echo t . '                    - list all variables'
+	echo t . ' <varname>          - print value of a variable'
+	echo t . ' <varname> <value>  - assign value to a variable'
+	echo t . '! <varname>         - remove a variable'
+endfunc
+
+function! s:complete_environ(ArgLead, CmdLine, CursorPos)
+	let candidate = []
+	if a:ArgLead == '-'
+		let candidate = ['-h']
+	else
+		let names = keys(g:asynctasks_environ)
+		call sort(names)
+		for name in names
+			if stridx(name, a:ArgLead) == 0
+				let candidate += [name]
+			endif
+		endfor
+	endif
+	return candidate
+endfunc
+
+command! -bang -nargs=* -complete=customlist,s:complete_environ 
+		\ AsyncTaskEnviron  call s:task_environ('<bang>', <f-args>)
 
 
 
