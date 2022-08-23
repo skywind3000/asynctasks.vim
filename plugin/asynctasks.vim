@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2022/04/06 20:14
-" Verision: 1.9.3
+" Last Modified: 2022/08/24 00:30
+" Verision: 1.9.4
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -1141,6 +1141,9 @@ function! s:handle_environ(text)
 	endif
 	let t = get(s:private.tasks.environ, key, '')
 	let t = get(g:asynctasks_environ, key, t)
+	if type(t) != type('')
+		return printf('%s', t)
+	endif
 	return t
 endfunc
 
