@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2022/08/24 01:52
+" Last Modified: 2022/08/24 02:12
 " Verision: 1.9.5
 "
 " For more information, please visit:
@@ -1987,6 +1987,7 @@ function! asynctasks#cmd(bang, args, ...)
 		call s:task_macro(1)
 		return 0
 	elseif args ==# '-Z'
+		silent! exec "AsyncRun -mode=load"
 		return 0
 	endif
 	let [args, opts] = s:ExtractOpt(args)
