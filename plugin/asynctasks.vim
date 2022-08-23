@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2022/08/24 01:45
+" Last Modified: 2022/08/24 01:52
 " Verision: 1.9.5
 "
 " For more information, please visit:
@@ -2348,6 +2348,8 @@ function! s:task_environ(bang, ...)
 	elseif nargs == 2
 		let name = args[0]
 		let g:asynctasks_environ[name] = args[1]
+		echohl Statement
+		echon 'assigned '
 		echohl Keyword
 		echon name
 		echohl Comment
