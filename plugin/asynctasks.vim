@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2022/08/24 02:12
-" Verision: 1.9.5
+" Last Modified: 2022/09/29 23:47
+" Verision: 1.9.6
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -659,7 +659,6 @@ function! s:collect_rtp_config() abort
 		endif
 	endfor
 	let config = deepcopy(s:private.rtp.ini)
-	call s:config_merge(config, g:asynctasks_tasks, '<script>', 'script')
 	let s:private.rtp.config = config
 	return s:private.rtp.config
 endfunc
@@ -698,6 +697,22 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" script level config
+"----------------------------------------------------------------------
+function! s:compose_script_config()
+	let config = {}
+	for prefix in ['g:', 't:', 'w:', 'b:']
+		let varname = prefix . 'asynctasks_tasks'
+		if exists(varname)
+			let cc = eval(varname)
+			call s:config_merge(config, cc, '<script>', 'script')
+		endif
+	endfor
+	return config
+endfunc
+
+
+"----------------------------------------------------------------------
 " fetch all config
 "----------------------------------------------------------------------
 function! asynctasks#collect_config(path, force)
@@ -706,8 +721,9 @@ function! asynctasks#collect_config(path, force)
 	let s:error = ''
 	let c1 = s:compose_rtp_config(a:force)
 	let c2 = s:compose_local_config(path)
+	let c3 = s:compose_script_config()
 	let tasks = {'config':{}, 'names':{}, 'avail':[]}
-	for cc in [c1, c2]
+	for cc in [c1, c2, c3]
 		call s:config_merge(tasks.config, cc, '', '')
 	endfor
 	let avail = []
