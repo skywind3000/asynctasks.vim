@@ -2274,10 +2274,45 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" internal variables
+"----------------------------------------------------------------------
+function! asynctasks#environ()
+	call asynctasks#collect_config('.', 1)
+	let hr = {}
+	for key in keys(s:private.tasks.environ)
+		let hr[key] = s:private.tasks.environ[key]
+	endfor
+	for scope in ['g:', 't:', 'w:', 'b:']
+		let name = scope . 'asynctasks_environ'
+		if exists(name)
+			let environ = eval(name)
+			for key in keys(environ)
+				let hr[key] = environ[key]
+			endfor
+		endif
+	endfor
+	return hr
+endfunc
+
+
+"----------------------------------------------------------------------
 " AsyncTaskEnviron 
 "----------------------------------------------------------------------
 function! s:task_environ(bang, ...)
 	let args = a:000
+	let head = (len(args) > 0)? args[0] : ''
+	let environ = g:asynctasks_environ
+	for scope in ['b', 't', 'w', 'g']
+		let pattern = '^-' . scope
+		let name = scope . ':' . 'asynctasks_environ'
+		if head =~ pattern
+			if !exists(name)
+				exec 'let ' . name . ' = {}'
+			endif
+			let environ = eval(name)
+			let args = slice(args, 1)
+		endif
+	endfor
 	let nargs = len(args)
 	if nargs == 0
 		let rows = []
@@ -2286,11 +2321,11 @@ function! s:task_environ(bang, ...)
 		let index = 0
 		let highmap['0,0'] = 'Title'
 		let highmap['0,1'] = 'Title'
-		let names = keys(g:asynctasks_environ)
+		let names = keys(environ)
 		call sort(names)
 		for name in names
 			let key = printf('%s', name)
-			let value = printf('%s', g:asynctasks_environ[name])
+			let value = printf('%s', environ[name])
 			let index += 1
 			let rows += [[key, value]]
 			let highmap[index . ',0'] = 'Keyword'
@@ -2302,21 +2337,21 @@ function! s:task_environ(bang, ...)
 		if name == '-h'
 			call s:environ_help()
 		elseif a:bang == ''
-			if has_key(g:asynctasks_environ, name)
+			if has_key(environ, name)
 				echohl Keyword
 				echon name
 				echohl Comment
 				echon '='
 				echohl Number
-				echon g:asynctasks_environ[name]
+				echon environ[name]
 				echohl None
 			else
 				let t = "invalid name '" . name . "'"
 				call s:errmsg(t . ', use AsyncTaskEnviron -h for help')
 			endif
 		else
-			if has_key(g:asynctasks_environ, name)
-				unlet g:asynctasks_environ[name]
+			if has_key(environ, name)
+				unlet environ[name]
 				echo "variable '" . name . "' has been removed"
 			else
 				let t = "invalid name '" . name . "'"
@@ -2325,7 +2360,7 @@ function! s:task_environ(bang, ...)
 		endif
 	elseif nargs == 2
 		let name = args[0]
-		let g:asynctasks_environ[name] = args[1]
+		let environ[name] = args[1]
 		echohl Statement
 		echon 'assigned '
 		echohl Keyword
@@ -2333,9 +2368,10 @@ function! s:task_environ(bang, ...)
 		echohl Comment
 		echon '='
 		echohl Number
-		echon g:asynctasks_environ[name]
+		echon environ[name]
 		echohl None
 	else
+		echom args
 		call s:errmsg('too many arguments, use AsyncTaskEnviron -h for help')
 	endif
 	return 0
