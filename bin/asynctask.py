@@ -6,8 +6,8 @@
 #
 # Maintainer: skywind3000 (at) gmail.com, 2020
 #
-# Last Modified: 2022/01/09 13:40
-# Verision: 1.2.1
+# Last Modified: 2022/11/10 10:45
+# Verision: 1.2.2
 #
 # for more information, please visit:
 # https://github.com/skywind3000/asynctasks.vim
@@ -989,8 +989,8 @@ class TaskManager (object):
                 y = macros['VIM_RELNAME']
                 macros['WSL_RELDIR'] = self.config.path_win2unix(x)
                 macros['WSL_RELNAME'] = self.config.path_win2unix(y)
-        command = self.config.macros_replace(command, macros)
         command = self.config.environ_replace(command)
+        command = self.config.macros_replace(command, macros)
         command = command.strip()
         for name in macros:
             value = macros.get(name, None)
