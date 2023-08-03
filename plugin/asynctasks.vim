@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/08/03 12:59
+" Last Modified: 2023/08/03 13:05
 " Verision: 1.9.11
 "
 " For more information, please visit:
@@ -1305,6 +1305,9 @@ function! s:task_option(task)
 	endif
 	if has_key(task, 'init')
 		let opts.init = get(task, 'init', '')
+	endif
+	if has_key(task, 'filetype')
+		let opts.ft = get(task, 'filetype', '')
 	endif
 	return opts
 endfunc
