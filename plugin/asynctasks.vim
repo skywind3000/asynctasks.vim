@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/08/03 21:20
+" Last Modified: 2023/08/18 02:04
 " Verision: 1.9.12
 "
 " For more information, please visit:
@@ -2291,8 +2291,10 @@ endfunc
 "----------------------------------------------------------------------
 " internal variables
 "----------------------------------------------------------------------
-function! asynctasks#environ()
-	call asynctasks#collect_config('.', 1)
+function! asynctasks#environ(path)
+	let path = (a:path == '')? expand('%:p') : a:path
+	let path = (path == '')? getcwd() : path
+	call asynctasks#collect_config(path, 1)
 	let hr = {}
 	for key in keys(s:private.tasks.environ)
 		let hr[key] = s:private.tasks.environ[key]
@@ -2307,6 +2309,29 @@ function! asynctasks#environ()
 		endif
 	endfor
 	return hr
+endfunc
+
+
+"----------------------------------------------------------------------
+" get internal variable
+"----------------------------------------------------------------------
+function! asynctasks#variable(path, name)
+	let path = (a:path == '')? expand('%:p') : a:path
+	let path = (path == '')? getcwd() : path
+	call asynctasks#collect_config(path, 1)
+	for scope in ['b:', 'w:', 't:', 'g:']
+		let name = scope . 'asynctasks_environ'
+		if exists(name)
+			let environ = eval(name)
+			if has_key(environ, a:name)
+				return environ[a:name]
+			endif
+		endif
+	endfor
+	if has_key(s:private.tasks.environ, a:name)
+		return s:private.tasks.environ[a:name]
+	endif
+	return ''
 endfunc
 
 
