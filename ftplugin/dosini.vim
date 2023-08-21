@@ -32,14 +32,33 @@ endif
 
 
 "----------------------------------------------------------------------
+" extract names
+"----------------------------------------------------------------------
+function! s:config_names()
+	let cname = get(g:, 'asynctasks_config_name', '.tasks')
+	let parts = (type(cname) == 1)? split(cname, ',') : cname
+	let names = []
+	for name in parts
+		let t = substitute(name, '^\s*\(.\{-}\)\s*$', '\1', '')
+		if t != ''
+			let names += [t]
+		endif
+	endfor
+	return names
+endfunc
+
+
+"----------------------------------------------------------------------
 " check task config
 "----------------------------------------------------------------------
 function! s:check_task_config()
-	let config_name = get(g:, 'asynctasks_config_name', '.tasks')
 	let rtp_config = get(g:, 'asynctasks_rtp_config', 'tasks.ini')
-	if expand('%:t') == config_name
-		return 1
-	endif
+	let sname = expand('%:t')
+	for cname in s:config_names()
+		if sname == cname
+			return 1
+		endif
+	endfor
 	let filepath = expand('%:p')
 	for dirname in split(&rtp, ',')
 		let t = printf('%s/%s', dirname, rtp_config)

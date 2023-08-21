@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/08/18 02:04
-" Verision: 1.9.12
+" Last Modified: 2023/08/21 03:00
+" Verision: 1.9.13
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -502,6 +502,9 @@ endfunc
 function! s:config_merge(target, source, ininame, mode)
 	let special = []
 	let setting = ['*', '+', '-', '%', '#']
+	if type(a:source) != type({})
+		return a:target
+	endif
 	for key in keys(a:source)
 		if stridx(key, ':') >= 0
 			let special += [key]
@@ -666,6 +669,33 @@ function! s:compose_script_config()
 			call s:config_merge(config, cc, '<script>', 'script')
 		endif
 	endfor
+	for prefix in ['g:', 't:', 'w:', 'b:']
+		let varname = prefix . 'asynctasks_factory'
+		if exists(varname)
+			let factory = eval(varname)
+			if type(factory) == type([])
+				let size = len(factory)
+				let index = 0
+				while index < size
+					let cc = call(factory[index], [])
+					call s:config_merge(config, cc, '<script>', 'script')
+					let index += 1
+				endwhile
+			else
+				let cc = call(factory, [])
+				call s:config_merge(config, cc, '<script>', 'script')
+			endif
+		endif
+	endfor
+	if exists('g:asynctasks_loader')
+		let size = len(g:asynctasks_loader)
+		let index = 0
+		while index < size
+			let cc = call(g:asynctasks_loader[index], [])
+			call s:config_merge(config, cc, '<script>', 'script')
+			let index += 1
+		endwhile
+	endif
 	return config
 endfunc
 
@@ -2332,6 +2362,17 @@ function! asynctasks#variable(path, name)
 		return s:private.tasks.environ[a:name]
 	endif
 	return ''
+endfunc
+
+
+"----------------------------------------------------------------------
+" get current root
+"----------------------------------------------------------------------
+function! asynctasks#current_root() abort
+	if s:requirement('asyncrun') == 0
+		return ''
+	endif
+	return asyncrun#current_root()
 endfunc
 
 
