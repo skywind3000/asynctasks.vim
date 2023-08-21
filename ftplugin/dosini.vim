@@ -55,6 +55,7 @@ function! s:check_task_config()
 	let rtp_config = get(g:, 'asynctasks_rtp_config', 'tasks.ini')
 	let sname = expand('%:t')
 	for cname in s:config_names()
+		let cname = fnamemodify(cname, ':t')
 		if sname == cname
 			return 1
 		endif
