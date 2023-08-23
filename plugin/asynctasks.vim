@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/08/23 15:17
+" Last Modified: 2023/08/23 15:22
 " Verision: 1.9.15
 "
 " For more information, please visit:
@@ -2396,6 +2396,14 @@ function! asynctasks#current_root() abort
 		return ''
 	endif
 	return asyncrun#current_root()
+endfunc
+
+
+"----------------------------------------------------------------------
+" load templates
+"----------------------------------------------------------------------
+function! asynctasks#template_load() abort
+	return s:template_load()
 endfunc
 
 
