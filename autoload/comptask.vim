@@ -215,9 +215,9 @@ function! comptask#omnifunc(findstart, base) abort
 	else
 		let ctx = s:get_context()
 		if ctx =~ '^\s*#'
-			return v:none
+			return v:null
 		elseif ctx =~ '^\s*['
-			return v:none
+			return v:null
 		elseif stridx(ctx, '=') < 0
 			if stridx(ctx, ':') < 0
 				return s:match_complete(a:base, s:text_keys, 'k', 1)
@@ -266,7 +266,7 @@ function! comptask#omnifunc(findstart, base) abort
 				return s:match_complete(a:base, s:list_program, 'r', 1)
 			endif
 		endif
-		return v:none
+		return v:null
 	endif
 endfunc
 
@@ -318,7 +318,7 @@ function! s:check_omni_avail() abort
 	call setpos('.', new)
 	let hr = call(&omnifunc, [0, base])
 	call setpos('.', pos)
-	if type(hr) == type(v:none)
+	if type(hr) == type(v:null)
 		return 0
 	elseif type(hr) == type([])
 		if len(hr) == 0

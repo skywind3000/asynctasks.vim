@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/08/23 15:22
+" Last Modified: 2023/09/12 22:12
 " Verision: 1.9.15
 "
 " For more information, please visit:
@@ -22,6 +22,7 @@ let s:windows = has('win32') || has('win64') || has('win16') || has('win95')
 let s:scriptname = expand('<sfile>:p')
 let s:scripthome = fnamemodify(s:scriptname, ':h:h')
 let s:inited = 0
+let s:taskft = get(g:, 'asynctasks_filetype', 'dosini')
 
 
 "----------------------------------------------------------------------
@@ -1615,7 +1616,7 @@ endfunc
 " config template
 "----------------------------------------------------------------------
 let s:template = [
-			\ '# vim: set fenc=utf-8 ft=dosini:',
+			\ '# vim: set fenc=utf-8 ft=' . s:taskft . ' :',
 			\ '# see: https://github.com/skywind3000/asynctasks.vim/wiki/Task-Config',
 			\ '',
 			\ '# define a new task named "file-build"',
@@ -1767,18 +1768,19 @@ function! s:task_edit(mode, path, template)
 			endif
 		endif
 	endfor
+	let taskft = get(g:, 'asynctasks_filetype', 'dosini')
 	let template = s:template
 	let temp = get(g:, 'asynctasks_template', 1)
 	let wiki = 'https://github.com/skywind3000/asynctasks.vim/wiki/Task-Config'
 	if type(temp) == 0
 		if temp == 0
 			let t = 'https://github.com/skywind3000/asynctasks.vim/wiki/Task-Config'
-			let template = ['# vim: set fenc=utf-8 ft=dosini:']
+			let template = ['# vim: set fenc=utf-8 ft=' . taskft . ':']
 			let template += ['# see: ' . wiki, '']
 		endif
 	else
 		let templates = s:template_load()
-		let template = ['# vim: set fenc=utf-8 ft=dosini:']
+		let template = ['# vim: set fenc=utf-8 ft=' . taskft . ':']
 		let template += ['# see: ' . wiki, '']
 		if a:template == ''
 			if get(g:, 'asynctasks_template_ask', 1) != 0
@@ -1833,10 +1835,14 @@ function! s:task_edit(mode, path, template)
 		else
 			exec "split ". fnameescape(name)
 		endif
+	elseif mods == 'tab'
+		exec "tabe " . fnameescape(name)
 	else
 		exec mods . " split " . fnameescape(name)
 	endif
-	setlocal ft=dosini
+	if taskft != ''
+		exec 'setlocal ft=' . taskft
+	endif
 	if newfile
 		exec "normal ggVGx"
 		call append(line('.') - 1, template)
@@ -1865,7 +1871,8 @@ let s:macros = {
 			\ 'VIM_RELNAME': 'File name relativize to current directory',
 			\ 'VIM_ROOT': 'Project root directory',
 			\ 'VIM_PRONAME': 'Name of current project root directory',
-			\ 'VIM_DIRNAME': "Name of current directory",
+			\ 'VIM_CWDNAME': "Name of current directory",
+			\ 'VIM_DIRNAME': "Directory name of current file",
 			\ 'VIM_CWORD': 'Current word under cursor',
 			\ 'VIM_CFILE': 'Current filename under cursor',
 			\ 'VIM_CLINE': 'Cursor line number in current buffer',
@@ -1918,7 +1925,8 @@ function! s:expand_macros()
 	let macros['VIM_ROOT'] = asyncrun#get_root('%')
 	let macros['VIM_HOME'] = expand(split(&rtp, ',')[0])
 	let macros['VIM_PRONAME'] = fnamemodify(macros['VIM_ROOT'], ':t')
-	let macros['VIM_DIRNAME'] = fnamemodify(macros['VIM_CWD'], ':t')
+	let macros['VIM_DIRNAME'] = fnamemodify(macros['VIM_FILEDIR'], ':t')
+	let macros['VIM_CWDNAME'] = fnamemodify(macros['VIM_CWD'], ':t')
 	let macros['VIM_PROFILE'] = g:asynctasks_profile
 	let macros['<cwd>'] = macros['VIM_CWD']
 	let macros['<root>'] = macros['VIM_ROOT']
@@ -1946,7 +1954,8 @@ function! s:task_macro(wsl)
 	let names = ['FILEPATH', 'FILENAME', 'FILEDIR', 'FILEEXT', 'FILETYPE']
 	let names += ['FILENOEXT', 'PATHNOEXT', 'CWD', 'RELDIR', 'RELNAME']
 	let names += ['CWORD', 'CFILE', 'CLINE', 'VERSION', 'SVRNAME', 'COLUMNS']
-	let names += ['LINES', 'GUI', 'ROOT', 'DIRNAME', 'PRONAME', 'PROFILE']
+	let names += ['LINES', 'GUI', 'ROOT', 'CWDNAME', 'PRONAME', 'DIRNAME']
+	let names += ['PROFILE']
 	let rows = []
 	let rows += [['Macro', 'Detail', 'Value']]
 	let highmap = {}
