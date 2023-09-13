@@ -12,7 +12,6 @@
 " api hook
 "----------------------------------------------------------------------
 let g:asynctasks_api_hook = get(g:, 'asynctasks_api_hook', {})
-let g:asynctasks_filetype = 'taskini'
 
 
 "----------------------------------------------------------------------
@@ -182,7 +181,7 @@ endfunc
 " init filetype
 "----------------------------------------------------------------------
 function! s:init_filetype()
-	let ft = get(g:, 'asynctasks_filetype', 'dosini')
+	let ft = get(g:, 'asynctasks_filetype', 'taskini')
 	if s:detect_taskini()
 		exec 'setlocal ft=' . fnameescape(ft)
 		exec 'setlocal commentstring=#\ %s'
