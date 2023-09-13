@@ -12,6 +12,7 @@
 " api hook
 "----------------------------------------------------------------------
 let g:asynctasks_api_hook = get(g:, 'asynctasks_api_hook', {})
+let g:asynctasks_filetype = 'taskini'
 
 
 "----------------------------------------------------------------------
@@ -144,11 +145,57 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" detect taskini
+"----------------------------------------------------------------------
+function! s:detect_taskini()
+	if expand('%') == ''
+		return 1
+	endif
+	let cname = get(g:, 'asynctasks_config_name', '.tasks')
+	let parts = (type(cname) == 1)? split(cname, ',') : cname
+	let sname = expand('%:t')
+	let mainname = fnamemodify(sname, ':r')
+	let extname = fnamemodify(sname, ':e')
+	for cname in parts
+		let cname = fnamemodify(cname, ':t')
+		if sname == cname
+			return 1
+		endif
+	endfor
+	let rtp_config = get(g:, 'asynctasks_rtp_config', 'tasks.ini')
+	let cname = fnamemodify(rtp_config, ':t')
+	if sname == cname
+		let filepath = expand('%:p')
+		for dirname in split(&rtp, ',')
+			let t = printf('%s/%s', dirname, rtp_config)
+			if asyncrun#utils#path_equal(filepath, t) != 0
+				" echom printf("test: '%s' '%s'", filepath, t)
+				return 1
+			endif
+		endfor
+	endif
+	return 0
+endfunc
+
+
+"----------------------------------------------------------------------
+" init filetype
+"----------------------------------------------------------------------
+function! s:init_filetype()
+	let ft = get(g:, 'asynctasks_filetype', 'dosini')
+	if s:detect_taskini()
+		exec 'setlocal ft=' . fnameescape(ft)
+		exec 'setlocal commentstring=#\ %s'
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
 " autocmd
 "----------------------------------------------------------------------
 augroup TaskHelpAuto
 	au!
-	au BufNewFile,BufRead .tasks setlocal filetype=dosini
+	au BufNewFile,BufRead * call s:init_filetype()
 augroup end
 
 
