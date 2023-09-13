@@ -29,6 +29,20 @@ The generic way to handle building/running/testing/deploying tasks by imitating 
     - [Extensions](#extensions)
     - [Run last task](#run-last-task)
     - [Options](#options)
+        - [The `g:asynctasks_config_name` option](#the-gasynctasks_config_name-option)
+        - [The `g:asynctasks_rtp_config` option](#the-gasynctasks_rtp_config-option)
+        - [The `g:asynctasks_extra_config` option](#the-gasynctasks_extra_config-option)
+        - [The `g:asynctasks_term_pos` option](#the-gasynctasks_term_pos-option)
+        - [The `g:asynctasks_term_cols` option](#the-gasynctasks_term_cols-option)
+        - [The `g:asynctasks_term_rows` option](#the-gasynctasks_term_rows-option)
+        - [The `g:asynctasks_term_focus` option](#the-gasynctasks_term_focus-option)
+        - [The `g:asynctasks_term_reuse` option](#the-gasynctasks_term_reuse-option)
+        - [The `g:asynctasks_term_hidden` option](#the-gasynctasks_term_hidden-option)
+        - [The `g:asynctasks_term_listed` option](#the-gasynctasks_term_listed-option)
+        - [The `g:asynctasks_term_close` option](#the-gasynctasks_term_close-option)
+        - [The `g:asynctasks_confirm` option](#the-gasynctasks_confirm-option)
+        - [The `g:asynctasks_filetype` option](#the-gasynctasks_filetype-option)
+        - [The `g:asynctasks_template` option](#the-gasynctasks_template-option)
   - [Specification](#specification)
   - [Command Line Tool](#command-line-tool)
   - [Frequently Asked Questions](#frequently-asked-questions)
@@ -722,6 +736,10 @@ Set to `1` to close the terminal window when task finished.
 ##### The `g:asynctasks_confirm` option
 
 Set to zero to skip filename confirmation in `:AsyncTaskEdit`.
+
+##### The `g:asynctasks_filetype` option
+
+The filetype of the task configuration file, default to "taskini".
 
 ##### The `g:asynctasks_template` option
 

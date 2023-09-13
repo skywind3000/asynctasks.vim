@@ -689,6 +689,10 @@ let g:asynctasks_extra_config = [
 
 设置成 `0` 的话，使用 `:AsyncTaskEdit` 时就不需要你确认文件名了。
 
+##### The `g:asynctasks_filetype` option
+
+任务配置文件的 filetype，默认值是 "taskini".
+
 ## 使用案例
 
 这里有很多实际使用案例：
