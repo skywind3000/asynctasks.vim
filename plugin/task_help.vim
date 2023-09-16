@@ -9,6 +9,13 @@
 
 
 "----------------------------------------------------------------------
+" task configuration filetype, default to taskini,
+" override it as you like
+"----------------------------------------------------------------------
+let g:asynctasks_filetype = get(g:, 'asynctasks_filetype', 'taskini')
+
+
+"----------------------------------------------------------------------
 " api hook
 "----------------------------------------------------------------------
 let g:asynctasks_api_hook = get(g:, 'asynctasks_api_hook', {})
