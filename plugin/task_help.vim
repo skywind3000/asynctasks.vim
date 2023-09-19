@@ -154,8 +154,11 @@ endfunc
 " detect taskini
 "----------------------------------------------------------------------
 function! s:detect_taskini()
+	if &bt != ''
+		return 0
+	endif
 	if expand('%') == ''
-		return 1
+		return 0
 	endif
 	let cname = get(g:, 'asynctasks_config_name', '.tasks')
 	let parts = (type(cname) == 1)? split(cname, ',') : cname
@@ -181,6 +184,14 @@ function! s:detect_taskini()
 		endfor
 	endif
 	return 0
+endfunc
+
+
+"----------------------------------------------------------------------
+" detect file type
+"----------------------------------------------------------------------
+function! task_help#detect()
+	return s:detect_taskini()
 endfunc
 
 
