@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/09/13 10:51
-" Verision: 1.9.16
+" Last Modified: 2023/09/19 21:36
+" Verision: 1.9.17
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -2487,6 +2487,35 @@ function! s:task_environ(bang, ...)
 		echohl Number
 		echon environ[name]
 		echohl None
+	elseif nargs > 2
+		let index = -1
+		let name = args[0]
+		let text = get(g:asynctasks_environ, name, '')
+		let argv = slice(args, 1)
+		let candidates = []
+		for ii in range(len(argv))
+			if has_key(environ, name)
+				if text == argv[ii]
+					let index = ii + 1
+				endif
+			endif
+			let candidates += [printf('&%d %s', ii + 1, argv[ii])]
+		endfor
+		let prompt = printf("Set variable '%s' to: ", name)
+		let choice = s:api_confirm(prompt, join(candidates, "\n"), index)
+		if choice < 1 || choice > len(argv)
+			return 0
+		endif
+		let environ[name] = argv[choice - 1]
+		echohl Statement
+		echon 'assigned '
+		echohl Keyword
+		echon name
+		echohl Comment
+		echon '='
+		echohl Number
+		echon environ[name]
+		echohl None
 	else
 		echom args
 		call s:errmsg('too many arguments, use AsyncTaskEnviron -h for help')
@@ -2498,10 +2527,11 @@ function! s:environ_help()
 	echo 'usage:  :AsyncTaskEnviron <operation>'
 	let t = '    :AsyncTaskEnviron'
 	echo 'operations:'
-	echo t . '                    - list all variables'
-	echo t . ' <varname>          - print value of a variable'
-	echo t . ' <varname> <value>  - assign value to a variable'
-	echo t . '! <varname>         - remove a variable'
+	echo t . '                         - list all variables'
+	echo t . ' <varname>               - print value of a variable'
+	echo t . ' <varname> <value>       - assign value to a variable'
+	echo t . ' <varname> <v1> <v2> ... - select from a value list'
+	echo t . '! <varname>              - remove a variable'
 endfunc
 
 function! s:complete_environ(ArgLead, CmdLine, CursorPos)
