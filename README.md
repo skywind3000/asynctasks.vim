@@ -545,11 +545,11 @@ e.g. we have two tasks `file-build` and `project-find` in the global config `~/.
 
 ```ini
 [file-build]
-command=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" $(-cflags:) 
+command=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" $(+cflags:) 
 cwd=$(VIM_FILEDIR)
 
 [project-find]
-command=rg -n --no-heading --color never "$(-word)" "<root>" $(-findargs:)
+command=rg -n --no-heading --color never "$(-word)" "<root>" $(+findargs:)
 cwd=$(VIM_ROOT)
 errorformat=%f:%l:%m
 ```
