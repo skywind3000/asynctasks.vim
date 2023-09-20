@@ -519,9 +519,15 @@ function! s:section_condition(target, condition)
 	if has_key(a:target, '+')
 		let value = get(a:target['+'], varname, '')
 	endif
-	if has_key(g:asynctasks_environ, varname)
-		let value = g:asynctasks_environ[varname]
-	endif
+	for scope in ['g:', 't:', 'w:', 'b:']
+		let name = scope . 'asynctasks_environ'
+		if exists(name)
+			let environ = eval(name)
+			if has_key(environ, varname)
+				let value = environ[varname]
+			endif
+		endif
+	endfor
 	if p1 >= 0 && value == vartest
 		return 1
 	elseif p2 >= 0 && value != vartest
@@ -2458,12 +2464,13 @@ function! s:task_environ(bang, ...)
 	for scope in ['b', 't', 'w', 'g']
 		let pattern = '^-' . scope
 		let name = scope . ':' . 'asynctasks_environ'
+		" echo pattern
 		if head =~ pattern
 			if !exists(name)
 				exec 'let ' . name . ' = {}'
 			endif
 			let environ = eval(name)
-			let args = slice(args, 1)
+			let args = args[1:]
 		endif
 	endfor
 	let nargs = len(args)
@@ -2527,7 +2534,7 @@ function! s:task_environ(bang, ...)
 		let index = -1
 		let name = args[0]
 		let text = get(g:asynctasks_environ, name, '')
-		let argv = slice(args, 1)
+		let argv = args[1:]
 		let candidates = []
 		for ii in range(len(argv))
 			if has_key(environ, name)
