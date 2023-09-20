@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/09/19 21:36
+" Last Modified: 2023/09/20 15:28
 " Verision: 1.9.17
 "
 " For more information, please visit:
@@ -497,6 +497,41 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" check section condition
+"----------------------------------------------------------------------
+function! s:section_condition(target, condition)
+	let condition = s:strip(a:condition)
+	let p1 = stridx(condition, '==')
+	let p2 = stridx(condition, '!=')
+	if p1 < 0 && p2 < 0
+		let profile = condition
+		return (profile == g:asynctasks_profile)? 1 : 0
+	elseif p1 >= 0
+		let varname = strpart(condition, 0, p1)
+		let vartest = strpart(condition, p1 + 2)
+	elseif p2 >= 0
+		let varname = strpart(condition, 0, p2)
+		let vartest = strpart(condition, p2 + 2)
+	endif
+	let varname = s:strip(varname)
+	let vartest = s:strip(vartest)
+	let value = ''
+	if has_key(a:target, '+')
+		let value = get(a:target['+'], varname, '')
+	endif
+	if has_key(g:asynctasks_environ, varname)
+		let value = g:asynctasks_environ[varname]
+	endif
+	if p1 >= 0 && value == vartest
+		return 1
+	elseif p2 >= 0 && value != vartest
+		return 1
+	endif
+	return 0
+endfunc
+
+
+"----------------------------------------------------------------------
 " merge two tasks
 "----------------------------------------------------------------------
 function! s:config_merge(target, source, ininame, mode)
@@ -533,8 +568,9 @@ function! s:config_merge(target, source, ininame, mode)
 		let parts[1] = s:strip(parts[1])
 		let parts[2] = s:strip(parts[2])
 		if parts[1] != ''
-			let profile = parts[1]
-			if profile != g:asynctasks_profile
+			let condition = parts[1]
+			let hr = s:section_condition(a:target, condition)
+			if hr == 0
 				continue
 			endif
 		endif
