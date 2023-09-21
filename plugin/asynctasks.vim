@@ -4,7 +4,7 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2023/09/20 15:28
+" Last Modified: 2023/09/21 15:09
 " Verision: 1.9.17
 "
 " For more information, please visit:
@@ -1202,6 +1202,9 @@ function! s:handle_environ(text)
 	let t = get(g:asynctasks_environ, key, t)
 	if type(t) != type('')
 		return printf('%s', t)
+	endif
+	if t == ''
+		return s:strip(default)
 	endif
 	return t
 endfunc
