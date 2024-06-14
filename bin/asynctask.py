@@ -6,8 +6,8 @@
 #
 # Maintainer: skywind3000 (at) gmail.com, 2020
 #
-# Last Modified: 2023/08/05 04:40
-# Verision: 1.2.3
+# Last Modified: 2024/06/14 22:23
+# Verision: 1.2.4
 #
 # for more information, please visit:
 # https://github.com/skywind3000/asynctasks.vim
@@ -1051,7 +1051,9 @@ class TaskManager (object):
         opts.command = command
         save = os.getcwd()
         if opts.cwd:
-            os.chdir(opts.cwd)
+            cwd = self.config.environ_replace(opts.cwd)
+            if cwd:
+                os.chdir(cwd)
         self.execute(opts)
         if opts.cwd:
             os.chdir(save)
