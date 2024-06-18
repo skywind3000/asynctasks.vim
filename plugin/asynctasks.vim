@@ -4,8 +4,8 @@
 "
 " Maintainer: skywind3000 (at) gmail.com, 2020-2021
 "
-" Last Modified: 2024/06/14 22:23
-" Verision: 1.9.18
+" Last Modified: 2024/06/18 16:30
+" Verision: 1.9.19
 "
 " For more information, please visit:
 " https://github.com/skywind3000/asynctasks.vim
@@ -1554,7 +1554,9 @@ function! asynctasks#start(bang, taskname, path, ...)
 	endif
 	let opts = s:task_option(task)
 	let opts.name = a:taskname
-	let opts.cwd = s:command_environ(opts.cwd)
+	if has_key(opts, 'cwd')
+		let opts.cwd = s:command_environ(opts.cwd)
+	endif
 	let skip = g:asyncrun_skip
 	if opts.mode == 'bang' || opts.mode == 2
 		" let g:asyncrun_skip = or(g:asyncrun_skip, 2)
