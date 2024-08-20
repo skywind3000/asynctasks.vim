@@ -6,8 +6,8 @@
 #
 # Maintainer: skywind3000 (at) gmail.com, 2020
 #
-# Last Modified: 2024/06/14 22:23
-# Verision: 1.2.4
+# Last Modified: 2024/08/20 15:17:27
+# Verision: 1.2.5
 #
 # for more information, please visit:
 # https://github.com/skywind3000/asynctasks.vim
@@ -490,6 +490,18 @@ class configure (object):
             return path
         return None
 
+    def relpath (self, path, base = None):
+        if not base:
+            base = os.getcwd()
+        base = os.path.abspath(base)
+        path = os.path.abspath(path)
+        if self.win32:
+            try:
+                return os.path.relpath(path, base)
+            except ValueError:
+                return path
+        return os.path.relpath(path, base)
+
     def check_environ (self, key):
         if key in os.environ:
             if os.environ[key].strip():
@@ -751,8 +763,8 @@ class configure (object):
             macros['VIM_FILEEXT'] = t[-1]
             macros['VIM_FILENOEXT'] = t[0]
             macros['VIM_PATHNOEXT'] = os.path.splitext(self.path)[0]
-            macros['VIM_RELDIR'] = os.path.relpath(macros['VIM_FILEDIR'])
-            macros['VIM_RELNAME'] = os.path.relpath(macros['VIM_FILEPATH'])
+            macros['VIM_RELDIR'] = self.relpath(macros['VIM_FILEDIR'])
+            macros['VIM_RELNAME'] = self.relpath(macros['VIM_FILEPATH'])
         else:
             macros['VIM_FILEPATH'] = None
             macros['VIM_FILENAME'] = None
@@ -997,8 +1009,8 @@ class TaskManager (object):
         macros['VIM_CWD'] = os.getcwd()
         macros['VIM_DIRNAME'] = os.path.basename(macros['VIM_CWD'])
         if self.config.target == 'file':
-            macros['VIM_RELDIR'] = os.path.relpath(macros['VIM_FILEDIR'])
-            macros['VIM_RELNAME'] = os.path.relpath(macros['VIM_FILEPATH'])
+            macros['VIM_RELDIR'] = self.config.relpath(macros['VIM_FILEDIR'])
+            macros['VIM_RELNAME'] = self.config.relpath(macros['VIM_FILEPATH'])
         if self.config.win32:
             macros['WSL_CWD'] = self.config.path_win2unix(macros['VIM_CWD'])
             if self.config.target == 'file':
